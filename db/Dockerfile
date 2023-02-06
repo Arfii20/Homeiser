@@ -10,10 +10,9 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy the contents of the current directory to the working directory in the container
-COPY . ./app
+COPY . .
 
 # Expose the default MySQL port
 EXPOSE 3306
 
-# Run the command to start the MySQL service
- CMD ["mysqld"]
+CMD ["/etc/init.d/mysql", "start"]
