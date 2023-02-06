@@ -106,5 +106,5 @@ CREATE TABLE transaction (
     due_date DATE,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (pair_id) REFERENCES pairs(id),
+    FOREIGN KEY (pair_id) REFERENCES pairs(id)
 );
