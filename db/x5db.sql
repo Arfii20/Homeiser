@@ -2,8 +2,6 @@
 --  will also need to set up creation of new table
 --  would be good to include test data
 
--- CREATE DATABASE [IF NOT EXISTS] x5db;
-
 -- build tables
 CREATE TABLE postcode (
     id INT AUTO_INCREMENT,
@@ -61,19 +59,6 @@ CREATE TABLE list_event (
 );
 
 
-CREATE TABLE user_doing_calendar_event (
-    user_id INT,
-    calendar_event_id INT,
-    added_by_user TINYINT, -- true/false; update to true for user who added
-    -- TODO: decide if we want this functionality and see there is a better way to implement
-
-    PRIMARY KEY (user_id, calendar_event_id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (calendar_event_id) REFERENCES calendar_event(id)
-
-);
-
-
 CREATE TABLE calendar_event (
     id INT AUTO_INCREMENT,
     title VARCHAR(128),
@@ -85,6 +70,19 @@ CREATE TABLE calendar_event (
 
     PRIMARY KEY (id),
     FOREIGN KEY (household_id) REFERENCES household(id)
+);
+
+
+CREATE TABLE user_doing_calendar_event (
+    user_id INT,
+    calendar_event_id INT,
+    added_by_user TINYINT, -- true/false; update to true for user who added
+    -- TODO: decide if we want this functionality and see there is a better way to implement
+
+    PRIMARY KEY (user_id, calendar_event_id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (calendar_event_id) REFERENCES calendar_event(id)
+
 );
 
 

@@ -4,7 +4,6 @@ FROM ubuntu:latest
 # Install MySQL server
 RUN apt-get update && \
     apt-get install -y mysql-server && \
-    apt-get install -y mysql-server-8.0 && \
     apt-get clean
 
 # Set the working directory in the container
@@ -16,5 +15,5 @@ COPY . ./app
 # Expose the default MySQL port
 EXPOSE 3306
 
-## Run the command to start the MySQL service
-#CMD ["mysqld"]
+# Run the command to start the MySQL service
+ CMD ["mysqld"]
