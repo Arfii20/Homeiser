@@ -40,6 +40,7 @@ CREATE TABLE user (
     email VARCHAR(319) NOT NULL, -- 319 is max length for email. 64 characters for local, '@', 254 for domain
     date_of_birth DATE,
     household_id INT,
+    color INT,  --
 
     PRIMARY KEY (id),
     FOREIGN KEY (household_id) REFERENCES household(id)
@@ -50,11 +51,12 @@ CREATE TABLE list_event (
     task VARCHAR(128) NOT NULL,
     description VARCHAR(512),
     added_by_user INT NOT NULL,
-    checked_off TINYINT DEFAULT 0,
+    checked_off_by_user INT,
     list INT,
 
     PRIMARY KEY (id),
     FOREIGN KEY (added_by_user) REFERENCES user(id),
+    FOREIGN KEY (checked_off_by_user) REFERENCES user(id),
     FOREIGN KEY (list) REFERENCES list(id)
 );
 
@@ -102,6 +104,7 @@ CREATE TABLE transaction (
     amount INT,
     description VARCHAR(256),
     due_date DATE,
+    paid TINYINT DEFAULT 0,
 
     PRIMARY KEY (id),
     FOREIGN KEY (pair_id) REFERENCES pairs(id)
