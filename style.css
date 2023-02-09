@@ -14,10 +14,11 @@
   align-items: center;
 }
 
-#header-text {
+#header-link-left {
   padding-left: 10px;
   font-size: 20px;
   font-weight: bold;
+  color: black;
 }
 
 #header-links {
