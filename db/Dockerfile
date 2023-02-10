@@ -2,9 +2,11 @@
 FROM ubuntu:latest
 
 # Install MySQL server
-RUN apt-get update && \
-    apt-get install -y mysql-server && \
-    apt-get clean
+RUN apt update && \
+    apt install -y mysql-server && \
+    apt clean
+
+RUN apt install -y systemctl
 
 # Set the working directory in the container
 WORKDIR /app
@@ -15,4 +17,5 @@ COPY . .
 # Expose the default MySQL port
 EXPOSE 3306
 
-CMD ["/etc/init.d/mysql", "start"]
+CMD ["/bin/bash"]
+CMD ["systemctl", "start", "mysql.service"]
