@@ -18,7 +18,6 @@
   padding-left: 10px;
   font-size: 20px;
   font-weight: bold;
-  color: black;
 }
 
 #header-links {
@@ -69,6 +68,67 @@
   flex: 1;
   margin: 5px;
   margin-left: 0px
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 20%;
+  padding: 80px;
+  margin-left: 180px;
+}
+
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+.square {
+  width: 250px;
+  height: 300px;
+  border: 1px solid #D592F4;
+  background: #D592F4;
+  margin: auto;
+}
+
+/*#header {
+  width: 100px;
+  height: 300px;
+  border: 10px;
+  background-color: #D592F4;
+}*/
+
+/*#square {
+  display: flex;
+  justify-content: center;
+}
+
+.rectangle {
+  width: 100px;
+  height: 100px;
+  background-color: #D592F4;
+  margin: 10px;
+}*/
+
+.Text {
+  width: 150px;
+  height: 30px;
+  flex: 1;
+  margin-left: 0px;
+}
+
+
+
+
+
+
+
+
+
 
 
 
