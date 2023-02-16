@@ -1,9 +1,13 @@
 """Entry point for server"""
 
+import server.transaction_enpoints
+
 import click
 from flask import Flask, g
-from flask_restful import Api
+from flask_restful import Api, Resource
 import mysql.connector
+
+import transaction_enpoints
 
 
 @click.group
@@ -34,4 +38,6 @@ def get_db(passwd):
 def start(host: str, debug: bool, password: str ="HALR0b0t!12"):
     app.run(host=host, debug=debug)
     get_db(password)
+
+transaction_enpoints.attach()
 
