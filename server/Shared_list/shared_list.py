@@ -4,7 +4,7 @@ The shared list methods are defined here
 
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from mysql.connector import connect, Error
+from mysql.connector import connect
 
 app = Flask(__name__)
 api = Api(app)
