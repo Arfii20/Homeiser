@@ -2,194 +2,253 @@
 The shared list methods are defined here
 """
 
-from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
 from mysql.connector import connect, Error
-import json
 
 app = Flask(__name__)
 api = Api(app)
 
+# def get_db():
+connection = connect(
+    host="localhost",
+    user="root",
+    password="Arfi12000@",
+    database="x5db",
+    buffered=True
+)
 
-def get_db():
-    connection = connect(
-        host="localhost",
-        user="root",
-        password="Arfi12000@",
-        database="x5db"
-    )
-    return connection
 
-
-print(get_db())
+# return connection
+# print(get_db())
 
 
 class SharedList(Resource):
-    def __init__(self):
-        pass
-
-    @app.route('/new_list', method="POST")
-    def new_list(self):
+    # Make new list
+    def post(self, household_id):
         """
         Gets the values from the website and stores the new list items in the database
         """
         # Getting values from the website
-        name = request.form.get("name")
-        user_id = current_user.household_id  # <----------------------------------------------
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, help='Name of the list is required',
+                            required=True, location='form')
+        args = parser.parse_args()
+        name = args.get("name")
 
-        cursor = get_db().cursor()
+        cursor1 = connection.cursor()
+        cursor1.execute("SELECT * FROM list WHERE name = '%s';" % name)
+        list_back = cursor1.fetchone()
 
-        # Querying for house_id
-        houseid_query = "SELECT household_id FROM user WHERE id = ?"
-        houseid = cursor.execute(houseid_query, [user_id])
+        if list_back is not None:
+            return {"Response": "ListNameMustBeUnique"}, 291
+        else:
+            # Query to insert to database
+            query = "INSERT INTO list (name, household_id) VALUES ('%s', %s);"
+            data = (name, household_id)
 
-        # Query to insert to database
-        query = "INSERT INTO list (name, household_id) VALUES (?, ?);"
+            cursor = connection.cursor()
+            cursor.execute(query % data)
+            connection.commit()
 
-        cursor.execute(query, [name], [houseid])
+            return {"Response": "ListCreated"}, 292
 
-        return  # render_template("name") # <----------------------------------------------
+    def get(self, household_id):
+        """
+        Sends all the list names to the website
+        :return: all list names
+        """
+        cursor = connection.cursor()
 
-    @app.route('/delete_list', method="POST")
-    def delete_list(self):
+        cursor.execute("SELECT * FROM list WHERE household_id = %s;" % household_id)
+
+        objects = []
+        for x in cursor.fetchall():
+            print(x)
+            objects.append(x)
+
+        return {"Response": "Works"}, 293  # <-------------------------------------------------------
+
+
+class ListDetails(Resource):
+
+    def delete(self, list_id):
         """
         Delete a full list from the database
         :return: name of the person who deleted the list
         """
-        list_in = json.loads(request.data)
-        list_in_id = list_in["list_id"]
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM list WHERE id = %s;" % list_id)
+        present = cursor.fetchone()
 
-        cursor = get_db().cursor()
+        if present is not None:
+            query1 = "DELETE FROM list WHERE list.id = %s;"
+            cursor1 = connection.cursor()
+            cursor1.execute(query1 % list_id)
+            connection.commit()
 
-        query = "DELETE FROM list, list_event WHERE list.id = ? and list_event.list = ?;"
-        cursor.execute(query, [list_in_id], [list_in_id])
+            query2 = "DELETE FROM list_event WHERE list_event.list = %s;"
+            cursor2 = connection.cursor()
+            cursor2.execute(query2 % list_id)
+            connection.commit()
+            return {'Response': 'ListDeleted'}, 294
+        else:
+            return {'Response': 'ListDoesntExist'}, 295
 
-        return jsonify({})  # <----------------------------------------------
-
-    @app.route('/update_list', methods="POST")
-    def change_list_name(self):
+    def patch(self, list_id):
         """
         Changes the name of the list name and returns the new name
         :return: new name of the list
         """
-        new_name = request.form.get("name")
-        list_id = request.form.get("list_id")  # <----------------------------------------------
-        cursor = get_db().cursor()
+        parser = reqparse.RequestParser()
+        parser.add_argument('new_name', type=str, help='Name of the list is required',
+                            required=True, location='form')
+        args = parser.parse_args()
+        new_name = args.get("new_name")
 
-        query = "UPDATE FROM list SET name = ? WHERE id = ?;"
-        cursor.execute(query, [new_name], [list_id])
+        query = "UPDATE list SET name = '%s' WHERE id = %s;"
+        data = (new_name, list_id)
 
-        return  # render_template("name") # <----------------------------------------------
+        cursor = connection.cursor()
+        cursor.execute(query % data)
+        connection.commit()
 
-    # @app.route('/shared_lists', method="GET")
-    # def show_list_names(self):
-    #     """
-    #     Sends all the list names to the website
-    #     :return: all list names
-    #     """
-    #     cursor = get_db().cursor()
-    #
-    #     name = cursor.execute("SELECT name FROM list WHERe id = listID;")
-    #
-    #     return name
+        return {'Response': 'UpdateSuccessful'}, 296
 
 
 class ListEvents(Resource):
 
-    def __init__(self):
-        pass
-
-    @app.route('/list_event', method="POST")
-    def new_list_event(self):
+    # Add mew list event
+    def post(self, list_id):
         """
         Inserts a new row to the list_event table
         :return: sends the new row to the website
         """
-        # Getting values from the website
-        task_name = request.form.get("task_name")
-        description_of_task = request.form.get("task_description")
-        added_user_id = current_user.id  # <----------------------------------------------
-        list_id = request.form.get("list_id")  # <----------------------------------------------
+        print("Hello")
+        parser = reqparse.RequestParser()
+        parser.add_argument("task_name", type=str, required=True, location="form",
+                            help="Name of the task is required")
+        parser.add_argument("description_of_task", type=str, required=True,
+                            location="form", help="Description of the task is required")
+        parser.add_argument("added_user_id", type=int, required=True,
+                            location="form", help="User ID is required")
+        args = parser.parse_args()
+        task_name = args.get("task_name")
+        description_of_task = args.get("description_of_task")
+        added_user_id = args.get("added_user_id")
 
-        cursor = get_db().cursor()
+        cursor1 = connection.cursor()
+        query1 = "SELECT * FROM list_event WHERE (task = '%s' AND checked_off_by_user is NOT NULL);"
+        cursor1.execute(query1 % task_name)
+        present = cursor1.fetchone()
 
-        # Query to insert to database
-        query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES (?, ?, ?, ?);"
+        if present is not None:
+            cursor = connection.cursor()
 
-        cursor.execute(query, [task_name], [description_of_task], [added_user_id], [list_id])
+            # Query to insert to database
+            query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
+            data = (task_name, description_of_task, added_user_id, list_id)
+            cursor.execute(query % data)
+            connection.commit()
+            return {"Response": "ListEventCreated"}, 281
+        else:
+            return {"Response": "ListEventAlreadyExists"}, 282
 
-        return  # render_template("name of list page")  <---------------------------------------------------
+    def get(self, list_id):
+        """
+        Shows the list events for a particular list
+        :return:
+        """
+        cursor = connection.cursor()
+        query = "SELECT * FROM list_event WHERE list = %s;"
+        cursor.execute(query % list_id)
 
-    @app.route('/delete_list_event', method="POST")
-    def delete_list_event(self):
+        objects = []
+        for x in cursor.fetchall():
+            objects.append(x)
+            print(x)
+
+        return {"Response": "Works"}, 283  # <-------------------------------------------------------
+
+
+class ListEventDetails(Resource):
+
+    def delete(self, list_event_id):
         """
         Deletes a row from the list
         :return: jsonify({})
         """
-        event_in = json.loads(request.data)
-        event_in_id = event_in["list_event_id"]
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM list_event WHERE id = %s;" % list_event_id)
+        present = cursor.fetchone()
 
-        cursor = get_db().cursor()
+        if present is not None:
+            query = "DELETE FROM list_event WHERE id = %s;"
+            cursor1 = connection.cursor()
+            cursor1.execute(query % list_event_id)
+            connection.commit()
+            return {'Response': 'ListEventDeleted'}, 284
+        else:
+            return {'Response': 'ListEventDoesntExist'}, 285
 
-        query = "DELETE FROM list_event WHERE id = ?;"
-        cursor.execute(query, [event_in_id])
-
-        return jsonify({})  # <----------------------------------------------
-
-    @app.route('/checkoff_list_event', method="POST")
-    def check_off_list_event(self):
+    # Check off list event
+    def patch(self, list_event_id):
         """
         Checks off an event
         :return: jsonify({})
         """
-        user_id = current_user.id  # <----------------------------------------------
+        parser = reqparse.RequestParser()
+        parser.add_argument("user_id", type=str, required=True, location="form",
+                            help="User ID required. Yes even for unchecking")
+        args = parser.parse_args()
+        user_id = args.get("user_id")
 
-        cursor = get_db().cursor()
-
-        checked_off = cursor.execute("SELECT checked_off_by_user FROM list_event WHERE list = ?;", [user_id])
-
-        # If checked_off is not null
-        if checked_off:
-            query = "UPDATE list_event SET checked_off_by_user = null WHERE id = ?;"
-            value = None
-            cursor.execute(query, [value])
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM list_event WHERE id = %s AND checked_off_by_user is NULL;" % list_event_id)
+        checked_off = cursor.fetchone()
 
         # If checked_off is null
-        else:
-            query = "DELETE FROM list_event WHERE id = ?;"
-            cursor.execute(query, [user_id])
+        if checked_off is not None:
+            query = "UPDATE list_event SET checked_off_by_user = %s WHERE id = %s;"
+            data = (user_id, list_event_id)
+            cursor.execute(query % data)
+            connection.commit()
+            return {"Response": "Checked-off"}, 286
+            # If checked_off is not null
+        elif checked_off is None:
+            query = "UPDATE list_event SET checked_off_by_user = NULL WHERE id = %s;"
+            cursor.execute(query % list_event_id)
+            connection.commit()
+            return {"Response": "Un-Checked"}, 287
 
-        return jsonify({})  # <----------------------------------------------
-
-    @app.route('/update_list_event', method="POST")
-    def update_list_event(self):
+    def put(self, list_event_id):
         """
         For Updating Something in the list
         :return:
         """
-        new_task = request.form.get("task_name")
-        new_description = request.form.get("task_description")
-        list_id = request.form.get("list_id")  # <----------------------------------------------
+        parser = reqparse.RequestParser()
+        parser.add_argument("new_task", type=str, required=True, location="form",
+                            help="Name of the task is required")
+        parser.add_argument("new_description", type=str, required=True,
+                            location="form", help="Description of the task is required")
+        args = parser.parse_args()
+        new_task = args.get("new_task")
+        new_description = args.get("new_description")
 
-        cursor = get_db().cursor()
+        cursor = connection.cursor()
 
-        query = "SET task = ?, description = ? WHERE id = ?;"
-        cursor.execute(query, [new_task], [new_description], [list_id])
+        query = "UPDATE list_event SET task = '%s', description = '%s' WHERE id = %s;"
+        data = (new_task, new_description, list_event_id)
+        cursor.execute(query % data)
+        connection.commit()
 
-        return  # render_template("name of list page")  <---------------------------------------------------
-
-    # @app.route('/shared_lists', methods=["GET", "POST"])
-    # def show_list_event(self):
-    #     """
-    #     Shows the list events for a particular list
-    #     :return:
-    #     """
-    #     # # For sending the tasks to the server
-    #     # SELECT * FROM list_event WHERE list = listID;
+        return {"Response": "Task details updated"}, 288
 
 
-api.add_resource(SharedList, "/shared_list/<int:id>")
-api.add_resource(ListEvents, "/list_events/<int:id>")
+api.add_resource(SharedList, "/shared_list/<int:household_id>")
+api.add_resource(ListDetails, "/list_details/<int:list_id>")
+api.add_resource(ListEvents, "/list_events/<int:list_id>")
+api.add_resource(ListEventDetails, "/list_event_details/<int:list_event_id>")
 
 if __name__ == '__main__':
     app.run(debug=True)
