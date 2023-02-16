@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(
-    name='host',
-    version='0.1.0',
-    py_modules=['host'],
+    name="host",
+    version="0.1.0",
+    py_modules=["host"],
     install_requires=[
-        'Click',
+        "Click",
     ],
     entry_points={
-        'console_scripts': [
-            'host = host:server',
+        "console_scripts": [
+            "host = host:server",
         ],
     },
 )
