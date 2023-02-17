@@ -1,7 +1,7 @@
 """Entry point for server"""
 
 import endpoints
-
+import db_handler
 from flask import Flask, g
 from flask_restful import Api  # type: ignore
 
@@ -10,6 +10,10 @@ app = Flask(__name__)
 api = Api(app)
 endpoints.attach(api)
 app.run()
+
+with app.app_context():
+    conn = db_handler.get_db()
+
 
 @app.teardown_appcontext
 def close_connection(exception):

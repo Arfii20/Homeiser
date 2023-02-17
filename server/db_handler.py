@@ -1,8 +1,6 @@
 import mysql.connector
 from flask import g
 
-"""Database handler is in its own file to avoid circular imports"""
-
 
 class DBPasswordError(Exception):
     """No password supplied to the database"""
@@ -11,17 +9,13 @@ class DBPasswordError(Exception):
 def get_db():
     """Returns current database connection if there is one. If not, creates one and asks for password via cli"""
     db = getattr(g, "_database", None)
+
+    # connect to db (ask for password). Ask for password again if wrong. Set mysql to use x5db
     if db is None:
-        while True:
-            try:
-                db = g._database = mysql.connector.connect(
-                    host="localhost", user="root", password=input("DB Password: ")
-                )
-                break
-            except mysql.connector.errors.ProgrammingError:
-                print("Authentication failed")
+        db = g._database = mysql.connector.connect(
+            host="localhost", user="root", password="", buffered=True
+        )
 
-        # buffered = true may be needed
+        db._execute_query("USE x5db;")
+
     return db
-
-
