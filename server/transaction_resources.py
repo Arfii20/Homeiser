@@ -1,9 +1,9 @@
 """List of all resources pertaining to transactions"""
 
-from server.db_handler import get_db
+import db_handler
+
 from flask_restful import Resource, Api  # type: ignore
 
-conn = get_db()
 
 class Transaction(Resource):
     """
@@ -24,9 +24,8 @@ class Transaction(Resource):
         """
         Gets a transaction by ID. ID is supplied in the URL.
         """
-        conn._execute_query('SELECT * FROM transaction;')
+        # conn._execute_query('SELECT * FROM transaction;')
         return {"Test": "Conn"}
-
 
     def post(self):
         """Post a new transaction. Require a transaction in the format specified above"""
