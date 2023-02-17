@@ -2,14 +2,14 @@
 The shared list methods are defined here
 """
 
-from flask import Flask
-from flask_restful import Resource, Api, reqparse
+from flask import Flask, jsonify
+from flask_restful import Resource, Api, reqparse, abort
 from mysql.connector import connect
+from server.host import *
 
-app = Flask(__name__)
-api = Api(app)
+# with app.app_context():
+#     connection = get_db("Arfi12000@")
 
-# def get_db():
 connection = connect(
     host="localhost",
     user="root",
@@ -33,25 +33,44 @@ class SharedList(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, help='Name of the list is required',
                             required=True, location='form')
+        parser.add_argument('id', type=int, location='form')
         args = parser.parse_args()
         name = args.get("name")
+        list_id = args.get("id")
 
         cursor1 = connection.cursor()
         cursor1.execute("SELECT * FROM list WHERE name = '%s';" % name)
         list_back = cursor1.fetchone()
 
-        if list_back is not None:
-            return {"Response": "ListNameMustBeUnique"}, 291
-        else:
+        id_back = None
+
+        if list_id:
+            cursor2 = connection.cursor()
+            cursor2.execute("SELECT * FROM list WHERE id = %s;" % list_id)
+            id_back = cursor2.fetchone()
+
+        if list_back:
+            abort(406, Error="List Name Must Be Unique")
+        elif id_back:
+            abort(406, Error="ID Must Be Unique")
+        elif list_id:
             # Query to insert to database
+            query = "INSERT INTO list (id, name, household_id) VALUES (%s, '%s', %s);"
+            data = (list_id, name, household_id)
+
+            cursor = connection.cursor()
+            cursor.execute(query % data)
+            connection.commit()
+            return {"Response": "List Created"}, 201
+        else:
             query = "INSERT INTO list (name, household_id) VALUES ('%s', %s);"
             data = (name, household_id)
 
             cursor = connection.cursor()
             cursor.execute(query % data)
             connection.commit()
+            return {"Response": "List Created"}, 201
 
-            return {"Response": "ListCreated"}, 292
 
     def get(self, household_id):
         """
@@ -62,12 +81,17 @@ class SharedList(Resource):
 
         cursor.execute("SELECT * FROM list WHERE household_id = %s;" % household_id)
 
-        objects = []
+        objects = {
+            "id": [],
+            "name": [],
+            "household_id": []
+        }
         for x in cursor.fetchall():
-            print(x)
-            objects.append(x)
+            objects["id"].append(x[0])
+            objects["name"].append(x[1])
+            objects["household_id"].append(x[2])
 
-        return {"Response": "Works"}, 293  # <-------------------------------------------------------
+        return objects, 202
 
 
 class ListDetails(Resource):
@@ -91,9 +115,9 @@ class ListDetails(Resource):
             cursor2 = connection.cursor()
             cursor2.execute(query2 % list_id)
             connection.commit()
-            return {'Response': 'ListDeleted'}, 294
+            return {'Response': 'List Deleted'}, 202
         else:
-            return {'Response': 'ListDoesntExist'}, 295
+            return {'Response': 'List Doesnt Exist'}, 404
 
     def patch(self, list_id):
         """
@@ -113,7 +137,7 @@ class ListDetails(Resource):
         cursor.execute(query % data)
         connection.commit()
 
-        return {'Response': 'UpdateSuccessful'}, 296
+        return {'Response': 'Update Successful'}, 202
 
 
 class ListEvents(Resource):
@@ -124,7 +148,6 @@ class ListEvents(Resource):
         Inserts a new row to the list_event table
         :return: sends the new row to the website
         """
-        print("Hello")
         parser = reqparse.RequestParser()
         parser.add_argument("task_name", type=str, required=True, location="form",
                             help="Name of the task is required")
@@ -137,22 +160,22 @@ class ListEvents(Resource):
         description_of_task = args.get("description_of_task")
         added_user_id = args.get("added_user_id")
 
-        cursor1 = connection.cursor()
-        query1 = "SELECT * FROM list_event WHERE (task = '%s' AND checked_off_by_user is NOT NULL);"
-        cursor1.execute(query1 % task_name)
-        present = cursor1.fetchone()
+        # cursor1 = connection.cursor()
+        # query1 = "SELECT * FROM list_event WHERE (task = '%s' AND checked_off_by_user is NOT NULL);"
+        # cursor1.execute(query1 % task_name)
+        # present = cursor1.fetchone()
 
-        if present is not None:
-            cursor = connection.cursor()
+        # if present is not None:
+        cursor = connection.cursor()
 
-            # Query to insert to database
-            query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
-            data = (task_name, description_of_task, added_user_id, list_id)
-            cursor.execute(query % data)
-            connection.commit()
-            return {"Response": "ListEventCreated"}, 281
-        else:
-            return {"Response": "ListEventAlreadyExists"}, 282
+        # Query to insert to database
+        query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
+        data = (task_name, description_of_task, added_user_id, list_id)
+        cursor.execute(query % data)
+        connection.commit()
+        return {"Response": "List Event Created"}, 201
+        # else:
+        #     return {"Response": "ListEventAlreadyExists"}, 409
 
     def get(self, list_id):
         """
@@ -163,12 +186,23 @@ class ListEvents(Resource):
         query = "SELECT * FROM list_event WHERE list = %s;"
         cursor.execute(query % list_id)
 
-        objects = []
+        objects = {
+            "id": [],
+            "task_name": [],
+            "description_of_task": [],
+            "added_user_id": [],
+            "checked_off_by_user": [],
+            "list": []
+        }
         for x in cursor.fetchall():
-            objects.append(x)
-            print(x)
+            objects["id"].append(x[0])
+            objects["task_name"].append(x[1])
+            objects["description_of_task"].append(x[2])
+            objects["added_user_id"].append(x[3])
+            objects["checked_off_by_user"].append(x[4])
+            objects["list"].append(x[5])
 
-        return {"Response": "Works"}, 283  # <-------------------------------------------------------
+        return objects, 202
 
 
 class ListEventDetails(Resource):
@@ -187,9 +221,9 @@ class ListEventDetails(Resource):
             cursor1 = connection.cursor()
             cursor1.execute(query % list_event_id)
             connection.commit()
-            return {'Response': 'ListEventDeleted'}, 284
+            return {'Response': 'List Event Deleted'}, 202
         else:
-            return {'Response': 'ListEventDoesntExist'}, 285
+            return {'Response': 'List Event Doesnt Exist'}, 404
 
     # Check off list event
     def patch(self, list_event_id):
@@ -213,13 +247,13 @@ class ListEventDetails(Resource):
             data = (user_id, list_event_id)
             cursor.execute(query % data)
             connection.commit()
-            return {"Response": "Checked-off"}, 286
+            return {"Response": "Checked-off"}, 202
             # If checked_off is not null
         elif checked_off is None:
             query = "UPDATE list_event SET checked_off_by_user = NULL WHERE id = %s;"
             cursor.execute(query % list_event_id)
             connection.commit()
-            return {"Response": "Un-Checked"}, 287
+            return {"Response": "Un-Checked"}, 202
 
     def put(self, list_event_id):
         """
@@ -242,7 +276,7 @@ class ListEventDetails(Resource):
         cursor.execute(query % data)
         connection.commit()
 
-        return {"Response": "Task details updated"}, 288
+        return {"Response": "Task details updated"}, 202
 
 
 api.add_resource(SharedList, "/shared_list/<int:household_id>")
