@@ -22,8 +22,9 @@ class Transaction(Resource):
         """
         Gets a transaction by ID. ID is supplied in the URL.
         """
-        db.get_db()._execute_query('SELECT * FROM transaction;')
-        return {"Test": "Conn"}
+        cur = db.get_db()
+        cur.execute("SELECT * FROM transaction")
+        return {}
 
     def post(self):
         """Post a new transaction. Require a transaction in the format specified above"""

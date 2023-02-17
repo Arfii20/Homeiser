@@ -12,10 +12,9 @@ def get_db():
 
     # connect to db (ask for password). Ask for password again if wrong. Set mysql to use x5db
     if db is None:
-        db = g._database = mysql.connector.connect(
-            host="localhost", user="root", password="", buffered=True
+        conn = g._database = mysql.connector.connect(
+            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
         )
-
-        db._execute_query("USE x5db;")
+        db = conn.cursor()
 
     return db
