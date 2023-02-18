@@ -61,7 +61,7 @@ class SharedList(Resource):
             cursor = connection.cursor()
             cursor.execute(query % data)
             connection.commit()
-            return {"Response": "List Created"}, 201
+            return {"message": "List Created"}, 201
         else:
             query = "INSERT INTO list (name, household_id) VALUES ('%s', %s);"
             data = (name, household_id)
@@ -69,8 +69,7 @@ class SharedList(Resource):
             cursor = connection.cursor()
             cursor.execute(query % data)
             connection.commit()
-            return {"Response": "List Created"}, 201
-
+            return {"message": "List Created"}, 201
 
     def get(self, household_id):
         """
@@ -115,9 +114,9 @@ class ListDetails(Resource):
             cursor2 = connection.cursor()
             cursor2.execute(query2 % list_id)
             connection.commit()
-            return {'Response': 'List Deleted'}, 202
+            return {'message': 'List Deleted'}, 202
         else:
-            return {'Response': 'List Doesnt Exist'}, 404
+            return {'message': 'List Doesnt Exist'}, 404
 
     def patch(self, list_id):
         """
@@ -130,25 +129,44 @@ class ListDetails(Resource):
         args = parser.parse_args()
         new_name = args.get("new_name")
 
-        query = "UPDATE list SET name = '%s' WHERE id = %s;"
-        data = (new_name, list_id)
+        cursor1 = connection.cursor()
+        query1 = "SELECT * FROM list WHERE id = %s"
+        cursor1.execute(query1 % list_id)
+        id_present = cursor1.fetchone()
 
-        cursor = connection.cursor()
-        cursor.execute(query % data)
-        connection.commit()
+        cursor2 = connection.cursor()
+        query2 = "SELECT * FROM list WHERE name = '%s' AND id != %s"
+        cursor2.execute(query2 % (new_name, list_id))
+        name_present = cursor2.fetchall()
 
-        return {'Response': 'Update Successful'}, 202
+        if not id_present:
+            if name_present:
+                abort(404, error="List name already exists and id does not exist")
+            else:
+                abort(404, error="List id does not exist")
+        else:
+            if name_present:
+                abort(406, error="List name already exists")
+            else:
+                query = "UPDATE list SET name = '%s' WHERE id = %s;"
+                data = (new_name, list_id)
+
+                cursor = connection.cursor()
+                cursor.execute(query % data)
+                connection.commit()
+
+                return {'message': 'Update Successful'}, 202
 
 
 class ListEvents(Resource):
 
-    # Add mew list event
     def post(self, list_id):
         """
         Inserts a new row to the list_event table
         :return: sends the new row to the website
         """
         parser = reqparse.RequestParser()
+        parser.add_argument("event_id", type=int, location="form")        
         parser.add_argument("task_name", type=str, required=True, location="form",
                             help="Name of the task is required")
         parser.add_argument("description_of_task", type=str, required=True,
@@ -156,31 +174,40 @@ class ListEvents(Resource):
         parser.add_argument("added_user_id", type=int, required=True,
                             location="form", help="User ID is required")
         args = parser.parse_args()
+        event_id = args.get("event_id")
         task_name = args.get("task_name")
         description_of_task = args.get("description_of_task")
         added_user_id = args.get("added_user_id")
+        
+        if event_id:
+            cursor1 = connection.cursor()
+            query1 = "SELECT * FROM list_event WHERE id = %s;"
+            cursor1.execute(query1 % event_id)
+            present = cursor1.fetchone()
+    
+            if present:
+                abort(406, error="Event id already exists")
+            else:
+                cursor = connection.cursor()
+                query = "INSERT INTO list_event (id, task, description, added_by_user, list) " \
+                        "VALUES (%s, '%s', '%s', %s, %s);"
+                data = (event_id, task_name, description_of_task, added_user_id, list_id)
+                cursor.execute(query % data)
+                connection.commit()
+                return {"message": "List Event Created"}, 201
 
-        # cursor1 = connection.cursor()
-        # query1 = "SELECT * FROM list_event WHERE (task = '%s' AND checked_off_by_user is NOT NULL);"
-        # cursor1.execute(query1 % task_name)
-        # present = cursor1.fetchone()
-
-        # if present is not None:
-        cursor = connection.cursor()
-
-        # Query to insert to database
-        query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
-        data = (task_name, description_of_task, added_user_id, list_id)
-        cursor.execute(query % data)
-        connection.commit()
-        return {"Response": "List Event Created"}, 201
-        # else:
-        #     return {"Response": "ListEventAlreadyExists"}, 409
+        else:
+            cursor = connection.cursor()
+            # Query to insert to database
+            query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
+            data = (task_name, description_of_task, added_user_id, list_id)
+            cursor.execute(query % data)
+            connection.commit()
+            return {"message": "List Event Created"}, 201
 
     def get(self, list_id):
         """
         Shows the list events for a particular list
-        :return:
         """
         cursor = connection.cursor()
         query = "SELECT * FROM list_event WHERE list = %s;"
@@ -202,7 +229,10 @@ class ListEvents(Resource):
             objects["checked_off_by_user"].append(x[4])
             objects["list"].append(x[5])
 
-        return objects, 202
+        if not objects["id"]:
+            abort(404, error="List id not found")
+        else:
+            return objects, 202
 
 
 class ListEventDetails(Resource):
@@ -216,44 +246,45 @@ class ListEventDetails(Resource):
         cursor.execute("SELECT * FROM list_event WHERE id = %s;" % list_event_id)
         present = cursor.fetchone()
 
-        if present is not None:
+        if present:
             query = "DELETE FROM list_event WHERE id = %s;"
             cursor1 = connection.cursor()
             cursor1.execute(query % list_event_id)
             connection.commit()
-            return {'Response': 'List Event Deleted'}, 202
+            return {'message': 'List Event Deleted'}, 202
         else:
-            return {'Response': 'List Event Doesnt Exist'}, 404
+            return {'message': 'List Event Doesnt Exist'}, 404
 
     # Check off list event
     def patch(self, list_event_id):
         """
         Checks off an event
-        :return: jsonify({})
+        :return:
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("user_id", type=str, required=True, location="form",
-                            help="User ID required. Yes even for unchecking")
+        parser.add_argument("user_id", type=int, location="form")
         args = parser.parse_args()
         user_id = args.get("user_id")
 
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM list_event WHERE id = %s AND checked_off_by_user is NULL;" % list_event_id)
-        checked_off = cursor.fetchone()
+        check_off = cursor.fetchone()
 
-        # If checked_off is null
-        if checked_off is not None:
+        if check_off and user_id:
             query = "UPDATE list_event SET checked_off_by_user = %s WHERE id = %s;"
             data = (user_id, list_event_id)
             cursor.execute(query % data)
             connection.commit()
-            return {"Response": "Checked-off"}, 202
-            # If checked_off is not null
-        elif checked_off is None:
+            return {"message": "Checked-off"}, 202
+
+        elif check_off and not user_id:
+            abort(406, error="User ID required to check-off")
+
+        elif not check_off:
             query = "UPDATE list_event SET checked_off_by_user = NULL WHERE id = %s;"
             cursor.execute(query % list_event_id)
             connection.commit()
-            return {"Response": "Un-Checked"}, 202
+            return {"message": "Un-Checked"}, 202
 
     def put(self, list_event_id):
         """
@@ -270,13 +301,18 @@ class ListEventDetails(Resource):
         new_description = args.get("new_description")
 
         cursor = connection.cursor()
+        cursor.execute("SELECT * FROM list_event WHERE id = %s;" % list_event_id)
+        present = cursor.fetchone()
 
-        query = "UPDATE list_event SET task = '%s', description = '%s' WHERE id = %s;"
-        data = (new_task, new_description, list_event_id)
-        cursor.execute(query % data)
-        connection.commit()
-
-        return {"Response": "Task details updated"}, 202
+        if present:
+            cursor = connection.cursor()
+            query = "UPDATE list_event SET task = '%s', description = '%s' WHERE id = %s;"
+            data = (new_task, new_description, list_event_id)
+            cursor.execute(query % data)
+            connection.commit()
+            return {"message": "Task details updated"}, 202
+        else:
+            abort(404, error="Event not found")
 
 
 api.add_resource(SharedList, "/shared_list/<int:household_id>")
