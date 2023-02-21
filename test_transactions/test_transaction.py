@@ -35,6 +35,13 @@ class TestTransaction(TestCase):
 
         got = Transaction.build_from_id(transaction_id=1, cur=db)
 
-        self.assertEqual(expect, got, "Transaction objects")
+        with self.subTest("Fetch from id=1"):
+            self.assertEqual(expect, got, "Transaction objects")
+
+        with self.subTest("Fetch form id=-1"):
+            with self.assertRaises(TransactionConstructionError):
+                got = Transaction.build_from_id(transaction_id=-1, cur=db)
+
+
 
 
