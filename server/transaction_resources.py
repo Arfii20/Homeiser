@@ -4,7 +4,7 @@ import json
 from flask import request
 from flask_restful import Resource, Api  # type: ignore
 import server.db_handler as db
-from transactions.transaction import Transaction, TransactionConstructionError
+from transactions.transaction import Transaction, TransactionConstructionError, Ledger
 
 
 class TransactionResource(Resource):
@@ -75,7 +75,7 @@ class TransactionResource(Resource):
 
             # commit changes
             cur.execute("commit;")
-            
+
         # unpack pair_id from tuple
         pair_id = pair_id[0]
 
@@ -86,19 +86,29 @@ class TransactionResource(Resource):
             return "Incorrect JSON Format for Transaction object", 400
 
         # insert new Transaction object into the database
-        cur.execute("INSERT INTO transaction(pair_id, amount, description, due_date, paid) "
-                    "VALUES (%s, %s, %s, %s, %s)",
-                    [pair_id, trn.amount, trn.description, trn.due.isoformat(), 1 if trn.paid else 0])
+        cur.execute(
+            "INSERT INTO transaction(pair_id, amount, description, due_date, paid) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            [
+                pair_id,
+                trn.amount,
+                trn.description,
+                trn.due.isoformat(),
+                1 if trn.paid else 0,
+            ],
+        )
 
         # update the id of the new transaction
-        cur.execute("SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
-                    [pair_id, r["amount"], r["due_date"], 1 if r["paid"] == 'true' else 0])
+        cur.execute(
+            "SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
+            [pair_id, r["amount"], r["due_date"], 1 if r["paid"] == "true" else 0],
+        )
 
         # update trn to have the correct ID
         trn.t_id = cur.fetchone()[0]
 
         # commit changes
-        cur.execute('commit;')
+        cur.execute("commit;")
 
         return trn.json, 201
 
@@ -106,7 +116,9 @@ class TransactionResource(Resource):
         """Updates a transaction to toggle paid status"""
 
         cur = db.get_db()
-        result = cur.execute("UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id])
+        result = cur.execute(
+            "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
+        )
 
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1
@@ -125,13 +137,15 @@ class TransactionResource(Resource):
         else:
             return f"Deleted transaction {t_id}", 200
 
-class Ledger(Resource):
+
+class LedgerResource(Resource):
     """Ledger is a list of transactions.
     In JSON represented as '[t_1, t_2, ..., t_n]' where t_1..t_n are JSON(TransactionResource)
     """
 
     def get(self, user_id: int):
         """Given a user id, will return a 'ledger' of all user's transactions whether they are src or dest"""
+        return Ledger.build_from_id(user_id, db.get_db()).json, 200
 
 
 class CalendarTransactions(Resource):

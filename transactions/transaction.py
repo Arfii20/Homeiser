@@ -92,9 +92,7 @@ class Transaction:
         return Transaction(*args)
 
     @staticmethod
-    def build_from_req(*,
-        request: requests.Response | dict
-    ) -> Transaction:
+    def build_from_req(*, request: requests.Response | dict) -> Transaction:
         """Build a transaction object from an HTTP request"""
 
         # load json representation of Transaction into a dict if it is not already a dict
@@ -108,7 +106,9 @@ class Transaction:
 
             # convert date from str to datetime.date object if we havent been given a datetime.date object
             if type(r["due_date"]) is not datetime.date:
-                r["due_date"] = datetime.date(*[int(d) for d in r["due_date"].split("-")])
+                r["due_date"] = datetime.date(
+                    *[int(d) for d in r["due_date"].split("-")]
+                )
 
             # Convert paid from string to bool object
             r["paid"] = True if r["paid"] == "true" else False
@@ -124,7 +124,9 @@ class Transaction:
 
     def equal(self, other: Transaction) -> bool:
         """compares equality based on value of every field except t_id"""
-        return [v for v in self.__dict__.values()][1:] == [v for v in other.__dict__.values()][1:]
+        return [v for v in self.__dict__.values()][1:] == [
+            v for v in other.__dict__.values()
+        ][1:]
 
 
 @dataclass
@@ -132,17 +134,22 @@ class Ledger:
     transactions: list[Transaction]
 
     @staticmethod
-    def build_from_id(user_id, cur: cursor.MySQLCursor) -> Ledger:
+    def build_from_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
         """Builds a ledger of transactions given a user id and a cursor to the db"""
 
-        cur.execute("SELECT transaction.id FROM transaction, pairs "
-                    "WHERE pair_id = pairs.id AND src = %s OR dest = %s", [user_id, user_id])
+        cur.execute(
+            "SELECT transaction.id FROM transaction, pairs "
+            "WHERE pair_id = pairs.id AND src = %s OR dest = %s",
+            [user_id, user_id],
+        )
 
         # FIXME: statement returning duplicate ids e.g. returned 1, 1, 2
 
-        transaction_ids = [v for v in {tid[0] for tid in [row for row in cur.fetchall()]}]
+        transaction_ids = [
+            v for v in {tid[0] for tid in [row for row in cur.fetchall()]}
+        ]
 
-        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])
+        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])  # type: ignore
 
     @property
     def json(self):

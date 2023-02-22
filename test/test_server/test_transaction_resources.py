@@ -40,7 +40,6 @@ class TestTransactionResources(TestCase):
                 self.assertEqual((got.json(), got.status_code), expect)
 
     def test_post(self):
-
         # create a cursor
         conn = mysql.connector.connect(
             host="localhost", user="root", password="HALR0b0t!12", database="x5db"
@@ -56,21 +55,24 @@ class TestTransactionResources(TestCase):
         exp.amount *= 2
 
         # add the newly modified transaction to the database
-        r = requests.post('http://127.0.0.1:5000/transaction', json=exp.json)
+        r = requests.post("http://127.0.0.1:5000/transaction", json=exp.json)
 
         with self.subTest("add to db"):
             got = trn.Transaction.build_from_req(request=json.loads(r.json()))
             self.assertTrue(got.equal(exp))
 
         with self.subTest("attempt to add with incorrect json"):
-                got = requests.post('http://127.0.0.1:5000/transaction', json='{"Should": "Fail"}')
-                self.assertEqual(got.status_code, 400)
-                self.assertEqual(got.json(), "Incorrect JSON Format for Transaction object")
+            got = requests.post(
+                "http://127.0.0.1:5000/transaction", json='{"Should": "Fail"}'
+            )
+            self.assertEqual(got.status_code, 400)
+            self.assertEqual(got.json(), "Incorrect JSON Format for Transaction object")
 
     def test_patch(self):
         """Checks that we toggle paid and unpaid properly. Done by reading off a transaction and storing it,
         then sending the patch request, then reading off the same transaction. The 'before' and 'after'
-        transactions are compared. Test passes if paid is different and every other field is the same"""
+        transactions are compared. Test passes if paid is different and every other field is the same
+        """
 
         # FIXME: Database updates with the patch command, but after request still provides the un-updated value for
         #  paid. Very confusing
@@ -82,11 +84,10 @@ class TestTransactionResources(TestCase):
         db = conn.cursor(buffered=True)
         conn.autocommit = True
 
-
         # store transaction 2
         before = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
-        requests.patch(BASE + 'transaction/2')
+        requests.patch(BASE + "transaction/2")
 
         # check after the patch
         after = trn.Transaction.build_from_id(transaction_id=2, cur=db)
@@ -95,30 +96,33 @@ class TestTransactionResources(TestCase):
             self.assertNotEqual(before.paid, after.paid)
 
         with self.subTest("other fields unchanged"):
-            self.assertEqual([v for v in before.__dict__][:-1],
-                             [v for v in after.__dict__][:-1])
+            self.assertEqual(
+                [v for v in before.__dict__][:-1], [v for v in after.__dict__][:-1]
+            )
 
         with self.subTest("transaction not found"):
-            r = requests.patch(BASE + 'transaction/2000000000')
+            r = requests.patch(BASE + "transaction/2000000000")
             self.assertEqual(r.status_code, 404)
 
     def test_delete(self):
         """Add a transaction. Delete the transaction."""
-        temp_transaction = trn.Transaction(0, 1, 2, "", "", 1, "", datetime.date(2023, 12, 2), False)
-        r = requests.post('http://127.0.0.1:5000/transaction', json=temp_transaction.json)
+        temp_transaction = trn.Transaction(
+            0, 1, 2, "", "", 1, "", datetime.date(2023, 12, 2), False
+        )
+        r = requests.post(
+            "http://127.0.0.1:5000/transaction", json=temp_transaction.json
+        )
         new_id = json.loads(r.json())["transaction_id"]
 
         # confirm added
-        r = requests.get(f'http://127.0.0.1:5000/transaction/{new_id}')
+        r = requests.get(f"http://127.0.0.1:5000/transaction/{new_id}")
         self.assertNotEqual(r.status_code, 404)
 
         with self.subTest("delete transaction that exists"):
-            requests.delete(f'http://127.0.0.1:5000/transaction/{new_id}')
-            r = requests.get(f'http://127.0.0.1:5000/transaction/{new_id}')
+            requests.delete(f"http://127.0.0.1:5000/transaction/{new_id}")
+            r = requests.get(f"http://127.0.0.1:5000/transaction/{new_id}")
             self.assertEqual(r.status_code, 404)
 
         with self.subTest("transaction doesn't exist"):
-            r = requests.delete('http://127.0.0.1:5000/transaction/2000000')
+            r = requests.delete("http://127.0.0.1:5000/transaction/2000000")
             self.assertEqual(r.status_code, 404)
-
-

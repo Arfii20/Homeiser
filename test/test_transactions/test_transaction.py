@@ -63,7 +63,6 @@ class TestTransaction(TestCase):
                 Transaction.build_from_id(transaction_id=-1, cur=db)
 
     def test_build_from_req(self):
-
         # connect to db
         conn = mysql.connector.connect(
             host="localhost", user="root", password="HALR0b0t!12", database="x5db"
@@ -85,7 +84,6 @@ class TestTransaction(TestCase):
 
 
 class TestLedger(TestCase):
-
     def setUp(self):
         # connect to db
         conn = mysql.connector.connect(
