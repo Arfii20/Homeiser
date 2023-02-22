@@ -92,41 +92,36 @@ class Transaction:
         return Transaction(*args)
 
     @staticmethod
-    def build_from_req(
-        request: requests.Response, cur: cursor.MySQLCursor
+    def build_from_req(*,
+        request: requests.Response | dict
     ) -> Transaction:
         """Build a transaction object from an HTTP request"""
 
-        r = json.loads(request.json())
+        # load json representation of Transaction into a dict if it is not already a dict
+        if type(request) != dict:
+            r = json.loads(request.json())  # type: ignore
+        else:
+            r = request
 
-        # get pair id
-        cur.execute(
-            "SELECT id FROM pairs WHERE src = %s AND dest = %s",
-            [r["src_id"], r["dest_id"]],
-        )
-        pair_id = cur.fetchone()
+        try:
+            # clean data so can unpack values of dict straight into Transaction
 
-        if pair_id is None:
-            # add pair to pairs table if the pair doesn't already exist
-            cur.execute(
-                "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
-                [r["src_id"], r["dest_id"]],
-            )
+            # convert date from str to datetime.date object if we havent been given a datetime.date object
+            if type(r["due_date"]) is not datetime.date:
+                r["due_date"] = datetime.date(*[int(d) for d in r["due_date"].split("-")])
 
-            # get id from pair entry that was just generated
-            cur.execute(
-                "SELECT id FROM pairs WHERE src = %s AND dest = %s",
-                [r["src_id"], r["dest_id"]],
-            )
-            pair_id = cur.fetchone()
+            # Convert paid from string to bool object
+            r["paid"] = True if r["paid"] == "true" else False
 
-        # clean data so can unpack values of dict straight into Transaction init
+            # build transaction object
+            transaction = Transaction(*r.values())
 
-        # convert date from str to datetime.date object
-        r["due_date"] = datetime.date(*[int(d) for d in r["due_date"].split("-")])
+        # if we get a key error then JSON wasn't in correct format
+        except KeyError as ke:
+            raise TransactionConstructionError(ke)
 
-        # Convert bool string to bool object
-        r["paid"] = True if r["paid"] == "true" else False
+        return transaction
 
-        # build transaction object
-        return Transaction(*r.values())
+    def equal(self, other: Transaction) -> bool:
+        """compares equality based on value of every field except t_id"""
+        return [v for v in self.__dict__.values()][1:] == [v for v in other.__dict__.values()][1:]

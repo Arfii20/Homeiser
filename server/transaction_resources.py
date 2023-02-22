@@ -1,6 +1,7 @@
 """List of all resources pertaining to transactions"""
 import json
 
+from flask import request
 from flask_restful import Resource, Api  # type: ignore
 import server.db_handler as db
 from transactions.transaction import Transaction, TransactionConstructionError
@@ -37,6 +38,65 @@ class TransactionResource(Resource):
 
     def post(self):
         """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary)"""
+
+        cur = db.get_db()
+        r = request.get_json()
+
+        if type(r) is str:
+            r = json.loads(r)
+
+        # validate json by trying to build a transaction object from it; throw an exception if this fails
+        try:
+            _ = Transaction.build_from_req(request=r)
+        except TransactionConstructionError:
+            return "Incorrect JSON Format for Transaction object", 400
+
+        # get pair id
+        cur.execute(
+            "SELECT id FROM pairs WHERE src = %s AND dest = %s",
+            [r["src_id"], r["dest_id"]],
+        )
+        pair_id = cur.fetchone()[0]
+
+        # add pair to pairs table if the pair doesn't already exist
+        if pair_id is None:
+            cur.execute(
+                "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
+                [r["src_id"], r["dest_id"]],
+            )
+
+            # get id from pair entry that was just generated
+            cur.execute(
+                "SELECT id FROM pairs WHERE src = %s AND dest = %s",
+                [r["src_id"], r["dest_id"]],
+            )
+            pair_id = cur.fetchone()[0]
+
+            # commit changes
+            cur.execute("commit;")
+
+        # construct Transaction object from the request
+        try:
+            trn = Transaction.build_from_req(request=r)
+        except TransactionConstructionError:
+            return "Incorrect JSON Format for Transaction object", 400
+
+        # insert new Transaction object into the database
+        cur.execute("INSERT INTO transaction(pair_id, amount, description, due_date, paid) "
+                    "VALUES (%s, %s, %s, %s, %s)",
+                    [pair_id, trn.amount, trn.description, trn.due.isoformat(), 1 if trn.paid else 0])
+
+        # update the id of the new transaction
+        cur.execute("SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
+                    [pair_id, r["amount"], r["due_date"], 1 if r["paid"] == 'true' else 0])
+
+        # update trn to have the correct ID
+        trn.t_id = cur.fetchone()[0]
+
+        # commit changes
+        # cur.execute('commit;')
+
+        return trn.json, 201
 
     def patch(self, t_id: int):
         """Updates a transaction to toggle paid status"""

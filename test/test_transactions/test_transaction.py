@@ -74,6 +74,11 @@ class TestTransaction(TestCase):
         expected = Transaction.build_from_id(transaction_id=1, cur=db)
 
         # dump expected to json and use json to build a 'got' transaction
-        got = Transaction.build_from_req(MockPost(expected.json), cur=db)  # type: ignore
+        got = Transaction.build_from_req(request=MockPost(expected.json))  # type: ignore
 
-        self.assertEqual(expected, got)
+        with self.subTest("construct"):
+            self.assertEqual(expected, got)
+
+        with self.subTest("wrong format"):
+            with self.assertRaises(TransactionConstructionError):
+                Transaction.build_from_req(request={"test": "fails"})
