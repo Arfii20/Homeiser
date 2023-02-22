@@ -56,7 +56,7 @@ class TransactionResource(Resource):
             "SELECT id FROM pairs WHERE src = %s AND dest = %s",
             [r["src_id"], r["dest_id"]],
         )
-        pair_id = cur.fetchone()[0]
+        pair_id = cur.fetchone()
 
         # add pair to pairs table if the pair doesn't already exist
         if pair_id is None:
@@ -70,10 +70,13 @@ class TransactionResource(Resource):
                 "SELECT id FROM pairs WHERE src = %s AND dest = %s",
                 [r["src_id"], r["dest_id"]],
             )
-            pair_id = cur.fetchone()[0]
+            pair_id = cur.fetchone()
 
             # commit changes
             cur.execute("commit;")
+            
+        # unpack pair_id from tuple
+        pair_id = pair_id[0]
 
         # construct Transaction object from the request
         try:
