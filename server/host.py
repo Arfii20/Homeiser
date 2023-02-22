@@ -1,7 +1,7 @@
 """Entry point for server"""
 
-import endpoints
-import db_handler
+import server.endpoints as endpoints
+import server.db_handler as db_handler
 from flask import Flask, g
 from flask_restful import Api  # type: ignore
 

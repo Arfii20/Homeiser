@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import cursor
 from flask import g
 
 
@@ -6,7 +7,7 @@ class DBPasswordError(Exception):
     """No password supplied to the database"""
 
 
-def get_db():
+def get_db() -> cursor.MySQLCursor:
     """Returns current database connection if there is one. If not, creates one and asks for password via cli"""
     db = getattr(g, "_database", None)
 

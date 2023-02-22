@@ -1,5 +1,3 @@
-"""Transaction Object"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,6 +13,7 @@ class TransactionConstructionError(Exception):
 @dataclass
 class Transaction:
     """Specifies a singular transaction"""
+
     t_id: int
     src_id: int
     dest_id: int
@@ -24,7 +23,6 @@ class Transaction:
     description: str = ""
     src_name: str = ""
     dest_name: str = ""
-
 
     @property
     def json(self) -> str:
@@ -40,33 +38,39 @@ class Transaction:
 
         """
 
-        return json.dumps({
-            "src": self.src_name,
-            "dest": self.dest_name,
-            "amount": self.amount,
-            "description": self.description,
-            "due_date": self.due.isoformat(),
-            "paid": "true" if self.paid else "false"
-        })
+        return json.dumps(
+            {
+                "src": self.src_name,
+                "dest": self.dest_name,
+                "amount": self.amount,
+                "description": self.description,
+                "due_date": self.due.isoformat(),
+                "paid": "true" if self.paid else "false",
+            }
+        )
 
     @staticmethod
     def build_from_id(*, transaction_id: int, cur: cursor.MySQLCursor) -> Transaction:
-        """ Builds a transaction from an id in the db and a cursor to said database
-        """
+        """Builds a transaction from an id in the db and a cursor to said database"""
 
-        cur.execute("SELECT transaction.id, u1.id, u2.id, amount, due_date, paid, description,"
-                    "CONCAT_WS(' ', u2.first_name, u2.surname), CONCAT_WS(' ', u1.first_name, u1.surname) "                
-                    "FROM transaction, pairs, user u1, user u2 "
-                    "WHERE transaction.id = %s AND pairs.id = transaction.pair_id"
-                    " AND u1.id = pairs.src AND u2.id = pairs.dest", [transaction_id])
+        cur.execute(
+            "SELECT transaction.id, u1.id, u2.id, amount, due_date, paid, description,"
+            "CONCAT_WS(' ', u1.first_name, u1.surname), CONCAT_WS(' ', u2.first_name, u2.surname) "
+            "FROM transaction, pairs, user u1, user u2 "
+            "WHERE transaction.id = %s AND pairs.id = transaction.pair_id"
+            " AND u1.id = pairs.src AND u2.id = pairs.dest",
+            [transaction_id],
+        )
 
         # only one row will match an ID
         # throw an exception if no transaction returned
         # complain if None is returned
 
         if (row := cur.fetchone()) is None:
-            raise TransactionConstructionError("Couldn't find transaction in the database; "
-                                               "likely due to invalid transaction ID")
+            raise TransactionConstructionError(
+                "Couldn't find transaction in the database; "
+                "likely due to invalid transaction ID"
+            )
         else:
             args: list = [element for element in row]
 
@@ -80,5 +84,3 @@ class Transaction:
         args[5] = bool(args[5])
 
         return Transaction(*args)
-
-

@@ -1,18 +1,20 @@
 """List of all resources pertaining to transactions"""
+import json
 
 from flask_restful import Resource, Api  # type: ignore
-import db_handler as db
+import server.db_handler as db
+from transactions.transaction import Transaction, TransactionConstructionError
 
-class Transaction(Resource):
+
+class TransactionResource(Resource):
     """
-    JSON Format for a Transaction object. Query this endpoint for a **single** transaction
+    JSON Format for a TransactionResource object. Query this endpoint for a **single** transaction
 
         {   "src": <str:src full name>,
             "dest": <str:dest full name>,
             "amount": <int:amount>,
             "description": <str:description>
-            "due_date": <str:date string in format yyyy-mm-ddThh:mm:ss.xxxZ> where x is a millisecond, T denotes time
-                                                                            # and Z shows (Z)ero offset from UTC
+            "due_date": <str:date string in format yyyy-mm-dd>
             "paid": <str:boolean>
         }
 
@@ -23,8 +25,12 @@ class Transaction(Resource):
         Gets a transaction by ID. ID is supplied in the URL.
         """
         cur = db.get_db()
-        cur.execute("SELECT * FROM transaction")
-        return {}
+
+        try:
+            trn = Transaction.build_from_id(transaction_id=t_id, cur=cur)
+            return trn.json, 200
+        except TransactionConstructionError as tre:
+            return f"{tre}", 404
 
     def post(self):
         """Post a new transaction. Require a transaction in the format specified above"""
@@ -38,7 +44,7 @@ class Transaction(Resource):
 
 class Ledger(Resource):
     """Ledger is a list of transactions.
-    In JSON represented as '[t_1, t_2, ..., t_n]' where t_1..t_n are JSON(Transaction)
+    In JSON represented as '[t_1, t_2, ..., t_n]' where t_1..t_n are JSON(TransactionResource)
     """
 
     def get(self, user_id: int):
