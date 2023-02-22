@@ -10,7 +10,10 @@ class TransactionResource(Resource):
     """
     JSON Format for a TransactionResource object. Query this endpoint for a **single** transaction
 
-        {   "src": <str:src full name>,
+        {   "transaction_id": <int:transaction id>
+            "src_id": <int: src id>
+            "src_id": <int: dest id>
+            "src": <str:src full name>,
             "dest": <str:dest full name>,
             "amount": <int:amount>,
             "description": <str:description>
@@ -33,13 +36,16 @@ class TransactionResource(Resource):
             return f"{tre}", 404
 
     def post(self):
-        """Post a new transaction. Require a transaction in the format specified above"""
+        """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary)"""
 
     def patch(self, t_id: int):
         """Updates a transaction to toggle paid status"""
 
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1
+
+    def delete(self, t_id: int):
+        ...
 
 
 class Ledger(Resource):

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import datetime
 import json
 from mysql.connector import cursor
+import requests
 
 
 class TransactionConstructionError(Exception):
@@ -28,18 +29,23 @@ class Transaction:
     def json(self) -> str:
         """Returns a JSON representation of transaction object of the format
 
-         {   "src": <str:src full name>,
+        {   "transaction_id": <int:transaction id>
+            "src_id": <int: src id>
+            "src_id": <int: dest id>
+            "src": <str:src full name>,
             "dest": <str:dest full name>,
             "amount": <int:amount>,
             "description": <str:description>
             "due_date": <str:date string in format yyyy-mm-dd>
             "paid": <str:boolean>
         }
-
         """
 
         return json.dumps(
             {
+                "transaction_id": self.t_id,
+                "src_id": self.src_id,
+                "dest_id": self.dest_id,
                 "src": self.src_name,
                 "dest": self.dest_name,
                 "amount": self.amount,
@@ -84,3 +90,11 @@ class Transaction:
         args[5] = bool(args[5])
 
         return Transaction(*args)
+
+    @staticmethod
+    def build_from_req(request: requests.Response, cur: cursor.MySQLCursor) -> Transaction:
+        """Build a transaction object from an HTTP request"""
+
+        request = request.json()
+
+

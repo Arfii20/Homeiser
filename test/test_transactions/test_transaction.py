@@ -31,7 +31,7 @@ class TestTransaction(TestCase):
         """
 
         expect = Transaction(
-            1, 1, 2, 10, datetime.date(2023, 2, 17), False, "test", "Bob _", "Alice _"
+            1, 1, 2, 10, datetime.date(2023, 2, 17), False, "test", "Alice _", "Bob _"
         )
 
         # connect to db
@@ -45,6 +45,6 @@ class TestTransaction(TestCase):
         with self.subTest("Fetch from id=1"):
             self.assertEqual(expect, got, "Transaction objects")
 
-        with self.subTest("Fetch form id=-1"):
+        with self.subTest("Fetch form id=3"):
             with self.assertRaises(TransactionConstructionError):
                 Transaction.build_from_id(transaction_id=-1, cur=db)
