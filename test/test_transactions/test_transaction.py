@@ -9,7 +9,9 @@ class TestTransaction(TestCase):
         """Make sure json in correct format"""
 
         expected = json.dumps(
-            {
+            {   "transaction_id": 0,
+                "src_id": 0,
+                "dest_id": 0,
                 "src": "Alice",
                 "dest": "Bob",
                 "amount": 10,
