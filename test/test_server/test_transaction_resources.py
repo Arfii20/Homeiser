@@ -1,3 +1,4 @@
+import datetime
 from unittest import TestCase
 import json
 import mysql.connector
@@ -100,4 +101,24 @@ class TestTransactionResources(TestCase):
         with self.subTest("transaction not found"):
             r = requests.patch(BASE + 'transaction/2000000000')
             self.assertEqual(r.status_code, 404)
+
+    def test_delete(self):
+        """Add a transaction. Delete the transaction."""
+        temp_transaction = trn.Transaction(0, 1, 2, "", "", 1, "", datetime.date(2023, 12, 2), False)
+        r = requests.post('http://127.0.0.1:5000/transaction', json=temp_transaction.json)
+        new_id = json.loads(r.json())["transaction_id"]
+
+        # confirm added
+        r = requests.get(f'http://127.0.0.1:5000/transaction/{new_id}')
+        self.assertNotEqual(r.status_code, 404)
+
+        with self.subTest("delete transaction that exists"):
+            requests.delete(f'http://127.0.0.1:5000/transaction/{new_id}')
+            r = requests.get(f'http://127.0.0.1:5000/transaction/{new_id}')
+            self.assertEqual(r.status_code, 404)
+
+        with self.subTest("transaction doesn't exist"):
+            r = requests.delete('http://127.0.0.1:5000/transaction/2000000')
+            self.assertEqual(r.status_code, 404)
+
 

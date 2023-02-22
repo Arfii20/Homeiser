@@ -37,7 +37,8 @@ class TransactionResource(Resource):
             return f"{tre}", 404
 
     def post(self):
-        """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary)"""
+        """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary).
+        Returns json of the object added (with correct ID)"""
 
         cur = db.get_db()
         r = request.get_json()
@@ -97,7 +98,7 @@ class TransactionResource(Resource):
         trn.t_id = cur.fetchone()[0]
 
         # commit changes
-        # cur.execute('commit;')
+        cur.execute('commit;')
 
         return trn.json, 201
 
@@ -116,8 +117,13 @@ class TransactionResource(Resource):
             return f"Transaction {t_id} doesn't exist", 404
 
     def delete(self, t_id: int):
-        ...
+        cur = db.get_db()
+        result = cur.execute("DELETE FROM transaction WHERE id = %s; commit", [t_id])
 
+        if result is None:
+            return f"Transaction {t_id} not found", 404
+        else:
+            return f"Deleted transaction {t_id}", 200
 
 class Ledger(Resource):
     """Ledger is a list of transactions.
