@@ -104,8 +104,16 @@ class TransactionResource(Resource):
     def patch(self, t_id: int):
         """Updates a transaction to toggle paid status"""
 
+        cur = db.get_db()
+        result = cur.execute("UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id])
+
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1
+
+        if result is not None:
+            return f"Marked {t_id} as paid", 200
+        else:
+            return f"Transaction {t_id} doesn't exist", 404
 
     def delete(self, t_id: int):
         ...
