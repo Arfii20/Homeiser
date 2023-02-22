@@ -85,8 +85,9 @@ class TestTransactionResources(TestCase):
         # store transaction 2
         before = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
-
         requests.patch(BASE + 'transaction/2')
+
+        # check after the patch
         after = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
         with self.subTest("paid has changed"):
@@ -95,3 +96,8 @@ class TestTransactionResources(TestCase):
         with self.subTest("other fields unchanged"):
             self.assertEqual([v for v in before.__dict__][:-1],
                              [v for v in after.__dict__][:-1])
+
+        with self.subTest("transaction not found"):
+            r = requests.patch(BASE + 'transaction/2000000000')
+            self.assertEqual(r.status_code, 404)
+
