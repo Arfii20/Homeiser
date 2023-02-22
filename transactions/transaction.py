@@ -125,3 +125,26 @@ class Transaction:
     def equal(self, other: Transaction) -> bool:
         """compares equality based on value of every field except t_id"""
         return [v for v in self.__dict__.values()][1:] == [v for v in other.__dict__.values()][1:]
+
+
+@dataclass
+class Ledger:
+    transactions: list[Transaction]
+
+    @staticmethod
+    def build_from_id(user_id, cur: cursor.MySQLCursor) -> Ledger:
+        """Builds a ledger of transactions given a user id and a cursor to the db"""
+
+        cur.execute("SELECT transaction.id FROM transaction, pairs "
+                    "WHERE pair_id = pairs.id AND src = %s OR dest = %s", [user_id, user_id])
+
+        # FIXME: statement returning duplicate ids e.g. returned 1, 1, 2
+
+        transaction_ids = [v for v in {tid[0] for tid in [row for row in cur.fetchall()]}]
+
+        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])
+
+    @property
+    def json(self):
+        """Returns json; list of transactions"""
+        return json.dumps([t.json for t in self.transactions])
