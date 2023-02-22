@@ -1,7 +1,17 @@
 from transactions.transaction import *
+import mysql.connector
+from typing import Any
 from unittest import TestCase
 
-import mysql.connector
+
+class MockPost:
+    """Mocks post request"""
+
+    def __init__(self, mock_json):
+        self.mock_json = mock_json
+
+    def json(self) -> Any:
+        return self.mock_json
 
 
 class TestTransaction(TestCase):
@@ -9,7 +19,8 @@ class TestTransaction(TestCase):
         """Make sure json in correct format"""
 
         expected = json.dumps(
-            {   "transaction_id": 0,
+            {
+                "transaction_id": 0,
                 "src_id": 0,
                 "dest_id": 0,
                 "src": "Alice",
@@ -22,7 +33,7 @@ class TestTransaction(TestCase):
         )
 
         transaction = Transaction(
-            0, 0, 0, 10, datetime.date(2023, 2, 17), False, "test", "Alice", "Bob"
+            0, 0, 0, "Alice", "Bob", 10, "test", datetime.date(2023, 2, 17), False
         )
 
         self.assertEqual(transaction.json, expected)
@@ -33,7 +44,7 @@ class TestTransaction(TestCase):
         """
 
         expect = Transaction(
-            1, 1, 2, 10, datetime.date(2023, 2, 17), False, "test", "Alice _", "Bob _"
+            1, 1, 2, "Alice _", "Bob _", 10, "test", datetime.date(2023, 2, 17), False
         )
 
         # connect to db
@@ -50,3 +61,19 @@ class TestTransaction(TestCase):
         with self.subTest("Fetch form id=3"):
             with self.assertRaises(TransactionConstructionError):
                 Transaction.build_from_id(transaction_id=-1, cur=db)
+
+    def test_build_from_req(self):
+
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+        )
+        db = conn.cursor()
+
+        # Create test transaction from database
+        expected = Transaction.build_from_id(transaction_id=1, cur=db)
+
+        # dump expected to json and use json to build a 'got' transaction
+        got = Transaction.build_from_req(MockPost(expected.json), cur=db)  # type: ignore
+
+        self.assertEqual(expected, got)
