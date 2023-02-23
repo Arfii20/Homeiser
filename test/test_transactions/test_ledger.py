@@ -2,20 +2,28 @@ from unittest import TestCase
 
 import mysql.connector
 
-from transactions.ledger import Ledger
+from transactions.ledger import Ledger, LedgerConstructionError
 
 
 class TestLedger(TestCase):
-    def setUp(self):
+    def test_build_from_id(self):
         # connect to db
         conn = mysql.connector.connect(
             host="localhost", user="root", password="HALR0b0t!12", database="x5db"
         )
         db = conn.cursor()
-        self.l = Ledger.build_from_id(1, db)
 
-    def test_build_from_id(self):
-        print(self.l)
+        with self.subTest("Successful construction"):
+            self.l = Ledger.build_from_id(1, db)
+
+        with self.subTest("User doesn't exist"):
+            with self.assertRaises(LedgerConstructionError):
+                Ledger.build_from_id(12312341231, db)
 
     def test_json(self):
-        print(self.l.json)
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+        )
+        db = conn.cursor()
+
+        print(Ledger.build_from_id(1, db).json)

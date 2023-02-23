@@ -136,13 +136,17 @@ class TransactionResource(Resource):
             return f"Transaction {t_id} doesn't exist", 404
 
     def delete(self, t_id: int):
-        cur = db.get_db()
+        conn: mysql.connector.MySQLConnection
+        cur: cursor.MySQLCursor
 
+        conn, cur = db.get_conn()
         cur.execute("SELECT id FROM transaction WHERE id = %s", [t_id])
         if cur.fetchone() is None:
             return "Transaction not found; cannot be deleted", 402
 
         cur.execute("DELETE FROM transaction WHERE id = %s", [t_id])
+        conn.commit()
+
         cur.execute("SELECT pair_id FROM transaction WHERE id = %s", [t_id])
         result = cur.fetchone()
 
