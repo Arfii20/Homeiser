@@ -109,9 +109,9 @@ class TransactionResource(Resource):
 
         if (t_id := cur.fetchone()) is None:
             return json.dumps("Adding transaction failed"), 500
-
-        # update trn to have the correct ID
-        trn.t_id = cur.fetchone()
+        else:
+            # update trn to have the correct ID
+            trn.t_id = t_id
 
         return trn.json, 201
 
@@ -123,7 +123,7 @@ class TransactionResource(Resource):
         cur: cursor.MySQLCursor
 
         conn, cur = db.get_conn()
-        cur.execute(
+        result = cur.execute(
             "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
         )
 
@@ -140,8 +140,15 @@ class TransactionResource(Resource):
         cur = db.get_db()
         result = cur.execute("DELETE FROM transaction WHERE id = %s; commit", [t_id])
 
-        if result is None:
-            return f"Transaction {t_id} not found", 404
+        cur.execute("SELECT id FROM transaction WHERE id = %s", [t_id])
+        if cur.fetchone() is None:
+            return "Transaction not found; cannot be deleted", 402
+
+        cur.execute("DELETE FROM transaction WHERE id = %s", [t_id])
+        result = cur.execute("SELECT pair_id FROM transaction WHERE id = %s", [t_id])
+
+        if result is not None:
+            return f"Transaction {t_id} not deleted", 500
         else:
             return f"Deleted transaction {t_id}", 200
 

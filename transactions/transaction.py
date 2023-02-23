@@ -40,20 +40,15 @@ class Transaction:
             "paid": <str:boolean>
         }
         """
+        try:
+            dump = json.dumps(
+                {"transaction_id": self.t_id, "src_id": self.src_id, "dest_id": self.dest_id, "src": self.src_name,
+                 "dest": self.dest_name, "amount": self.amount, "description": self.description,
+                 "due_date": self.due.isoformat(), "paid": "true" if self.paid else "false", })
+            return dump
 
-        return json.dumps(
-            {
-                "transaction_id": self.t_id,
-                "src_id": self.src_id,
-                "dest_id": self.dest_id,
-                "src": self.src_name,
-                "dest": self.dest_name,
-                "amount": self.amount,
-                "description": self.description,
-                "due_date": self.due.isoformat(),
-                "paid": "true" if self.paid else "false",
-            }
-        )
+        except json.decoder.JSONDecodeError as je:
+            raise ValueError("Failed to convert transaction to JSON", je)
 
     @staticmethod
     def build_from_id(*, transaction_id: int, cur: cursor.MySQLCursor) -> Transaction:
@@ -104,10 +99,10 @@ class Transaction:
         try:
             # clean data so can unpack values of dict straight into Transaction
 
-            # convert date from str to datetime.date object if we havent been given a datetime.date object
+            # convert date from str to datetime.date object if we haven't been given a datetime.date object
             if type(r["due_date"]) is not datetime.date:
                 r["due_date"] = datetime.date(
-                    *[int(d) for d in r["due_date"].split("-")]
+                    *[int(d) for d in r["due_date"][:10].split("-")]
                 )
 
             # Convert paid from string to bool object

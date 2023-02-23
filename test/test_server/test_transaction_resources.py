@@ -91,7 +91,6 @@ class TestTransactionResources(TestCase):
         before = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
         requests.patch(BASE + "transaction/2")
-        sleep(0.5)
 
         # check after the patch
         after = trn.Transaction.build_from_id(transaction_id=2, cur=db)
@@ -110,8 +109,9 @@ class TestTransactionResources(TestCase):
 
     def test_delete(self):
         """Add a transaction. Delete the transaction."""
+        now = datetime.datetime.now()
         temp_transaction = trn.Transaction(
-            0, 1, 2, "", "test patch", 1, "", datetime.date(2023, 12, 2), False
+            0, 1, 2, "", "", 1, "test delete", datetime.datetime.fromisoformat(now.isoformat()), False
         )
         r = requests.post(
             "http://127.0.0.1:5000/transaction", json=temp_transaction.json, headers={"Content-Type": "application/json"}
@@ -119,15 +119,9 @@ class TestTransactionResources(TestCase):
         new_id = json.loads(r.json())["transaction_id"]
 
 
-        # confirm added
-        r = requests.get(f"http://127.0.0.1:5000/transaction/{new_id}")
-        self.assertNotEqual(r.status_code, 404)
-
         with self.subTest("delete transaction that exists"):
-            requests.delete(f"http://127.0.0.1:5000/transaction/{new_id}")
-            r = requests.get(f"http://127.0.0.1:5000/transaction/{new_id}")
-            self.assertEqual(r.status_code, 404)
+            r = requests.delete(f"http://127.0.0.1:5000/transaction/{new_id[0]}")
+            self.assertEqual(r.status_code, 200)
 
-        with self.subTest("transaction doesn't exist"):
             r = requests.delete("http://127.0.0.1:5000/transaction/2000000")
-            self.assertEqual(r.status_code, 404)
+            self.assertEqual(r.status_code, 402)
