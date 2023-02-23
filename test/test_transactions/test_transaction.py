@@ -81,3 +81,10 @@ class TestTransaction(TestCase):
         with self.subTest("wrong format"):
             with self.assertRaises(TransactionConstructionError):
                 Transaction.build_from_req(request={"test": "fails"})
+
+
+class TestCalendarEvent(TestCase):
+
+    def test_json(self): ...
+
+    def test_from_transaction(self): ...

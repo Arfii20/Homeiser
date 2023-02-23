@@ -17,4 +17,3 @@ class LedgerResource(Resource):
 
         except LedgerConstructionError:
             return "Could not return given user's transactions", 404
-

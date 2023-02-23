@@ -5,7 +5,7 @@ import mysql.connector
 import requests
 import transactions.transaction as trn
 
-BASE = "http://127.0.0.1:5000/"
+target = "http://127.0.0.1:5000/"
 
 
 class TestTransactionResources(TestCase):
@@ -35,7 +35,8 @@ class TestTransactionResources(TestCase):
 
         for test, param, expect in zip(tests, params, expected):
             with self.subTest(test):
-                got = requests.get(BASE + param)
+
+                got = requests.get(target + param)
                 self.assertEqual((got.json(), got.status_code), expect)
 
     def test_post(self):
@@ -93,7 +94,7 @@ class TestTransactionResources(TestCase):
         # store transaction 2
         before = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
-        requests.patch(BASE + "transaction/2")
+        requests.patch(target + "transaction/2")
 
         # get new status of paid directly from db
         db.execute("""SELECT paid FROM transaction WHERE id = %s""", [before.t_id])
@@ -113,7 +114,7 @@ class TestTransactionResources(TestCase):
             )
 
         with self.subTest("transaction not found"):
-            r = requests.patch(BASE + "transaction/2000000000")
+            r = requests.patch(target + "transaction/2000000000")
             self.assertEqual(r.status_code, 404)
 
     def test_delete(self):

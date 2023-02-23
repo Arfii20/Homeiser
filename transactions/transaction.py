@@ -131,3 +131,20 @@ class Transaction:
         return [v for v in self.__dict__.values()][1:] == [
             v for v in other.__dict__.values()
         ][1:]
+
+
+@dataclass
+class CalendarEvent:
+    """Represents one event in the calendar"""
+
+    def from_transaction(self, transaction: Transaction) -> CalendarEvent:
+        """Builds a calendar object from a transaction"""
+        ...
+
+    @property
+    def json(self) -> str:
+        """
+            Dumps CalendarEvent to JSON. Format is defined in implementation of CalendarEvent
+            and used here
+        """
+        ...

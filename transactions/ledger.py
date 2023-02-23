@@ -20,8 +20,8 @@ class Ledger:
 
     @staticmethod
     def build_from_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
-        """ Builds a ledger of transactions given a user id and a cursor to the db.
-            Returns an empty ledger where user has no transactions
+        """Builds a ledger of transactions given a user id and a cursor to the db.
+        Returns an empty ledger where user has no transactions
         """
         # validate user id; return a 404 if not found
 
