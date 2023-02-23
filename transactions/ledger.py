@@ -19,8 +19,6 @@ class Ledger:
             [user_id, user_id],
         )
 
-        # FIXME: statement returning duplicate ids e.g. returned 1, 1, 2
-
         transaction_ids = [
             v for v in {tid[0] for tid in [row for row in cur.fetchall()]}
         ]
