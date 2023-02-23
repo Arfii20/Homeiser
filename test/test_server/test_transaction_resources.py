@@ -1,3 +1,4 @@
+import copy
 import datetime
 from unittest import TestCase
 import json
@@ -92,8 +93,14 @@ class TestTransactionResources(TestCase):
 
         requests.patch(BASE + "transaction/2")
 
-        # check after the patch
+        # get new status of paid directly from db
+        db.execute("""SELECT paid FROM transaction WHERE id = %s""", [before.t_id])
+        paid_status = db.fetchall()[0]
+        conn.commit()
+
+        # build after object to compare before object with; overwrite paid status with one calculated above
         after = trn.Transaction.build_from_id(transaction_id=2, cur=db)
+        after.paid = paid_status
 
         with self.subTest("paid has changed"):
             self.assertNotEqual(before.paid, after.paid)
