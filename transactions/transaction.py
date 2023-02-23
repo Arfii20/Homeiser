@@ -42,9 +42,18 @@ class Transaction:
         """
         try:
             dump = json.dumps(
-                {"transaction_id": self.t_id, "src_id": self.src_id, "dest_id": self.dest_id, "src": self.src_name,
-                 "dest": self.dest_name, "amount": self.amount, "description": self.description,
-                 "due_date": self.due.isoformat(), "paid": "true" if self.paid else "false", })
+                {
+                    "transaction_id": self.t_id,
+                    "src_id": self.src_id,
+                    "dest_id": self.dest_id,
+                    "src": self.src_name,
+                    "dest": self.dest_name,
+                    "amount": self.amount,
+                    "description": self.description,
+                    "due_date": self.due.isoformat(),
+                    "paid": "true" if self.paid else "false",
+                }
+            )
             return dump
 
         except json.decoder.JSONDecodeError as je:

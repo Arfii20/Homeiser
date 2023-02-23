@@ -115,7 +115,6 @@ class TransactionResource(Resource):
 
         return trn.json, 201
 
-
     def patch(self, t_id: int):
         """Updates a transaction to toggle paid status"""
 
@@ -127,7 +126,6 @@ class TransactionResource(Resource):
         result = cur.execute(
             "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
         )
-
 
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1

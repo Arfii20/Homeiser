@@ -17,6 +17,7 @@ def get_conn() -> [mysql.connector.MySQLConnection, cursor.MySQLCursor]:
 
     return conn, db
 
+
 def get_db() -> cursor.MySQLCursor:
     """Returns current database connection if there is one. If not, creates one and asks for password via cli"""
     db = getattr(g, "_database", None)

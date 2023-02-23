@@ -1,10 +1,8 @@
-import copy
 import datetime
 from unittest import TestCase
 import json
 import mysql.connector
 import requests
-from time import sleep
 import transactions.transaction as trn
 
 BASE = "http://127.0.0.1:5000/"
@@ -56,9 +54,13 @@ class TestTransactionResources(TestCase):
         exp.amount *= 2
 
         # add the newly modified transaction to the database
-        r = requests.post("http://127.0.0.1:5000/transaction", json=exp.json, headers={"Content-Type": "application/json"})
+        r = requests.post(
+            "http://127.0.0.1:5000/transaction",
+            json=exp.json,
+            headers={"Content-Type": "application/json"},
+        )
 
-        if not(200 <= r.status_code < 300):
+        if not (200 <= r.status_code < 300):
             self.fail(f"Error {r.status_code}")
 
         with self.subTest("add to db"):
@@ -118,13 +120,22 @@ class TestTransactionResources(TestCase):
         """Add a transaction. Delete the transaction."""
         now = datetime.datetime.now()
         temp_transaction = trn.Transaction(
-            0, 1, 2, "", "", 1, "test delete", datetime.datetime.fromisoformat(now.isoformat()), False
+            0,
+            1,
+            2,
+            "",
+            "",
+            1,
+            "test delete",
+            datetime.datetime.fromisoformat(now.isoformat()),
+            False,
         )
         r = requests.post(
-            "http://127.0.0.1:5000/transaction", json=temp_transaction.json, headers={"Content-Type": "application/json"}
+            "http://127.0.0.1:5000/transaction",
+            json=temp_transaction.json,
+            headers={"Content-Type": "application/json"},
         )
         new_id = json.loads(r.json())["transaction_id"]
-
 
         with self.subTest("delete transaction that exists"):
             r = requests.delete(f"http://127.0.0.1:5000/transaction/{new_id[0]}")

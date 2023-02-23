@@ -8,9 +8,10 @@ from transactions.transaction import Transaction
 
 @dataclass
 class Ledger:
-    """ List of transactions. In JSON:
-        '[{Transaction}, {Transaction}...{Transaction}]'
+    """List of transactions. In JSON:
+    '[{Transaction}, {Transaction}...{Transaction}]'
     """
+
     transactions: list[Transaction]
 
     @staticmethod
