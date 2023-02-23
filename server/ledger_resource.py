@@ -14,6 +14,7 @@ class LedgerResource(Resource):
         try:
             ledger = Ledger.build_from_id(user_id, db.get_db())
             return ledger.json, 200
+
         except LedgerConstructionError:
-            return "Could not return given user's transactions"
+            return "Could not return given user's transactions", 404
 

@@ -20,14 +20,23 @@ class Ledger:
 
     @staticmethod
     def build_from_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
-        """Builds a ledger of transactions given a user id and a cursor to the db"""
+        """ Builds a ledger of transactions given a user id and a cursor to the db.
+            Returns an empty ledger where user has no transactions
+        """
+        # validate user id; return a 404 if not found
 
+        cur.execute("SELECT id FROM user where id = %s;", [user_id])
+        if not cur.fetchall():
+            raise LedgerConstructionError("User not found")
+
+        # get all transaction ids where the user is src or dest
         cur.execute(
             "SELECT transaction.id FROM transaction, pairs "
             "WHERE pair_id = pairs.id AND (src = %s OR dest = %s)",
             [user_id, user_id],
         )
 
+        # extract transaction ids
         transaction_rows = cur.fetchall()
 
         # throw an exception if no results were returned
