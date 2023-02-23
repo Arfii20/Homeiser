@@ -4,7 +4,8 @@ import json
 from flask import request
 from flask_restful import Resource, Api  # type: ignore
 import server.db_handler as db
-from transactions.transaction import Transaction, TransactionConstructionError, Ledger
+from transactions.transaction import Transaction, TransactionConstructionError
+from transactions.ledger import Ledger
 
 
 class TransactionResource(Resource):

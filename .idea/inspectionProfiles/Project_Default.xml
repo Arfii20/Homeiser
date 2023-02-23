@@ -9,8 +9,8 @@
         <option value="Scratches and Consoles" />
       </list>
     </option>
-    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="false">
-      <scope name="Project Files" level="ERROR" enabled="true" editorAttributes="ERRORS_ATTRIBUTES">
+    <inspection_tool class="PyCompatibilityInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <scope name="Project Files" level="ERROR" enabled="false" editorAttributes="ERRORS_ATTRIBUTES">
         <option name="ourVersions">
           <value>
             <list size="1">
@@ -27,6 +27,15 @@
         </value>
       </option>
     </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="host" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
     <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="ignoredErrors">
         <list>
@@ -34,5 +43,6 @@
         </list>
       </option>
     </inspection_tool>
+    <inspection_tool class="SyntaxError" enabled="false" level="ERROR" enabled_by_default="false" />
   </profile>
 </component>
