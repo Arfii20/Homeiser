@@ -1,8 +1,10 @@
 import datetime
-from unittest import TestCase
 import json
+from unittest import TestCase
+
 import mysql.connector
 import requests
+
 import transactions.transaction as trn
 
 target = "http://127.0.0.1:5000/"
@@ -35,7 +37,6 @@ class TestTransactionResources(TestCase):
 
         for test, param, expect in zip(tests, params, expected):
             with self.subTest(test):
-
                 got = requests.get(target + param)
                 self.assertEqual((got.json(), got.status_code), expect)
 

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import datetime
 import json
-from mysql.connector import cursor
+from dataclasses import dataclass
+
 import requests
+from mysql.connector import cursor
 
 
 class TransactionConstructionError(Exception):
@@ -135,16 +136,62 @@ class Transaction:
 
 @dataclass
 class CalendarEvent:
-    """Represents one event in the calendar"""
+    """Represents one event in the calendar
+
+    JSON Format:
+
+        {
+        'event_id': list[int],
+        'title_of_event': list[str],
+        "starting_time": list[str], where str is in the form "yyyy-mm-dd HH:MM:SS"
+        "ending_time": ["yyyy-mm-dd HH:MM:SS"],
+        'additional_notes': list[str],
+        'location_of_event': list[str],
+        "household_id": list[int],
+        "tagged_users": list[int],
+        'added_by': list[int]
+        }
+
+    """
+
+    event_id: int
+    title: str
+    start: datetime.datetime
+    end: datetime.datetime
+    notes: str
+    location: str
+    house: int
+    tags: list[int]
+    added_by: int
 
     def from_transaction(self, transaction: Transaction) -> CalendarEvent:
-        """Builds a calendar object from a transaction"""
+        """Builds a calendar object from a transaction. Uses the Transaction object's ID.
+        This ID is NOT a calendar_event ID. It cannot be involved in queries regarding calendar_events"""
         ...
 
     @property
     def json(self) -> str:
         """
-            Dumps CalendarEvent to JSON. Format is defined in implementation of CalendarEvent
-            and used here
+        Dumps CalendarEvent to JSON. Format is defined in implementation of CalendarEvent
+        and used here
         """
-        ...
+        as_dict = {
+            'event_id': [self.event_id],
+            'title_of_event': [self.title],
+            "starting_time": [self.datetime_to_propiatery(self.start)],
+            "ending_time": [self.datetime_to_propiatery(self.end)],
+            'additional_notes': [self.notes],
+            'location_of_event': [self.location],
+            "household_id": [self.house],
+            "tagged_users": self.tags,
+            'added_by': [self.added_by]
+        }
+
+        return json.dumps(as_dict)
+
+    @staticmethod
+    def datetime_to_propiatery(dt: datetime.datetime) -> str:
+        """JSON for Calendar object calls for datetimes to be formatted in YYYY-MM-DD HH:MM:SS.
+        Given a datetime object this method will return the date in propriatery format"""
+
+        return f"{dt.isoformat()[:10]} {dt.hour}:{dt.minute}:{dt.second}"

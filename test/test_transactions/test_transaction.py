@@ -1,7 +1,7 @@
-from transactions.transaction import *
-import mysql.connector
 from typing import Any
 from unittest import TestCase
+import mysql.connector
+from transactions.transaction import *
 
 
 class MockPost:
@@ -84,7 +84,29 @@ class TestTransaction(TestCase):
 
 
 class TestCalendarEvent(TestCase):
+    def test_json(self):
 
-    def test_json(self): ...
+        # set up expected JSON
+        start = datetime.datetime(2023, 2, 23, 19, 51, 57, 441926)
+        end = datetime.datetime(2023, 2, 23, 20, 2, 47, 797909)
 
-    def test_from_transaction(self): ...
+        exp = json.dumps(
+            {
+                'event_id': [1],
+                'title_of_event': ["Test"],
+                "starting_time": [CalendarEvent.datetime_to_propiatery(start)],
+                "ending_time": [CalendarEvent.datetime_to_propiatery(end)],
+                'additional_notes': ["notes"],
+                'location_of_event': ["location"],
+                "household_id": [1],
+                "tagged_users": [1, 2, 3],
+                'added_by': [4]
+            }
+        )
+
+        ce = CalendarEvent(1, "Test", start, end, "notes", "location", 1, [1, 2, 3], 4)
+
+        self.assertEqual(exp, ce.json)
+
+    def test_from_transaction(self):
+        ...

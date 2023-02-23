@@ -1,8 +1,7 @@
 import json
-
-import mysql.connector
-import requests
 from unittest import TestCase
+
+import requests
 
 
 class TestLedgerResource(TestCase):

@@ -1,7 +1,8 @@
 """Endpoints for transactions"""
+import flask_restful  # type: ignore
+
 import server.ledger_resource
 import server.transaction_resources as tr
-import flask_restful  # type: ignore
 
 
 def attach(api: flask_restful.Api):

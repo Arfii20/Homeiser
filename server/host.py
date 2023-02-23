@@ -1,9 +1,10 @@
 """Entry point for server"""
 
-import server.endpoints as endpoints
-import server.db_handler as db_handler
 from flask import Flask, g
 from flask_restful import Api  # type: ignore
+
+import server.db_handler as db_handler
+import server.endpoints as endpoints
 
 # create the app
 app = Flask(__name__)

@@ -1,6 +1,6 @@
 import mysql.connector
-from mysql.connector import cursor
 from flask import g
+from mysql.connector import cursor
 
 
 class DBPasswordError(Exception):
