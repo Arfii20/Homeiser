@@ -13,7 +13,7 @@ class TestTransactionResources(TestCase):
         """Ensures get request returns transaction object in the correct format"""
 
         tests = ["Get an existing transaction", "Transaction doesn't exist"]
-        params = ["transaction/1", "transaction/3"]
+        params = ["transaction/1", "transaction/1234523145"]
         expected = [
             (
                 '{"transaction_id": 1, '
