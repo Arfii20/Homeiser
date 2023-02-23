@@ -127,4 +127,3 @@ class Transaction:
         return [v for v in self.__dict__.values()][1:] == [
             v for v in other.__dict__.values()
         ][1:]
-

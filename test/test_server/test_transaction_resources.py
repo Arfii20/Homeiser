@@ -3,7 +3,7 @@ from unittest import TestCase
 import json
 import mysql.connector
 import requests
-
+from time import sleep
 import transactions.transaction as trn
 
 BASE = "http://127.0.0.1:5000/"
@@ -55,7 +55,10 @@ class TestTransactionResources(TestCase):
         exp.amount *= 2
 
         # add the newly modified transaction to the database
-        r = requests.post("http://127.0.0.1:5000/transaction", json=exp.json)
+        r = requests.post("http://127.0.0.1:5000/transaction", json=exp.json, headers={"Content-Type": "application/json"})
+
+        if not(200 <= r.status_code < 300):
+            self.fail(f"Error {r.status_code}")
 
         with self.subTest("add to db"):
             got = trn.Transaction.build_from_req(request=json.loads(r.json()))
@@ -81,13 +84,14 @@ class TestTransactionResources(TestCase):
         conn = mysql.connector.connect(
             host="localhost", user="root", password="HALR0b0t!12", database="x5db"
         )
-        db = conn.cursor(buffered=True)
-        conn.autocommit = True
+
+        db = conn.cursor()
 
         # store transaction 2
         before = trn.Transaction.build_from_id(transaction_id=2, cur=db)
 
         requests.patch(BASE + "transaction/2")
+        sleep(0.5)
 
         # check after the patch
         after = trn.Transaction.build_from_id(transaction_id=2, cur=db)
@@ -107,12 +111,13 @@ class TestTransactionResources(TestCase):
     def test_delete(self):
         """Add a transaction. Delete the transaction."""
         temp_transaction = trn.Transaction(
-            0, 1, 2, "", "", 1, "", datetime.date(2023, 12, 2), False
+            0, 1, 2, "", "test patch", 1, "", datetime.date(2023, 12, 2), False
         )
         r = requests.post(
-            "http://127.0.0.1:5000/transaction", json=temp_transaction.json
+            "http://127.0.0.1:5000/transaction", json=temp_transaction.json, headers={"Content-Type": "application/json"}
         )
         new_id = json.loads(r.json())["transaction_id"]
+
 
         # confirm added
         r = requests.get(f"http://127.0.0.1:5000/transaction/{new_id}")

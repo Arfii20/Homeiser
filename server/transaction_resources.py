@@ -1,11 +1,12 @@
 """List of all resources pertaining to transactions"""
 import json
 
+import mysql.connector
+from mysql.connector import cursor
 from flask import request
 from flask_restful import Resource, Api  # type: ignore
 import server.db_handler as db
 from transactions.transaction import Transaction, TransactionConstructionError
-from transactions.ledger import Ledger
 
 
 class TransactionResource(Resource):
@@ -41,7 +42,11 @@ class TransactionResource(Resource):
         """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary).
         Returns json of the object added (with correct ID)"""
 
-        cur = db.get_db()
+        # get cursor to db and accept request
+        conn: mysql.connector.MySQLConnection
+        cur: cursor.MySQLCursor
+
+        conn, cur = db.get_conn()
         r = request.get_json()
 
         if type(r) is str:
@@ -49,7 +54,7 @@ class TransactionResource(Resource):
 
         # validate json by trying to build a transaction object from it; throw an exception if this fails
         try:
-            _ = Transaction.build_from_req(request=r)
+            trn = Transaction.build_from_req(request=r)
         except TransactionConstructionError:
             return "Incorrect JSON Format for Transaction object", 400
 
@@ -75,16 +80,10 @@ class TransactionResource(Resource):
             pair_id = cur.fetchone()
 
             # commit changes
-            cur.execute("commit;")
+            conn.commit()
 
         # unpack pair_id from tuple
         pair_id = pair_id[0]
-
-        # construct Transaction object from the request
-        try:
-            trn = Transaction.build_from_req(request=r)
-        except TransactionConstructionError:
-            return "Incorrect JSON Format for Transaction object", 400
 
         # insert new Transaction object into the database
         cur.execute(
@@ -99,27 +98,35 @@ class TransactionResource(Resource):
             ],
         )
 
+        # commit
+        conn.commit()
+
         # update the id of the new transaction
         cur.execute(
             "SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
             [pair_id, r["amount"], r["due_date"], 1 if r["paid"] == "true" else 0],
         )
 
-        # update trn to have the correct ID
-        trn.t_id = cur.fetchone()[0]
+        if (t_id := cur.fetchone()) is None:
+            return json.dumps("Adding transaction failed"), 500
 
-        # commit changes
-        cur.execute("commit;")
+        # update trn to have the correct ID
+        trn.t_id = cur.fetchone()
 
         return trn.json, 201
+
 
     def patch(self, t_id: int):
         """Updates a transaction to toggle paid status"""
 
-        cur = db.get_db()
-        result = cur.execute(
+        conn: mysql.connector.MySQLConnection
+        cur: cursor.MySQLCursor
+
+        conn, cur = db.get_conn()
+        cur.execute(
             "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
         )
+
 
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1
@@ -137,16 +144,6 @@ class TransactionResource(Resource):
             return f"Transaction {t_id} not found", 404
         else:
             return f"Deleted transaction {t_id}", 200
-
-
-class LedgerResource(Resource):
-    """Ledger is a list of transactions.
-    In JSON represented as '[t_1, t_2, ..., t_n]' where t_1..t_n are JSON(TransactionResource)
-    """
-
-    def get(self, user_id: int):
-        """Given a user id, will return a 'ledger' of all user's transactions whether they are src or dest"""
-        return Ledger.build_from_id(user_id, db.get_db()).json, 200
 
 
 class CalendarTransactions(Resource):

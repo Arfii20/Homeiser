@@ -5,8 +5,12 @@ from dataclasses import dataclass
 from mysql.connector import cursor
 from transactions.transaction import Transaction
 
+
 @dataclass
 class Ledger:
+    """ List of transactions. In JSON:
+        '[{Transaction}, {Transaction}...{Transaction}]'
+    """
     transactions: list[Transaction]
 
     @staticmethod

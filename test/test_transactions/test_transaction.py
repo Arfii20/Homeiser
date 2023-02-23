@@ -1,4 +1,3 @@
-from transactions.ledger import Ledger
 from transactions.transaction import *
 import mysql.connector
 from typing import Any
@@ -82,19 +81,3 @@ class TestTransaction(TestCase):
         with self.subTest("wrong format"):
             with self.assertRaises(TransactionConstructionError):
                 Transaction.build_from_req(request={"test": "fails"})
-
-
-class TestLedger(TestCase):
-    def setUp(self):
-        # connect to db
-        conn = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
-        )
-        db = conn.cursor()
-        self.l = Ledger.build_from_id(1, db)
-
-    def test_build_from_id(self):
-        print(self.l)
-
-    def test_json(self):
-        print(self.l.json)
