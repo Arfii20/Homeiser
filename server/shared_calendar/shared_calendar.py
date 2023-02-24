@@ -30,13 +30,15 @@ class SharedCalendar(Resource):
 
         :returns
         The server will return following json object:
-        {'event_id': [3, 5, 7],
-        'title_of_event': ['event_a', 'event_b', 'event_c'],
-        'starting_time': ['2023-2-19 0:0:0', '2023-2-19 0:0:0', '2023-2-19 0:0:0'],
-        'ending_time': ['2023-2-19 20:0:0', '2023-2-19 20:0:0', '2023-2-19 20:0:0'],
-        'additional_notes': ['Do this', 'Do that', 'do this now'],
-        'location_of_event': ['This address', 'That address', 'those addresses']
-        'added_by': [7, 7, 7]}
+        {
+        'event_id': [3, 5, 7],                                                                # list of ints
+        'title_of_event': ['event_a', 'event_b', 'event_c'],                                  # list of strings
+        'starting_time': ['2023-2-19 0:0:0', '2023-2-19 0:0:0', '2023-2-19 0:0:0'],           # list of strings
+        'ending_time': ['2023-2-19 20:0:0', '2023-2-19 20:0:0', '2023-2-19 20:0:0'],          # list of strings
+        'additional_notes': ['Do this', 'Do that', 'do this now'],                            # list of strings
+        'location_of_event': ['This address', 'That address', 'those addresses']              # list of strings
+        'added_by': [7, 7, 7]                                                                 # list of ints
+        }
 
         *** For the times, have to use split() method of JS as it return 1 digit if the first digit is 0
         e.g. '2023-2-19 0:0:0' instead of '2023-02-19 00:00:00'
@@ -57,37 +59,41 @@ class SharedCalendar(Resource):
         query = "SELECT * FROM calendar_event WHERE household_id = %s AND start_time >= '%s' AND end_time <= '%s';"
         data = (household_id, starting_time, ending_time)
         cursor.execute(query % data)
+        fetched_result = cursor.fetchall()
 
-        objects = {
-            "event_id": [],
-            "title_of_event": [],
-            "starting_time": [],
-            "ending_time": [],
-            "additional_notes": [],
-            "location_of_event": [],
-            "added_by": []}
+        if fetched_result:
+            objects = {
+                "event_id": [],
+                "title_of_event": [],
+                "starting_time": [],
+                "ending_time": [],
+                "additional_notes": [],
+                "location_of_event": [],
+                "added_by": []}
 
-        cursor1 = connection.cursor()
-        query1 = "SELECT * FROM user_doing_calendar_event"
-        cursor1.execute(query1)
-        result = cursor1.fetchall()
+            cursor1 = connection.cursor()
+            query1 = "SELECT * FROM user_doing_calendar_event"
+            cursor1.execute(query1)
+            result = cursor1.fetchall()
 
-        for x in cursor.fetchall():
-            objects["event_id"].append(x[0])
-            objects["title_of_event"].append(x[1])
-            objects["starting_time"].append(
-                f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}")
-            objects["ending_time"].append(
-                f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}")
-            objects["additional_notes"].append(x[4])
-            objects["location_of_event"].append(x[5])
+            for x in fetched_result:
+                objects["event_id"].append(x[0])
+                objects["title_of_event"].append(x[1])
+                objects["starting_time"].append(
+                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}")
+                objects["ending_time"].append(
+                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}")
+                objects["additional_notes"].append(x[4])
+                objects["location_of_event"].append(x[5])
 
-            for i in result:
-                if i[1] == x[0]:
-                    objects["added_by"].append(i[2])
-                    break
+                for i in result:
+                    if i[1] == x[0]:
+                        objects["added_by"].append(i[2])
+                        break
 
-        return objects, 200
+            return objects, 200
+        else:
+            abort(404, error="No event found")
 
     def post(self, household_id):
         """
@@ -199,22 +205,24 @@ class CalendarEvent(Resource):
 
     def get(self, calendar_event_id):
         """
-        Sends the event details in a specific time range to the website using the calendar_event_id
+        Sends one event details when clicked on an event using the calendar_event_id
 
         How get requests for calendar events should be like:
         requests.get(BASE + "shared_calendar/<int: calendar_event_id>")
 
         :returns
         The server will return following json object:
-        {'event_id': [3],
-        'title_of_event': ['event_a'],
-        "starting_time": "yyyy-mm-dd HH:MM:SS",
-        "ending_time": "yyyy-mm-dd HH:MM:SS",
-        'additional_notes': ['Do this'],
-        'location_of_event': ['This address']
-        "household_id": [1],
-        "tagged_users": [2, 3, 5],
-        'added_by': [7]}
+        {
+        'event_id': [3],                                                                # list of int
+        'title_of_event': ['event_a'],                                                  # list of string
+        'starting_time': ["yyyy-mm-dd HH:MM:SS"],                                       # list of string
+        'ending_time': ["yyyy-mm-dd HH:MM:SS"],                                         # list of string
+        'additional_notes': ['Do this'],                                                # list of string
+        'location_of_event': ['This address']                                           # list of string
+        'household_id': [1],                                                            # list of int
+        'tagged_users': [2, 3, 5],                                                      # list of ints
+        'added_by': [7]                                                                 # list of int
+        }
 
         *** For the times, have to use split() method of JS as it return 1 digit if the first digit is 0
         e.g. '2023-2-19 0:0:0' instead of '2023-02-19 00:00:00'
@@ -227,7 +235,8 @@ class CalendarEvent(Resource):
         cursor1 = connection.cursor()
         query1 = "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
         cursor1.execute(query1 % calendar_event_id)
-        if cursor1.fetchall():
+        fetched_result = cursor.fetchall()
+        if fetched_result:
             objects = {
                 "event_id": [],
                 "title_of_event": [],
@@ -238,7 +247,7 @@ class CalendarEvent(Resource):
                 "household_id": [],
                 "tagged_users": [],
                 "added_by": []}
-            for x in cursor.fetchall():
+            for x in fetched_result:
                 objects["event_id"].append(x[0])
                 objects["title_of_event"].append(x[1])
                 objects["starting_time"].append(
@@ -394,8 +403,10 @@ class UserColour(Resource):
 
         :returns:
         The server will return following json object:
-        {'id': [3, 4],
-        'color': [346523, 435465]}
+        {
+        'id': [3, 4],
+        'color': [346523, 435465]
+        }
         """
         cursor = connection.cursor()
         query = "SELECT id, color FROM user WHERE household_id = %s;"

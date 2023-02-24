@@ -13,9 +13,21 @@ BASE = "http://127.0.0.1:5000/"
 
 class TestSharedList(unittest.TestCase):
 
+    def test_shared_list_get(self):
+        response = requests.get(BASE + "shared_list/1")
+        valid = True
+        for i in response.json().keys():
+            if i not in ['id', 'name']:
+                valid = False
+        self.assertTrue(valid)
+
+    def test_shared_list_get_bad(self):
+        response = requests.get(BASE + "shared_list/2")
+        self.assertEqual(response.json(), {"error": "No lists found"})
+
     def test_shared_list_name_post_bad(self):
         response = requests.post(BASE + "shared_list/1", {"name": "Gr2s"})
-        self.assertEqual(response.json(), {'Error': 'List Name Must Be Unique'})
+        self.assertEqual(response.json(), {'error': 'List Name Must Be Unique'})
 
     def test_shared_list_id_post_bad(self):
         file = open("words.txt")
@@ -26,7 +38,7 @@ class TestSharedList(unittest.TestCase):
             response = requests.post(BASE + "shared_list/1", {'id': 1,
                                                               "name": word[0:len(word) - 2]})
 
-            if response.json() != {'Error': 'List Name Must Be Unique'}:
+            if response.json() != {'error': 'List Name Must Be Unique'}:
                 break
         file.close()
 
@@ -50,18 +62,6 @@ class TestSharedList(unittest.TestCase):
         response = requests.post(BASE + "shared_list/1", {'id': number,
                                                           "name": word[0:len(word) - 2]})
         self.assertEqual(response.json(), {"message": "List Created"})
-
-    def test_shared_list_get(self):
-        response = requests.get(BASE + "shared_list/1")
-        valid = True
-        for i in response.json().keys():
-            if i not in ['id', 'name', 'household_id']:
-                valid = False
-        self.assertTrue(valid)
-
-    def test_shared_list_get_bad(self):
-        response = requests.get(BASE + "shared_list/2")
-        self.assertEqual(response.json(), {'id': [], 'name': [], 'household_id': []})
 
 
 class TestListDetails(unittest.TestCase):
