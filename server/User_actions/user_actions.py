@@ -280,9 +280,9 @@ class LoginHouse(Resource):
 
 
 api.add_resource(RegisterUser, "/register_user")
-api.add_resource(login, "/login<int:user_id><string:password>")
+api.add_resource(LoginUser, "/login_user<int:user_id><string:password>")
 api.add_resource(RegisterHouse, "/register_house")
-api.add_resource(login_household, "/login_household<int:house_id><string:password>")
+api.add_resource(LoginHouse, "/login_house<int:house_id><string:password>")
 
 if __name__ == "__main__":
     app.run(debug=True)
