@@ -177,15 +177,15 @@ class CalendarEvent:
         """
 
         return CalendarEvent(
-            transaction.t_id,
-            f"{transaction.src_name} -> {transaction.dest_name}",
-            datetime.datetime.combine(transaction.due, datetime.time(0, 0, 0)),
-            datetime.datetime.combine(transaction.due, datetime.time(23, 59, 59)),
-            transaction.description,
-            "",
-            0,
-            [transaction.dest_id],
-            transaction.src_id,
+            event_id=transaction.t_id,
+            title=f"{transaction.src_name} -> {transaction.dest_name}",
+            start=datetime.datetime.combine(transaction.due, datetime.time(0, 0, 0)),
+            end=datetime.datetime.combine(transaction.due, datetime.time(23, 59, 59)),
+            notes=transaction.description,
+            location="",
+            house=transaction.house_id,
+            tags=[transaction.dest_id],
+            added_by=transaction.src_id,
         )
 
     @property
