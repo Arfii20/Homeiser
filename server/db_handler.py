@@ -7,7 +7,7 @@ class DBPasswordError(Exception):
     """No password supplied to the database"""
 
 
-def get_conn() -> [mysql.connector.MySQLConnection, cursor.MySQLCursor]:
+def get_conn() -> tuple[mysql.connector.MySQLConnection, cursor.MySQLCursor]:
     """Get a connection and a cursor to the database; overwrites connection in flask globals"""
 
     conn = g._database = mysql.connector.connect(

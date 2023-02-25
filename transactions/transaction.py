@@ -16,6 +16,8 @@ class TransactionConstructionError(Exception):
 class Transaction:
     """Specifies a singular transaction"""
 
+    # TODO: house id
+
     t_id: int
     src_id: int
     dest_id: int
@@ -25,6 +27,7 @@ class Transaction:
     description: str
     due: datetime.date
     paid: bool
+    house_id: int
 
     @property
     def json(self) -> str:
@@ -35,10 +38,11 @@ class Transaction:
             "dest_id": <int: dest id>
             "src": <str:src full name>,
             "dest": <str:dest full name>,
-            "amount": <int:amount>,
-            "description": <str:description>
+            "amount": <int: amount>,
+            "description": <str: description>
             "due_date": <str:date string in format yyyy-mm-dd>
-            "paid": <str:boolean>
+            "paid": <int: boolean>
+            "house_id": <int:>
         }
         """
         try:
@@ -53,6 +57,7 @@ class Transaction:
                     "description": self.description,
                     "due_date": self.due.isoformat(),
                     "paid": "true" if self.paid else "false",
+                    "household_id": self.house_id
                 }
             )
             return dump
@@ -66,7 +71,7 @@ class Transaction:
 
         cur.execute(
             "SELECT transaction.id, u1.id, u2.id,  CONCAT_WS(' ', u1.first_name, u1.surname), "
-            "CONCAT_WS(' ', u2.first_name, u2.surname), amount, description, due_date, paid "
+            "CONCAT_WS(' ', u2.first_name, u2.surname), amount, description, due_date, paid, u1.household_id "
             "FROM transaction, pairs, user u1, user u2 "
             "WHERE transaction.id = %s AND pairs.id = transaction.pair_id"
             " AND u1.id = pairs.src AND u2.id = pairs.dest",
@@ -92,7 +97,8 @@ class Transaction:
         # need to convert paid from int -> bool
         # do in place so can pass tuple directly into Transaction() instantiation
 
-        args[-1] = bool(args[-1])
+        # convert paid in {0, 1} -> True/False
+        args[-2] = bool(args[-2])
 
         return Transaction(*args)
 
@@ -164,10 +170,22 @@ class CalendarEvent:
     tags: list[int]
     added_by: int
 
-    def from_transaction(self, transaction: Transaction) -> CalendarEvent:
+    @staticmethod
+    def from_transaction(transaction: Transaction) -> CalendarEvent:
         """Builds a calendar object from a transaction. Uses the Transaction object's ID.
-        This ID is NOT a calendar_event ID. It cannot be involved in queries regarding calendar_events"""
-        ...
+        This ID is NOT a calendar_event ID. It cannot be involved in queries regarding calendar_events
+        """
+
+        return CalendarEvent(transaction.t_id,
+                            f"{transaction.src_name} -> {transaction.dest_name}",
+                            datetime.datetime.combine(transaction.due, datetime.time(0, 0, 0)),
+                            datetime.datetime.combine(transaction.due, datetime.time(23, 59, 59)),
+                            transaction.description,
+                            "",
+                            0,
+                            [transaction.dest_id],
+                             transaction.src_id
+                            )
 
     @property
     def json(self) -> str:
@@ -176,15 +194,15 @@ class CalendarEvent:
         and used here
         """
         as_dict = {
-            'event_id': [self.event_id],
-            'title_of_event': [self.title],
+            "event_id": [self.event_id],
+            "title_of_event": [self.title],
             "starting_time": [self.datetime_to_propiatery(self.start)],
             "ending_time": [self.datetime_to_propiatery(self.end)],
-            'additional_notes': [self.notes],
-            'location_of_event': [self.location],
+            "additional_notes": [self.notes],
+            "location_of_event": [self.location],
             "household_id": [self.house],
             "tagged_users": self.tags,
-            'added_by': [self.added_by]
+            "added_by": [self.added_by],
         }
 
         return json.dumps(as_dict)
@@ -192,6 +210,7 @@ class CalendarEvent:
     @staticmethod
     def datetime_to_propiatery(dt: datetime.datetime) -> str:
         """JSON for Calendar object calls for datetimes to be formatted in YYYY-MM-DD HH:MM:SS.
-        Given a datetime object this method will return the date in propriatery format"""
+        Given a datetime object this method will return the date in propriatery format
+        """
 
         return f"{dt.isoformat()[:10]} {dt.hour}:{dt.minute}:{dt.second}"

@@ -25,5 +25,3 @@ class TestLedger(TestCase):
             host="localhost", user="root", password="HALR0b0t!12", database="x5db"
         )
         db = conn.cursor()
-
-        print(Ledger.build_from_id(1, db).json)

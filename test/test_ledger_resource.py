@@ -13,7 +13,7 @@ class TestLedgerResource(TestCase):
         exp_json = [
             '{"transaction_id": 4, "src_id": 3, "dest_id": 4, "src": "Test Ledger",'
             ' "dest": "Test2 Ledger", "amount": 20, "description": "test", '
-            '"due_date": "2023-02-17", "paid": "false"}'
+            '"due_date": "2023-02-17", "paid": "false", "household_id": 1}'
         ]
 
         with self.subTest("Get user transactions where user exists"):
