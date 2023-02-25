@@ -57,7 +57,7 @@ class Transaction:
                     "description": self.description,
                     "due_date": self.due.isoformat(),
                     "paid": "true" if self.paid else "false",
-                    "household_id": self.house_id
+                    "household_id": self.house_id,
                 }
             )
             return dump
@@ -176,16 +176,17 @@ class CalendarEvent:
         This ID is NOT a calendar_event ID. It cannot be involved in queries regarding calendar_events
         """
 
-        return CalendarEvent(transaction.t_id,
-                            f"{transaction.src_name} -> {transaction.dest_name}",
-                            datetime.datetime.combine(transaction.due, datetime.time(0, 0, 0)),
-                            datetime.datetime.combine(transaction.due, datetime.time(23, 59, 59)),
-                            transaction.description,
-                            "",
-                            0,
-                            [transaction.dest_id],
-                             transaction.src_id
-                            )
+        return CalendarEvent(
+            transaction.t_id,
+            f"{transaction.src_name} -> {transaction.dest_name}",
+            datetime.datetime.combine(transaction.due, datetime.time(0, 0, 0)),
+            datetime.datetime.combine(transaction.due, datetime.time(23, 59, 59)),
+            transaction.description,
+            "",
+            0,
+            [transaction.dest_id],
+            transaction.src_id,
+        )
 
     @property
     def json(self) -> str:

@@ -29,7 +29,7 @@ class TestTransaction(TestCase):
                 "description": "test",
                 "due_date": "2023-02-17",
                 "paid": "false",
-                "household_id": 1
+                "household_id": 1,
             }
         )
 
@@ -45,7 +45,16 @@ class TestTransaction(TestCase):
         """
 
         expect = Transaction(
-            1, 1, 2, "Alice _", "Bob _", 10, "test", datetime.date(2023, 2, 17), False, 1
+            1,
+            1,
+            2,
+            "Alice _",
+            "Bob _",
+            10,
+            "test",
+            datetime.date(2023, 2, 17),
+            False,
+            1,
         )
 
         # connect to db

@@ -28,7 +28,7 @@ class TestTransactionResources(TestCase):
                 '"due_date": "2023-02-17", '
                 '"paid": "false", '
                 '"household_id": 1'
-                '}',
+                "}",
                 200,
             ),
             (
@@ -133,7 +133,7 @@ class TestTransactionResources(TestCase):
             "test delete",
             datetime.datetime.fromisoformat(now.isoformat()),
             False,
-            1
+            1,
         )
         r = requests.post(
             "http://127.0.0.1:5000/transaction",
