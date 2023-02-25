@@ -16,7 +16,7 @@ CREATE TABLE household (
     name VARCHAR(64) NOT NULL,
     password VARCHAR(64) NOT NULL,  -- hashed passwords will always be 64 characters long (256bits -> 64 chars in hex)
     max_residents INT NOT NULL,
-    road_name VARCHAR(100) NOT NULL,
+    #road_name VARCHAR(100) NOT NULL,
     postcode_id INTEGER NOT NULL,
 
     PRIMARY KEY (id),
