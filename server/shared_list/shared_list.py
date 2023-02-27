@@ -7,16 +7,11 @@ from mysql.connector import connect
 from server.host import *
 
 connection = connect(
-    host="localhost",
-    user="root",
-    password="Arfi12000@",
-    database="x5db",
-    buffered=True
+    host="localhost", user="root", password="Arfi12000@", database="x5db", buffered=True
 )
 
 
 class SharedList(Resource):
-
     def get(self, household_id):
         """
         Sends the lists of a particular household using household_id
@@ -67,9 +62,14 @@ class SharedList(Resource):
         """
         # Getting values from the website
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, help='Name of the list is required',
-                            required=True, location='form')
-        parser.add_argument('id', type=int, location='form')
+        parser.add_argument(
+            "name",
+            type=str,
+            help="Name of the list is required",
+            required=True,
+            location="form",
+        )
+        parser.add_argument("id", type=int, location="form")
         args = parser.parse_args()
         name = args.get("name")
         list_id = args.get("id")
@@ -109,7 +109,6 @@ class SharedList(Resource):
 
 
 class ListDetails(Resource):
-
     def delete(self, list_id):
         """
         Delete a full list from the database using the list_id
@@ -135,9 +134,9 @@ class ListDetails(Resource):
             cursor2 = connection.cursor()
             cursor2.execute(query2 % list_id)
             connection.commit()
-            return {'message': 'List Deleted'}, 200
+            return {"message": "List Deleted"}, 200
         else:
-            abort(404, error='List Doesnt Exist')
+            abort(404, error="List Doesnt Exist")
 
     def patch(self, list_id):
         """
@@ -151,8 +150,13 @@ class ListDetails(Resource):
         {'message': 'Update Successful'}
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('new_name', type=str, help='Name of the list is required',
-                            required=True, location='form')
+        parser.add_argument(
+            "new_name",
+            type=str,
+            help="Name of the list is required",
+            required=True,
+            location="form",
+        )
         args = parser.parse_args()
         new_name = args.get("new_name")
 
@@ -182,11 +186,10 @@ class ListDetails(Resource):
                 cursor.execute(query % data)
                 connection.commit()
 
-                return {'message': 'Update Successful'}, 200
+                return {"message": "Update Successful"}, 200
 
 
 class ListEvents(Resource):
-
     def post(self, list_id):
         """
         Inserts a new row to the list_event table using the list_id
@@ -205,12 +208,27 @@ class ListEvents(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument("event_id", type=int, location="form")
-        parser.add_argument("task_name", type=str, required=True, location="form",
-                            help="Name of the task is required")
-        parser.add_argument("description_of_task", type=str, required=True,
-                            location="form", help="Description of the task is required")
-        parser.add_argument("added_user_id", type=int, required=True,
-                            location="form", help="User ID is required")
+        parser.add_argument(
+            "task_name",
+            type=str,
+            required=True,
+            location="form",
+            help="Name of the task is required",
+        )
+        parser.add_argument(
+            "description_of_task",
+            type=str,
+            required=True,
+            location="form",
+            help="Description of the task is required",
+        )
+        parser.add_argument(
+            "added_user_id",
+            type=int,
+            required=True,
+            location="form",
+            help="User ID is required",
+        )
         args = parser.parse_args()
         event_id = args.get("event_id")
         task_name = args.get("task_name")
@@ -227,9 +245,17 @@ class ListEvents(Resource):
                 abort(409, error="Event id already exists")
             else:
                 cursor = connection.cursor()
-                query = "INSERT INTO list_event (id, task, description, added_by_user, list) " \
-                        "VALUES (%s, '%s', '%s', %s, %s);"
-                data = (event_id, task_name, description_of_task, added_user_id, list_id)
+                query = (
+                    "INSERT INTO list_event (id, task, description, added_by_user, list) "
+                    "VALUES (%s, '%s', '%s', %s, %s);"
+                )
+                data = (
+                    event_id,
+                    task_name,
+                    description_of_task,
+                    added_user_id,
+                    list_id,
+                )
                 cursor.execute(query % data)
                 connection.commit()
                 return {"message": "List Event Created"}, 201
@@ -275,7 +301,7 @@ class ListEvents(Resource):
                 "description_of_task": [],
                 "added_user_id": [],
                 "checked_off_by_user": [],
-                "list": []
+                "list": [],
             }
 
             for x in fetched_result:
@@ -292,7 +318,6 @@ class ListEvents(Resource):
 
 
 class ListEventDetails(Resource):
-
     def delete(self, list_event_id):
         """
         Delete a list event from the database using the list_event_id
@@ -313,9 +338,9 @@ class ListEventDetails(Resource):
             cursor1 = connection.cursor()
             cursor1.execute(query % list_event_id)
             connection.commit()
-            return {'message': 'List Event Deleted'}, 200
+            return {"message": "List Event Deleted"}, 200
         else:
-            abort(404, error='List Event Doesnt Exist')
+            abort(404, error="List Event Doesnt Exist")
 
     # Check off list event
     def patch(self, list_event_id):
@@ -338,7 +363,10 @@ class ListEventDetails(Resource):
         user_id = args.get("user_id")
 
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM list_event WHERE id = %s AND checked_off_by_user is NULL;" % list_event_id)
+        cursor.execute(
+            "SELECT * FROM list_event WHERE id = %s AND checked_off_by_user is NULL;"
+            % list_event_id
+        )
         check_off = cursor.fetchone()
 
         if check_off and user_id:
@@ -374,10 +402,20 @@ class ListEventDetails(Resource):
         Will return error if the id does not exist
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("new_task", type=str, required=True, location="form",
-                            help="Name of the task is required")
-        parser.add_argument("new_description", type=str, required=True,
-                            location="form", help="Description of the task is required")
+        parser.add_argument(
+            "new_task",
+            type=str,
+            required=True,
+            location="form",
+            help="Name of the task is required",
+        )
+        parser.add_argument(
+            "new_description",
+            type=str,
+            required=True,
+            location="form",
+            help="Description of the task is required",
+        )
         args = parser.parse_args()
         new_task = args.get("new_task")
         new_description = args.get("new_description")
@@ -388,7 +426,9 @@ class ListEventDetails(Resource):
 
         if present:
             cursor = connection.cursor()
-            query = "UPDATE list_event SET task = '%s', description = '%s' WHERE id = %s;"
+            query = (
+                "UPDATE list_event SET task = '%s', description = '%s' WHERE id = %s;"
+            )
             data = (new_task, new_description, list_event_id)
             cursor.execute(query % data)
             connection.commit()
@@ -402,5 +442,5 @@ api.add_resource(ListDetails, "/list_details/<int:list_id>")
 api.add_resource(ListEvents, "/list_events/<int:list_id>")
 api.add_resource(ListEventDetails, "/list_event_details/<int:list_event_id>")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

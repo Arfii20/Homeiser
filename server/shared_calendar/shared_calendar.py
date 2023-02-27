@@ -10,16 +10,11 @@ import re
 
 # def get_db():
 connection = connect(
-    host="localhost",
-    user="root",
-    password="Arfi12000@",
-    database="x5db",
-    buffered=True
+    host="localhost", user="root", password="Arfi12000@", database="x5db", buffered=True
 )
 
 
 class SharedCalendar(Resource):
-
     def get(self, household_id):
         """
         Sends the event details in a specific time range to the website
@@ -46,10 +41,20 @@ class SharedCalendar(Resource):
         if nothing in the time range, the lists will be empty
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("starting_time", type=str, required=True,
-                            location="args", help="Starting time is required")
-        parser.add_argument("ending_time", type=str, required=True,
-                            location="args", help="End time is required")
+        parser.add_argument(
+            "starting_time",
+            type=str,
+            required=True,
+            location="args",
+            help="Starting time is required",
+        )
+        parser.add_argument(
+            "ending_time",
+            type=str,
+            required=True,
+            location="args",
+            help="End time is required",
+        )
         args = parser.parse_args()
 
         starting_time = args.get("starting_time")
@@ -69,7 +74,8 @@ class SharedCalendar(Resource):
                 "ending_time": [],
                 "additional_notes": [],
                 "location_of_event": [],
-                "added_by": []}
+                "added_by": [],
+            }
 
             cursor1 = connection.cursor()
             query1 = "SELECT * FROM user_doing_calendar_event"
@@ -80,9 +86,11 @@ class SharedCalendar(Resource):
                 objects["event_id"].append(x[0])
                 objects["title_of_event"].append(x[1])
                 objects["starting_time"].append(
-                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}")
+                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}"
+                )
                 objects["ending_time"].append(
-                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}")
+                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}"
+                )
                 objects["additional_notes"].append(x[4])
                 objects["location_of_event"].append(x[5])
 
@@ -98,7 +106,7 @@ class SharedCalendar(Resource):
     def post(self, household_id):
         """
         Creates an event in the database by adding a new row
-        
+
         The request should be like:
         requests.post(BASE + "shared_calendar/1", {"title_of_event": "event_a",
                                                   "starting_time": "yyyy-mm-dd HH:MM:SS",
@@ -107,7 +115,7 @@ class SharedCalendar(Resource):
                                                   "location_of_event": "Address_a",
                                                   "tagged_users": "4 5 3",
                                                   "added_by": 7})
-        
+
         *** All should be strings apart from "added_by"
 
         :returns:
@@ -116,20 +124,55 @@ class SharedCalendar(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=int, location="form")
-        parser.add_argument("title_of_event", type=str, required=True, location="form",
-                            help="Title of the event is required")
-        parser.add_argument("starting_time", type=str, required=True,
-                            location="form", help="Starting time is required")
-        parser.add_argument("ending_time", type=str, required=True,
-                            location="form", help="End time is required")
-        parser.add_argument("additional_notes", type=str, required=True,
-                            location="form", help="Details is required")
-        parser.add_argument("location_of_event", type=str, required=True,
-                            location="form", help="Location is required")
-        parser.add_argument("tagged_users", type=str, required=True,
-                            location="form", help="tagged users are required")
-        parser.add_argument("added_by", type=int, required=True,
-                            location="form", help="User ID is required")
+        parser.add_argument(
+            "title_of_event",
+            type=str,
+            required=True,
+            location="form",
+            help="Title of the event is required",
+        )
+        parser.add_argument(
+            "starting_time",
+            type=str,
+            required=True,
+            location="form",
+            help="Starting time is required",
+        )
+        parser.add_argument(
+            "ending_time",
+            type=str,
+            required=True,
+            location="form",
+            help="End time is required",
+        )
+        parser.add_argument(
+            "additional_notes",
+            type=str,
+            required=True,
+            location="form",
+            help="Details is required",
+        )
+        parser.add_argument(
+            "location_of_event",
+            type=str,
+            required=True,
+            location="form",
+            help="Location is required",
+        )
+        parser.add_argument(
+            "tagged_users",
+            type=str,
+            required=True,
+            location="form",
+            help="tagged users are required",
+        )
+        parser.add_argument(
+            "added_by",
+            type=int,
+            required=True,
+            location="form",
+            help="User ID is required",
+        )
 
         args = parser.parse_args()
         event_id = args.get("id")
@@ -153,8 +196,15 @@ class SharedCalendar(Resource):
                             INSERT INTO calendar_event (id, title, start_time, end_time, notes, location, household_id)
                             VALUES(%s, '%s', '%s', '%s', '%s', '%s', %s);
                     """
-                data = (event_id, title_of_event, starting_time, ending_time,
-                        additional_notes, location_of_event, household_id)
+                data = (
+                    event_id,
+                    title_of_event,
+                    starting_time,
+                    ending_time,
+                    additional_notes,
+                    location_of_event,
+                    household_id,
+                )
                 cursor.execute(query % data)
                 connection.commit()
 
@@ -177,13 +227,22 @@ class SharedCalendar(Resource):
                         INSERT INTO calendar_event (title, start_time, end_time, notes, location, household_id)
                         VALUES('%s', '%s', '%s', '%s', '%s', %s);
                 """
-            data = (title_of_event, starting_time, ending_time, additional_notes, location_of_event, household_id)
+            data = (
+                title_of_event,
+                starting_time,
+                ending_time,
+                additional_notes,
+                location_of_event,
+                household_id,
+            )
             cursor.execute(query % data)
             connection.commit()
 
             cursor1 = connection.cursor()
-            query_for_id = "SELECT AUTO_INCREMENT FROM information_schema.tables " \
-                           "WHERE table_name = 'calendar_event' AND table_schema = DATABASE( )"
+            query_for_id = (
+                "SELECT AUTO_INCREMENT FROM information_schema.tables "
+                "WHERE table_name = 'calendar_event' AND table_schema = DATABASE( )"
+            )
             cursor1.execute(query_for_id)
             events_id = cursor1.fetchone()[0] - 1
             connection.commit()
@@ -202,7 +261,6 @@ class SharedCalendar(Resource):
 
 
 class CalendarEvent(Resource):
-
     def get(self, calendar_event_id):
         """
         Sends one event details when clicked on an event using the calendar_event_id
@@ -246,20 +304,25 @@ class CalendarEvent(Resource):
                 "location_of_event": [],
                 "household_id": [],
                 "tagged_users": [],
-                "added_by": []}
+                "added_by": [],
+            }
             for x in fetched_result:
                 objects["event_id"].append(x[0])
                 objects["title_of_event"].append(x[1])
                 objects["starting_time"].append(
-                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}")
+                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}"
+                )
                 objects["ending_time"].append(
-                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}")
+                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}"
+                )
                 objects["additional_notes"].append(x[4])
                 objects["location_of_event"].append(x[5])
                 objects["household_id"].append(x[6])
 
             cursor1 = connection.cursor()
-            query1 = "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
+            query1 = (
+                "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
+            )
             cursor1.execute(query1 % calendar_event_id)
             for i in cursor1.fetchall():
                 if objects["event_id"][0] == i[1]:
@@ -293,20 +356,55 @@ class CalendarEvent(Resource):
         Error otherwise
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("title_of_event", type=str, required=True, location="form",
-                            help="Title of the event is required")
-        parser.add_argument("starting_time", type=str, required=True,
-                            location="form", help="Starting time is required")
-        parser.add_argument("ending_time", type=str, required=True,
-                            location="form", help="End time is required")
-        parser.add_argument("additional_notes", type=str, required=True,
-                            location="form", help="Details is required")
-        parser.add_argument("location_of_event", type=str, required=True,
-                            location="form", help="Location is required")
-        parser.add_argument("tagged_users", type=str, required=True,
-                            location="form", help="Tagged Users are required")
-        parser.add_argument("added_by", type=int, required=True,
-                            location="form", help="Added by User is required")
+        parser.add_argument(
+            "title_of_event",
+            type=str,
+            required=True,
+            location="form",
+            help="Title of the event is required",
+        )
+        parser.add_argument(
+            "starting_time",
+            type=str,
+            required=True,
+            location="form",
+            help="Starting time is required",
+        )
+        parser.add_argument(
+            "ending_time",
+            type=str,
+            required=True,
+            location="form",
+            help="End time is required",
+        )
+        parser.add_argument(
+            "additional_notes",
+            type=str,
+            required=True,
+            location="form",
+            help="Details is required",
+        )
+        parser.add_argument(
+            "location_of_event",
+            type=str,
+            required=True,
+            location="form",
+            help="Location is required",
+        )
+        parser.add_argument(
+            "tagged_users",
+            type=str,
+            required=True,
+            location="form",
+            help="Tagged Users are required",
+        )
+        parser.add_argument(
+            "added_by",
+            type=int,
+            required=True,
+            location="form",
+            help="Added by User is required",
+        )
         args = parser.parse_args()
         title_of_event = args.get("title_of_event")
         starting_time = args.get("starting_time")
@@ -327,7 +425,9 @@ class CalendarEvent(Resource):
         if cursor1.fetchone():
             # Deleting from user doing calendar event
             cursor2 = connection.cursor()
-            query_delete = "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
+            query_delete = (
+                "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
+            )
             cursor2.execute(query_delete % calendar_event_id)
             connection.commit()
 
@@ -345,14 +445,23 @@ class CalendarEvent(Resource):
 
             # Finally update the calendar event table
             cursor = connection.cursor()
-            query = "UPDATE calendar_event " \
-                    "SET title = '%s', " \
-                    "    start_time = '%s', " \
-                    "    end_time = '%s', " \
-                    "    notes = '%s', " \
-                    "    location = '%s'" \
-                    "WHERE id = %s;"
-            data = (title_of_event, starting_time, ending_time, additional_notes, location_of_event, calendar_event_id)
+            query = (
+                "UPDATE calendar_event "
+                "SET title = '%s', "
+                "    start_time = '%s', "
+                "    end_time = '%s', "
+                "    notes = '%s', "
+                "    location = '%s'"
+                "WHERE id = %s;"
+            )
+            data = (
+                title_of_event,
+                starting_time,
+                ending_time,
+                additional_notes,
+                location_of_event,
+                calendar_event_id,
+            )
             cursor.execute(query % data)
             connection.commit()
 
@@ -372,12 +481,16 @@ class CalendarEvent(Resource):
         Otherwise, error.
         """
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM calendar_event WHERE id = %s;" % calendar_event_id)
+        cursor.execute(
+            "SELECT * FROM calendar_event WHERE id = %s;" % calendar_event_id
+        )
         present = cursor.fetchone()
 
         if present:
             cursor2 = connection.cursor()
-            query1 = "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
+            query1 = (
+                "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
+            )
             cursor2.execute(query1 % calendar_event_id)
             connection.commit()
 
@@ -385,9 +498,9 @@ class CalendarEvent(Resource):
             cursor1 = connection.cursor()
             cursor1.execute(query % calendar_event_id)
             connection.commit()
-            return {'message': 'Calendar Event Deleted'}, 200
+            return {"message": "Calendar Event Deleted"}, 200
         else:
-            abort(404, message='Calendar Event Doesnt Exist')
+            abort(404, message="Calendar Event Doesnt Exist")
 
 
 class UserColour(Resource):
@@ -413,10 +526,7 @@ class UserColour(Resource):
         cursor.execute(query % household_id)
 
         if cursor.fetchall():
-            objects = {
-                "id": [],
-                "color": []
-            }
+            objects = {"id": [], "color": []}
             for x in cursor.fetchall():
                 objects["id"].append(x[0])
                 objects["color"].append(x[1])
@@ -430,5 +540,5 @@ api.add_resource(SharedCalendar, "/shared_calendar/<int:household_id>")
 api.add_resource(CalendarEvent, "/calendar_event/<int:calendar_event_id>")
 api.add_resource(UserColour, "/user_color/<int:household_id>")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
