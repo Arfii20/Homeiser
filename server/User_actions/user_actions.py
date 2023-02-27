@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_restful import Resource, Api, reqparse, abort
 from mysql.connector import connect
-from server.host import *
+#from server.host import *
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, LoginManager
@@ -18,7 +18,8 @@ connection = connect(
     user="root",
     password="Computer123!",
     database="x5db",
-    buffered=True
+    buffered=True,
+    auth_plugin='mysql_native_password'
 )
 
 login_manager = LoginManager()
@@ -32,11 +33,11 @@ class RegisterUser(Resource):
         """
         Creates a new user in the database by inserting a new row in user table
 
-        Request if of the form: requests.post(BASE + "regitser_user/1", {"firstname": "FirstName", "surname":
+        Request if of the form: requests.post(BASE + "register_user/1", {"firstname": "FirstName", "surname":
         "Surname", "password":"password", "email":r'[^@]+@[^@]+\.[^@]+'", "date_of_birth": yyyy-mm-dd, "color":1}
 
         :returns:
-        If successfuly,
+        If successfully,
         {'message': 'User Created'}
         """
         parser = reqparse.RequestParser()
@@ -57,13 +58,12 @@ class RegisterUser(Resource):
         surname = args.get("surname")
         date_of_birth = args.get("date_of_birth")
         color = args.get("color")
-        household_id = None
         email = args.get("email")
 
         # check if passwords are equal
         if args.get("password1") == args.get("password2"):
             password = args.get("password1")
-            password = generate_password_hash(password, method='sha256')    # generate password hash to be stored in database for security reasons
+            password = generate_password_hash(password, method='CRC32')    # generate password hash to be stored in database for security reasons
         else:
             abort(406, Error="Passwords do not match")
 
@@ -76,22 +76,22 @@ class RegisterUser(Resource):
         user_account = None
         if user_id:  # try and get user_id from database to see if it exists
             cursor2 = connection.cursor()
-            cursor2.execute("SELECT * FROM user WHERE id = '%s';" % user_id)
+            cursor2.execute("SELECT * FROM user WHERE id = %s;" % user_id)
             user_account = cursor2.fetchone()
 
         if email_account:
-            abort(406, Error="Account already exists !")  # email already in use
+            abort(409, Error="Account already exists !")  # email already in use
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):  # email of the wrong format
-            abort(406, Error="Invalid email address entered!")
+            abort(409, Error="Invalid email address entered!")
         elif user_account:
-            abort(406, Error="ID must be unique")  # user_id already exists
+            abort(409, Error="ID must be unique")  # user_id already exists
         else:
-            insert_user = "INSERT INTO user(id,first_name, surname, password, email, date_of_birth, household_id, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
-            data = (user_id, first_name, surname, password, email, date_of_birth, household_id, color)
+            insert_user = "INSERT INTO user(id,first_name, surname, password, email, date_of_birth, color) VALUES (%s, '%s', '%s', '%s', '%s', %s, %s);"
+            data = (user_id, first_name, surname, password, email, date_of_birth, color)
             cursor = connection.cursor()
             cursor.execute(insert_user % data)
             connection.commit()
-            return {"message": "List Created"}, 201
+            return {"message": "User created successfully"}, 200
 
 class LoginUser(Resource):
     """ Login into user account using specific user id
@@ -113,12 +113,12 @@ class LoginUser(Resource):
             account = cursor1.fetchone()
             if account:
                 if check_password_hash(account.password, password_entered):
-                    return {"message": "Logged in successfully"}, 201
-                    login_user(account, remember = True)
+                    login_user(account, remember=True)
+                    return {"message": "Logged in successfully"}, 200
                 else:
-                    abort(406, Error="Incorrect password entered")
+                    abort(409, Error="Incorrect password entered")
             else:
-                abort(406, Error="Email does not exist")
+                abort(409, Error="Email does not exist")
 
 class Logout(Resource):
     def logout(self):
@@ -146,7 +146,7 @@ class UserDetails(Resource):
 
         cursor = connection.cursor()
 
-        query = "SELECT * FROM user WHERE id = %s AND password = %s;"
+        query = "SELECT * FROM user WHERE id = %s AND password = '%s';"
         data = (user_id, password)
         cursor.execute(query % data)
         fetched_id = cursor.fetchall()
@@ -173,7 +173,7 @@ class UserDetails(Resource):
                 objects["household_id"].append(i[6])
                 objects["color"].append(i[7])
 
-            return objects, 202
+            return objects, 200
         else:
             abort(404, error="No user found")
 
@@ -189,7 +189,7 @@ class RegisterHouse(Resource):
         requests,post(BASE + "register_house/1", {"firstname": "FirstName", "surname": "Surname", "password":"password", "email":r'[^@]+@[^@]+\.[^@]+'", "date_of_birth": yyyy-mm-dd, "color":1}
 
         :returns:
-        If successfuly created,
+        If successfully created,
         {'message': 'Household Created'}
         """
 
@@ -218,39 +218,39 @@ class RegisterHouse(Resource):
         # check if passwords are equal
         if args.get("password1") == args.get("password2"):
             password = args.get("password1")
-            password = generate_password_hash(password, method='sha256')    # generate password hash to be stored in database for security reasons
+            password = generate_password_hash(password, method='CRC32')    # generate password hash to be stored in database for security reasons
         else:
             abort(406, Error="Passwords do not match")
 
         postcode_account = None
         if postcode_id:  # try and get email from database to see if it exists
             cursor1 = connection.cursor()
-            cursor1.execute("SELECT * FROM postcode WHERE id = '%s';" % postcode_id)
+            cursor1.execute("SELECT * FROM postcode WHERE id = %s;" % postcode_id)
             postcode_account = cursor1.fetchone()
 
         house_account = None
         if house_id:  # try and get user_id from database to see if it exists
             cursor2 = connection.cursor()
-            cursor2.execute("SELECT * FROM household WHERE id = '%s';" % house_id)
+            cursor2.execute("SELECT * FROM household WHERE id = %s;" % house_id)
             house_account = cursor2.fetchone()
 
         if postcode_account:
-            abort(406, Error="Postcode already exists !")  # postcode already in use
+            abort(409, Error="Postcode already exists !")  # postcode already in use
         elif house_account:
-            abort(406, Error="House ID must be unique")  # house_id already exists
+            abort(409, Error="House ID must be unique")  # house_id already exists
         else:
-            insert_house = "INSERT INTO household(id,name,password, max_residents, postcode_id) VALUES (%s, %s, %s, %s, %s);"
+            insert_house = "INSERT INTO household(id,name,password, max_residents, postcode_id) VALUES (%s, '%s', '%s', %s, %s);"
             house_data = (house_id, name, password, max_residents, postcode_id)
             cursor = connection.cursor()
             cursor.execute(insert_house % house_data)
             connection.commit()
 
-            insert_postcode = "INSERT INTO postcode(id, code, road_name) VALUES (%s, %s, $s);"
+            insert_postcode = "INSERT INTO postcode(id, code, road_name) VALUES (%s, '%s', '%s');"
             postcode_data = (postcode_id, postcode, road_name)
             cursor3 = connection.cursor()
             cursor3.execute(insert_postcode % postcode_data)
             cursor3.commit()
-            return {"message": "House Created"}, 201
+            return {"message": "House created successfully"}, 200
 
 
 class LoginHouse(Resource):
@@ -271,15 +271,15 @@ class LoginHouse(Resource):
             house_account = cursor1.fetchone()
             if house_account:
                 if check_password_hash(house_account.password, password_entered):
-                    return {"message": "Logged in successfully"}, 201
                     login_user(house_account, remember=True)
+                    return {"message": "Logged in successfully"}, 200
                 else:
                     abort(406, Error="Incorrect password entered")
             else:
                 abort(406, Error="House name does not exist")
 
 
-api.add_resource(RegisterUser, "/register_user")
+api.add_resource(RegisterUser, "/register_user/")
 api.add_resource(LoginUser, "/login_user<int:user_id><string:password>")
 api.add_resource(RegisterHouse, "/register_house")
 api.add_resource(LoginHouse, "/login_house<int:house_id><string:password>")
