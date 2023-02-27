@@ -1,10 +1,10 @@
 from flask import Flask, redirect, url_for
 from flask_restful import Resource, Api, reqparse, abort
 from mysql.connector import connect
-#from server.host import *
+from server.host import *
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, LoginManager
+#from flask_login import login_user, logout_user, LoginManager
 
 # create an instance of Flask
 app = Flask(__name__)
@@ -18,13 +18,8 @@ connection = connect(
     user="root",
     password="Computer123!",
     database="x5db",
-    buffered=True,
-    auth_plugin='mysql_native_password'
 )
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
 
 class RegisterUser(Resource):
     """Create a new user """
@@ -63,7 +58,7 @@ class RegisterUser(Resource):
         # check if passwords are equal
         if args.get("password1") == args.get("password2"):
             password = args.get("password1")
-            password = generate_password_hash(password, method='CRC32')    # generate password hash to be stored in database for security reasons
+            password = generate_password_hash(password, method='SHA256')    # generate password hash to be stored in database for security reasons
         else:
             abort(406, Error="Passwords do not match")
 
@@ -113,7 +108,7 @@ class LoginUser(Resource):
             account = cursor1.fetchone()
             if account:
                 if check_password_hash(account.password, password_entered):
-                    login_user(account, remember=True)
+                    #login_user(account, remember=True)
                     return {"message": "Logged in successfully"}, 200
                 else:
                     abort(409, Error="Incorrect password entered")
@@ -122,7 +117,7 @@ class LoginUser(Resource):
 
 class Logout(Resource):
     def logout(self):
-        logout_user()
+        #logout_user()
         return {"message": "user successfully logged out"}
 
 class UserDetails(Resource):
@@ -218,7 +213,7 @@ class RegisterHouse(Resource):
         # check if passwords are equal
         if args.get("password1") == args.get("password2"):
             password = args.get("password1")
-            password = generate_password_hash(password, method='CRC32')    # generate password hash to be stored in database for security reasons
+            password = generate_password_hash(password, method='SHA256')    # generate password hash to be stored in database for security reasons
         else:
             abort(406, Error="Passwords do not match")
 
@@ -271,7 +266,7 @@ class LoginHouse(Resource):
             house_account = cursor1.fetchone()
             if house_account:
                 if check_password_hash(house_account.password, password_entered):
-                    login_user(house_account, remember=True)
+                    #login_user(house_account, remember=True)
                     return {"message": "Logged in successfully"}, 200
                 else:
                     abort(406, Error="Incorrect password entered")
