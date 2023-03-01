@@ -1,10 +1,13 @@
 """
 The shared calendar methods are defined here
 """
+import json
 
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
+from .calendar_objects import CalendarEventBuild
 import re
+
 
 class SharedCalendar(Resource):
     def get(self, household_id):
@@ -26,6 +29,7 @@ class SharedCalendar(Resource):
         'location_of_event': ['This address', 'That address', 'those addresses']              # list of strings
         'added_by': [7, 7, 7]                                                                 # list of ints
         }
+        ['{"event_id": 640, "title_of_event": "event a", "starting_time": "2023-2-1 11:0:0", "ending_time": "2023-2-1 12:0:0", "additional_notes": "description here", "location_of_event": "location of event", "household_id": 620, "tagged_users": [630, 632, 633], "added_by": 630}'}
 
         *** For the times, have to use split() method of JS as it return 1 digit if the first digit is 0
         e.g. '2023-2-19 0:0:0' instead of '2023-02-19 00:00:00'
@@ -59,39 +63,24 @@ class SharedCalendar(Resource):
         cursor.execute(query % data)
         fetched_result = cursor.fetchall()
 
+        all_events = []
         if fetched_result:
-            objects = {
-                "event_id": [],
-                "title_of_event": [],
-                "starting_time": [],
-                "ending_time": [],
-                "additional_notes": [],
-                "location_of_event": [],
-                "added_by": [],
-            }
-
             query1 = "SELECT * FROM user_doing_calendar_event"
             cursor.execute(query1)
             result = cursor.fetchall()
-
             for x in fetched_result:
-                objects["event_id"].append(x[0])
-                objects["title_of_event"].append(x[1])
-                objects["starting_time"].append(
-                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}"
-                )
-                objects["ending_time"].append(
-                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}"
-                )
-                objects["additional_notes"].append(x[4])
-                objects["location_of_event"].append(x[5])
-
+                tagged = []
+                added_by = -1
                 for i in result:
                     if i[1] == x[0]:
-                        objects["added_by"].append(i[2])
-                        break
+                        tagged.append(i[0])
+                        if i[2] != added_by:
+                            added_by = i[2]
+                event_objects = CalendarEventBuild(x, tagged, added_by)
+                objects = event_objects.build_calendar_event()
+                all_events.append(objects)
 
-            return objects, 200
+            return all_events, 200
         else:
             abort(404, error="No event found")
 
@@ -114,6 +103,7 @@ class SharedCalendar(Resource):
         If successful,
         {'message': 'Event Added'}
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=int, location="form")
         parser.add_argument(
@@ -177,7 +167,6 @@ class SharedCalendar(Resource):
         added_by = args.get("added_by")
 
         if event_id:
-            connection, cursor = get_conn()
             query = "SELECT * FROM calendar_event WHERE id = %s;"
             cursor.execute(query % event_id)
             if cursor.fetchall():
@@ -212,7 +201,6 @@ class SharedCalendar(Resource):
 
                 return {"message": "Event Added"}, 201
         else:
-            connection, cursor = get_conn()
             query = """ 
                         INSERT INTO calendar_event (title, start_time, end_time, notes, location, household_id)
                         VALUES('%s', '%s', '%s', '%s', '%s', %s);
@@ -228,11 +216,9 @@ class SharedCalendar(Resource):
             cursor.execute(query % data)
             connection.commit()
 
-            query_for_id = """SELECT AUTO_INCREMENT FROM information_schema.tables
-                            WHERE table_name = 'calendar_event' AND table_schema = DATABASE( )"""
-
+            query_for_id = """SELECT id FROM calendar_event ORDER BY id DESC LIMIT 1"""
             cursor.execute(query_for_id)
-            events_id = cursor.fetchone()[0] - 1
+            events_id = cursor.fetchone()[0]
             connection.commit()
 
             tagged_user_ids = tagged_user_ids.split()
@@ -280,39 +266,19 @@ class CalendarEvent(Resource):
 
         fetched_result = cursor.fetchall()
         if fetched_result:
-            objects = {
-                "event_id": [],
-                "title_of_event": [],
-                "starting_time": [],
-                "ending_time": [],
-                "additional_notes": [],
-                "location_of_event": [],
-                "household_id": [],
-                "tagged_users": [],
-                "added_by": [],
-            }
-            for x in fetched_result:
-                objects["event_id"].append(x[0])
-                objects["title_of_event"].append(x[1])
-                objects["starting_time"].append(
-                    f"{x[2].year}-{x[2].month}-{x[2].day} {x[2].hour}:{x[2].minute}:{x[2].second}"
-                )
-                objects["ending_time"].append(
-                    f"{x[3].year}-{x[3].month}-{x[3].day} {x[3].hour}:{x[3].minute}:{x[3].second}"
-                )
-                objects["additional_notes"].append(x[4])
-                objects["location_of_event"].append(x[5])
-                objects["household_id"].append(x[6])
-
             query1 = (
                 "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
             )
             cursor.execute(query1 % calendar_event_id)
+            tagged = []
+            added_by = -1
             for i in cursor.fetchall():
-                if objects["event_id"][0] == i[1]:
-                    objects["tagged_users"].append(i[0])
-                    if i[2] not in objects["added_by"]:
-                        objects["added_by"].append(i[2])
+                tagged.append(i[0])
+                if i[2] != added_by:
+                    added_by = i[2]
+            print(fetched_result)
+            event_objects = CalendarEventBuild(fetched_result[0], tagged, added_by)
+            objects = event_objects.build_calendar_event()
 
             return objects, 200
         else:

@@ -24,7 +24,7 @@ CREATE TABLE household (
 
 CREATE TABLE list (
     id INT AUTO_INCREMENT,
-    name VARCHAR(64) NOT NULL UNIQUE,
+    name VARCHAR(64) NOT NULL,
     household_id INTEGER NOT NULL,
 
     PRIMARY KEY (id),
@@ -77,8 +77,7 @@ CREATE TABLE calendar_event (
 CREATE TABLE user_doing_calendar_event (
     user_id INT,
     calendar_event_id INT,
-    added_by_user TINYINT, -- true/false; update to true for user who added
-    -- TODO: decide if we want this functionality and see there is a better way to implement
+    added_by_user INT,
 
     PRIMARY KEY (user_id, calendar_event_id),
     FOREIGN KEY (user_id) REFERENCES user(id),

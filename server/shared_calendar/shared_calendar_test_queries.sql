@@ -22,10 +22,10 @@ VALUES (610, 1234, 'road a'),
         (611, 2345, 'road b'),
         (612, 3456, 'road c');
 
-INSERT INTO household (id, name, password, max_residents, road_name, postcode_id)
-VALUES (620, 'ab', 'abc123', 6, 'road a', 610),
-        (621, 'bc', 'cde123', 5, 'road b', 612),
-        (622, 'dc', 'def123', 6, 'road c', 611);
+INSERT INTO household (id, name, password, max_residents, postcode_id)
+VALUES (620, 'ab', 'abc123', 6, 610),
+        (621, 'bc', 'cde123', 5, 612),
+        (622, 'dc', 'def123', 6, 611);
 
 INSERT INTO user (id, first_name, surname, password, email, date_of_birth, household_id, color)
 VALUES (630, 'a', 'b', 'a1234', 'abcdefghijk1@gmail.com', '2001-01-01', 620, 112233),

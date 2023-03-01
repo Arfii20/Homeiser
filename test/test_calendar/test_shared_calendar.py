@@ -1,5 +1,6 @@
 import requests
 import unittest
+from json import loads
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -29,8 +30,10 @@ class TestSharedCalendar(unittest.TestCase):
                 "ending_time": "2024-02-19 00:00:00",
             },
         )
+        print(response.json())
+        response = loads(response.json()[0])
         valid = True
-        for i in response.json().keys():
+        for i in response.keys():
             if i not in [
                 "event_id",
                 "title_of_event",
@@ -38,6 +41,8 @@ class TestSharedCalendar(unittest.TestCase):
                 "ending_time",
                 "additional_notes",
                 "location_of_event",
+                "household_id",
+                "tagged_users",
                 "added_by",
             ]:
                 valid = False
@@ -112,8 +117,9 @@ class TestCalendarEvent(unittest.TestCase):
         Tests if the received json keys are valid
         """
         response = requests.get(BASE + "calendar_event/640")
+        response = loads(response.json())
         valid = True
-        for i in response.json().keys():
+        for i in response.keys():
             if i not in [
                 "tagged_users",
                 "event_id",
@@ -246,7 +252,7 @@ class TestCalendarEvent(unittest.TestCase):
         requests.post(
             BASE + "shared_calendar/620",
             {
-                "id": 1666,
+                "id": 676,
                 "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
@@ -256,8 +262,8 @@ class TestCalendarEvent(unittest.TestCase):
                 "added_by": 630,
             }
         )
-        requests.delete(BASE + "calendar_event/1666")
-        response = requests.delete(BASE + "calendar_event/1666")
+        requests.delete(BASE + "calendar_event/676")
+        response = requests.delete(BASE + "calendar_event/676")
         self.assertEqual(response.json(), {"message": "Calendar Event Doesnt Exist"})
 
 
