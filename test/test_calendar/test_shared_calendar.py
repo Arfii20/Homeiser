@@ -10,11 +10,11 @@ class TestSharedCalendar(unittest.TestCase):
         Tests if received something
         """
         response = requests.get(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
                 "starting_time": "2027-02-19 00:00:00",
-                "ending_time": "2028-02-19 00:00:00",
-            },
+                "ending_time": "2029-02-19 00:00:00",
+            }
         )
         self.assertEqual(response.json(), {"error": "No event found"})
 
@@ -23,14 +23,13 @@ class TestSharedCalendar(unittest.TestCase):
         Tests if received object have the required keys
         """
         response = requests.get(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
                 "starting_time": "2022-02-19 00:00:00",
                 "ending_time": "2024-02-19 00:00:00",
             },
         )
         valid = True
-        print(response.json().keys())
         for i in response.json().keys():
             if i not in [
                 "event_id",
@@ -50,16 +49,16 @@ class TestSharedCalendar(unittest.TestCase):
         Does not send any particular event id
         """
         response = requests.post(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
-                "title_of_event": "Partyyy",
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "4 5 3",
-                "added_by": 7,
-            },
+                "additional_notes": "description here",
+                "location_of_event": "location of event",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(response.json(), {"message": "Event Added"})
 
@@ -68,19 +67,19 @@ class TestSharedCalendar(unittest.TestCase):
         Tests if event is added to the table
         Sends particular event id
         """
-        requests.delete(BASE + "calendar_event/1")
+        requests.delete(BASE + "calendar_event/649")
         response = requests.post(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
-                "id": 1,
-                "title_of_event": "Party",
+                "id": 649,
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "1 3 4",
-                "added_by": 1,
-            },
+                "additional_notes": "description here",
+                "location_of_event": "location of event",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(response.json(), {"message": "Event Added"})
 
@@ -90,17 +89,17 @@ class TestSharedCalendar(unittest.TestCase):
         Sends particular event id but receives error as that id already exists
         """
         response = requests.post(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
-                "id": 1,
-                "title_of_event": "Party",
+                "id": 649,
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "1 3 4",
-                "added_by": 1,
-            },
+                "additional_notes": "description here",
+                "location_of_event": "location of event",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(
             response.json(), {"message": "Cannot use this ID. Already exists"}
@@ -112,7 +111,7 @@ class TestCalendarEvent(unittest.TestCase):
         """
         Tests if the received json keys are valid
         """
-        response = requests.get(BASE + "calendar_event/180")
+        response = requests.get(BASE + "calendar_event/640")
         valid = True
         for i in response.json().keys():
             if i not in [
@@ -134,21 +133,14 @@ class TestCalendarEvent(unittest.TestCase):
         """
         Tests if the received json keys are valid
         """
-        response = requests.get(BASE + "calendar_event/180")
+        response = requests.get(BASE + "calendar_event/640")
         self.assertNotEqual(response.json(), {})
 
     def test_calendar_event_get_bad(self):
         """
         Tests if received json is empty
         """
-        response = requests.get(BASE + "calendar_event/2")
-        self.assertEqual(response.json(), {"error": "Event id does not exist"})
-
-    def test_calendar_event_get_good(self):
-        """
-        Tests if received json is empty
-        """
-        response = requests.get(BASE + "calendar_event/50")
+        response = requests.get(BASE + "calendar_event/1640")
         self.assertEqual(response.json(), {"error": "Event id does not exist"})
 
     def test_calendar_event_put_good(self):
@@ -156,16 +148,16 @@ class TestCalendarEvent(unittest.TestCase):
         Tests if updating an event's details is successful
         """
         response = requests.put(
-            BASE + "calendar_event/180",
+            BASE + "calendar_event/642",
             {
-                "title_of_event": "Party",
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "3 7",
-                "added_by": 5,
-            },
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(response.json(), {"message": "Task details updated"})
 
@@ -175,16 +167,16 @@ class TestCalendarEvent(unittest.TestCase):
         """
 
         response = requests.put(
-            BASE + "calendar_event/40",
+            BASE + "calendar_event/1640",
             {
-                "title_of_event": "Party",
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "6 4",
-                "added_by": 4,
-            },
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(response.json(), {"message": "Event does not exist"})
 
@@ -196,14 +188,14 @@ class TestCalendarEvent(unittest.TestCase):
         response = requests.put(
             BASE + "calendar_event/2",
             {
-                "title_of_event": "Party",
+                "title_of_event": "event a",
                 "starting_time": "202-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "5 4",
-                "added_by": 2,
-            },
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
         self.assertEqual(response.json(), {"message": "Format of date is wrong"})
 
@@ -215,13 +207,13 @@ class TestCalendarEvent(unittest.TestCase):
         response = requests.put(
             BASE + "calendar_event/2",
             {
-                "title_of_event": "Party",
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
-                "ending_time": "202-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "6 4",
-                "added_by": 4,
+                "ending_time": "203-02-19 20:00:00",
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
             },
         )
         self.assertEqual(response.json(), {"message": "Format of date is wrong"})
@@ -231,19 +223,19 @@ class TestCalendarEvent(unittest.TestCase):
         Tests if an event is deleted successfully
         """
         requests.post(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
-                "id": 1,
-                "title_of_event": "Party",
+                "id": 649,
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "6 4",
-                "added_by": 4,
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
             },
         )
-        response = requests.delete(BASE + "calendar_event/1")
+        response = requests.delete(BASE + "calendar_event/649")
         self.assertEqual(response.json(), {"message": "Calendar Event Deleted"})
 
     def test_calendar_event_delete_bad(self):
@@ -252,26 +244,26 @@ class TestCalendarEvent(unittest.TestCase):
         Reason: Event does not exist
         """
         requests.post(
-            BASE + "shared_calendar/1",
+            BASE + "shared_calendar/620",
             {
-                "id": 1,
-                "title_of_event": "Party",
+                "id": 1666,
+                "title_of_event": "event a",
                 "starting_time": "2023-02-19 00:00:00",
                 "ending_time": "2023-02-19 20:00:00",
-                "additional_notes": "Bring your own booze",
-                "location_of_event": "22 Manila House",
-                "tagged_users": "6 4",
-                "added_by": 4,
-            },
+                "additional_notes": "description changed here",
+                "location_of_event": "location of event changed",
+                "tagged_users": "630 631 632",
+                "added_by": 630,
+            }
         )
-        requests.delete(BASE + "calendar_event/1")
-        response = requests.delete(BASE + "calendar_event/1")
+        requests.delete(BASE + "calendar_event/1666")
+        response = requests.delete(BASE + "calendar_event/1666")
         self.assertEqual(response.json(), {"message": "Calendar Event Doesnt Exist"})
 
 
 class UserColour(unittest.TestCase):
     def test_user_color_get(self):
-        response = requests.get(BASE + "user_color/1")
+        response = requests.get(BASE + "user_color/620")
 
         valid = True
         for i in response.json().keys():
@@ -281,7 +273,7 @@ class UserColour(unittest.TestCase):
         self.assertTrue(valid)
 
     def test_user_color_get_bad(self):
-        response = requests.get(BASE + "user_color/20")
+        response = requests.get(BASE + "user_color/1620")
 
         self.assertEqual(response.json(), {"error": "Users or household id not found"})
 

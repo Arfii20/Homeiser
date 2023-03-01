@@ -2,17 +2,9 @@
 The shared calendar methods are defined here
 """
 
-from flask_restful import Resource, Api, reqparse, abort
-from mysql.connector import connect
-from server.host import *
+from flask_restful import Resource, reqparse, abort
+from server.db_handler import get_conn, get_db
 import re
-
-
-# def get_db():
-connection = connect(
-    host="localhost", user="root", password="Arfi12000@", database="x5db", buffered=True
-)
-
 
 class SharedCalendar(Resource):
     def get(self, household_id):
@@ -40,6 +32,8 @@ class SharedCalendar(Resource):
 
         if nothing in the time range, the lists will be empty
         """
+        cursor = get_db()
+
         parser = reqparse.RequestParser()
         parser.add_argument(
             "starting_time",
@@ -60,7 +54,6 @@ class SharedCalendar(Resource):
         starting_time = args.get("starting_time")
         ending_time = args.get("ending_time")
 
-        cursor = connection.cursor()
         query = "SELECT * FROM calendar_event WHERE household_id = %s AND start_time >= '%s' AND end_time <= '%s';"
         data = (household_id, starting_time, ending_time)
         cursor.execute(query % data)
@@ -77,10 +70,9 @@ class SharedCalendar(Resource):
                 "added_by": [],
             }
 
-            cursor1 = connection.cursor()
             query1 = "SELECT * FROM user_doing_calendar_event"
-            cursor1.execute(query1)
-            result = cursor1.fetchall()
+            cursor.execute(query1)
+            result = cursor.fetchall()
 
             for x in fetched_result:
                 objects["event_id"].append(x[0])
@@ -185,13 +177,12 @@ class SharedCalendar(Resource):
         added_by = args.get("added_by")
 
         if event_id:
-            cursor1 = connection.cursor()
+            connection, cursor = get_conn()
             query = "SELECT * FROM calendar_event WHERE id = %s;"
-            cursor1.execute(query % event_id)
-            if cursor1.fetchone():
+            cursor.execute(query % event_id)
+            if cursor.fetchall():
                 abort(409, message="Cannot use this ID. Already exists")
             else:
-                cursor = connection.cursor()
                 query = """ 
                             INSERT INTO calendar_event (id, title, start_time, end_time, notes, location, household_id)
                             VALUES(%s, '%s', '%s', '%s', '%s', '%s', %s);
@@ -210,19 +201,18 @@ class SharedCalendar(Resource):
 
                 # For adding to the other table
                 tagged_user_ids = tagged_user_ids.split()
-                cursor2 = connection.cursor()
                 query_doing = """
                                 INSERT INTO user_doing_calendar_event (user_id, calendar_event_id, added_by_user)
                                 VALUES (%s, %s, %s)
                               """
                 for i in tagged_user_ids:
                     data = (int(i), event_id, added_by)
-                    cursor2.execute(query_doing % data)
+                    cursor.execute(query_doing % data)
                     connection.commit()
 
                 return {"message": "Event Added"}, 201
         else:
-            cursor = connection.cursor()
+            connection, cursor = get_conn()
             query = """ 
                         INSERT INTO calendar_event (title, start_time, end_time, notes, location, household_id)
                         VALUES('%s', '%s', '%s', '%s', '%s', %s);
@@ -238,24 +228,21 @@ class SharedCalendar(Resource):
             cursor.execute(query % data)
             connection.commit()
 
-            cursor1 = connection.cursor()
-            query_for_id = (
-                "SELECT AUTO_INCREMENT FROM information_schema.tables "
-                "WHERE table_name = 'calendar_event' AND table_schema = DATABASE( )"
-            )
-            cursor1.execute(query_for_id)
-            events_id = cursor1.fetchone()[0] - 1
+            query_for_id = """SELECT AUTO_INCREMENT FROM information_schema.tables
+                            WHERE table_name = 'calendar_event' AND table_schema = DATABASE( )"""
+
+            cursor.execute(query_for_id)
+            events_id = cursor.fetchone()[0] - 1
             connection.commit()
 
             tagged_user_ids = tagged_user_ids.split()
-            cursor2 = connection.cursor()
             query_doing = """
                             INSERT INTO user_doing_calendar_event (user_id, calendar_event_id, added_by_user)
                             VALUES (%s, %s, %s)
                           """
             for i in tagged_user_ids:
                 data = (int(i), events_id, added_by)
-                cursor2.execute(query_doing % data)
+                cursor.execute(query_doing % data)
                 connection.commit()
             return {"message": "Event Added"}, 201
 
@@ -287,12 +274,10 @@ class CalendarEvent(Resource):
 
         if the list does not exist, it will show an error message
         """
-        cursor = connection.cursor()
+        cursor = get_db()
         query = "SELECT * FROM calendar_event WHERE id = %s;"
         cursor.execute(query % calendar_event_id)
-        cursor1 = connection.cursor()
-        query1 = "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
-        cursor1.execute(query1 % calendar_event_id)
+
         fetched_result = cursor.fetchall()
         if fetched_result:
             objects = {
@@ -319,12 +304,11 @@ class CalendarEvent(Resource):
                 objects["location_of_event"].append(x[5])
                 objects["household_id"].append(x[6])
 
-            cursor1 = connection.cursor()
             query1 = (
                 "SELECT * FROM user_doing_calendar_event WHERE calendar_event_id = %s"
             )
-            cursor1.execute(query1 % calendar_event_id)
-            for i in cursor1.fetchall():
+            cursor.execute(query1 % calendar_event_id)
+            for i in cursor.fetchall():
                 if objects["event_id"][0] == i[1]:
                     objects["tagged_users"].append(i[0])
                     if i[2] not in objects["added_by"]:
@@ -355,6 +339,7 @@ class CalendarEvent(Resource):
 
         Error otherwise
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument(
             "title_of_event",
@@ -418,33 +403,29 @@ class CalendarEvent(Resource):
         if not re.search(regex, starting_time) or not re.search(regex, ending_time):
             abort(406, message="Format of date is wrong")
 
-        cursor1 = connection.cursor()
         query = "SELECT * FROM calendar_event WHERE id = %s;"
-        cursor1.execute(query % calendar_event_id)
+        cursor.execute(query % calendar_event_id)
 
-        if cursor1.fetchone():
+        if cursor.fetchall():
             # Deleting from user doing calendar event
-            cursor2 = connection.cursor()
             query_delete = (
                 "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
             )
-            cursor2.execute(query_delete % calendar_event_id)
+            cursor.execute(query_delete % calendar_event_id)
             connection.commit()
 
             # Add the new details to the same table
             tagged_user_ids = tagged_user_ids.split()
-            cursor3 = connection.cursor()
             query_doing = """
                             INSERT INTO user_doing_calendar_event (user_id, calendar_event_id, added_by_user)
                             VALUES (%s, %s, %s)
                           """
             for i in tagged_user_ids:
                 data = (int(i), calendar_event_id, added_by)
-                cursor3.execute(query_doing % data)
+                cursor.execute(query_doing % data)
                 connection.commit()
 
             # Finally update the calendar event table
-            cursor = connection.cursor()
             query = (
                 "UPDATE calendar_event "
                 "SET title = '%s', "
@@ -480,23 +461,21 @@ class CalendarEvent(Resource):
 
         Otherwise, error.
         """
-        cursor = connection.cursor()
+        connection, cursor = get_conn()
         cursor.execute(
             "SELECT * FROM calendar_event WHERE id = %s;" % calendar_event_id
         )
-        present = cursor.fetchone()
+        present = cursor.fetchall()
 
         if present:
-            cursor2 = connection.cursor()
             query1 = (
                 "DELETE FROM user_doing_calendar_event WHERE calendar_event_id = %d"
             )
-            cursor2.execute(query1 % calendar_event_id)
+            cursor.execute(query1 % calendar_event_id)
             connection.commit()
 
             query = "DELETE FROM calendar_event WHERE id = %s;"
-            cursor1 = connection.cursor()
-            cursor1.execute(query % calendar_event_id)
+            cursor.execute(query % calendar_event_id)
             connection.commit()
             return {"message": "Calendar Event Deleted"}, 200
         else:
@@ -521,7 +500,7 @@ class UserColour(Resource):
         'color': [346523, 435465]
         }
         """
-        cursor = connection.cursor()
+        cursor = get_db()
         query = "SELECT id, color FROM user WHERE household_id = %s;"
         cursor.execute(query % household_id)
 
@@ -534,11 +513,3 @@ class UserColour(Resource):
             return objects, 200
         else:
             abort(404, error="Users or household id not found")
-
-
-api.add_resource(SharedCalendar, "/shared_calendar/<int:household_id>")
-api.add_resource(CalendarEvent, "/calendar_event/<int:calendar_event_id>")
-api.add_resource(UserColour, "/user_color/<int:household_id>")
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -11,7 +11,7 @@ def get_conn() -> tuple[mysql.connector.MySQLConnection, cursor.MySQLCursor]:
     """Get a connection and a cursor to the database; overwrites connection in flask globals"""
 
     conn = g._database = mysql.connector.connect(
-        host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+        host="localhost", user="root", password="I_love_stew!12", database="x5db"
     )
     db = conn.cursor()
 
@@ -25,7 +25,7 @@ def get_db() -> cursor.MySQLCursor:
     # connect to db (ask for password). Ask for password again if wrong. Set mysql to use x5db
     if db is None:
         conn = g._database = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
         )
         db = conn.cursor()
 

@@ -15,7 +15,6 @@ app.run()
 with app.app_context():
     conn = db_handler.get_db()
 
-
 @app.teardown_appcontext
 def close_connection(exception):
     """Closes db if sudden error"""

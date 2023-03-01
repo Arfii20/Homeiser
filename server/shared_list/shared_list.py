@@ -2,14 +2,8 @@
 The shared list methods are defined here
 """
 
-from flask_restful import Resource, Api, reqparse, abort
-from mysql.connector import connect
-from server.host import *
-
-connection = connect(
-    host="localhost", user="root", password="Arfi12000@", database="x5db", buffered=True
-)
-
+from flask_restful import Resource, reqparse, abort
+from server.db_handler import get_conn, get_db
 
 class SharedList(Resource):
     def get(self, household_id):
@@ -28,7 +22,8 @@ class SharedList(Resource):
 
         if nothing is found, returns error message
         """
-        cursor = connection.cursor()
+        cursor = get_db()
+        print()
 
         cursor.execute("SELECT * FROM list WHERE household_id = %s;" % household_id)
         fetched_result = cursor.fetchall()
@@ -61,6 +56,7 @@ class SharedList(Resource):
         {'error': '"List Name Must Be Unique'}
         """
         # Getting values from the website
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument(
             "name",
@@ -74,16 +70,13 @@ class SharedList(Resource):
         name = args.get("name")
         list_id = args.get("id")
 
-        cursor1 = connection.cursor()
-        cursor1.execute("SELECT * FROM list WHERE name = '%s';" % name)
-        list_back = cursor1.fetchone()
+        cursor.execute("SELECT * FROM list WHERE name = '%s';" % name)
+        list_back = cursor.fetchone()
 
         id_back = None
-
         if list_id:
-            cursor2 = connection.cursor()
-            cursor2.execute("SELECT * FROM list WHERE id = %s;" % list_id)
-            id_back = cursor2.fetchone()
+            cursor.execute("SELECT * FROM list WHERE id = %s;" % list_id)
+            id_back = cursor.fetchone()
 
         if list_back:
             abort(409, error="List Name Must Be Unique")
@@ -94,7 +87,6 @@ class SharedList(Resource):
             query = "INSERT INTO list (id, name, household_id) VALUES (%s, '%s', %s);"
             data = (list_id, name, household_id)
 
-            cursor = connection.cursor()
             cursor.execute(query % data)
             connection.commit()
             return {"message": "List Created"}, 201
@@ -102,7 +94,6 @@ class SharedList(Resource):
             query = "INSERT INTO list (name, household_id) VALUES ('%s', %s);"
             data = (name, household_id)
 
-            cursor = connection.cursor()
             cursor.execute(query % data)
             connection.commit()
             return {"message": "List Created"}, 201
@@ -120,19 +111,17 @@ class ListDetails(Resource):
         if successful,
         {'message': 'List Deleted'}
         """
-        cursor = connection.cursor()
+        connection, cursor = get_conn()
         cursor.execute("SELECT * FROM list WHERE id = %s;" % list_id)
         present = cursor.fetchone()
 
         if present is not None:
             query1 = "DELETE FROM list WHERE list.id = %s;"
-            cursor1 = connection.cursor()
-            cursor1.execute(query1 % list_id)
+            cursor.execute(query1 % list_id)
             connection.commit()
 
             query2 = "DELETE FROM list_event WHERE list_event.list = %s;"
-            cursor2 = connection.cursor()
-            cursor2.execute(query2 % list_id)
+            cursor.execute(query2 % list_id)
             connection.commit()
             return {"message": "List Deleted"}, 200
         else:
@@ -149,6 +138,7 @@ class ListDetails(Resource):
         if successful,
         {'message': 'Update Successful'}
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument(
             "new_name",
@@ -160,15 +150,13 @@ class ListDetails(Resource):
         args = parser.parse_args()
         new_name = args.get("new_name")
 
-        cursor1 = connection.cursor()
         query1 = "SELECT * FROM list WHERE id = %s"
-        cursor1.execute(query1 % list_id)
-        id_present = cursor1.fetchone()
+        cursor.execute(query1 % list_id)
+        id_present = cursor.fetchone()
 
-        cursor2 = connection.cursor()
         query2 = "SELECT * FROM list WHERE name = '%s' AND id != %s"
-        cursor2.execute(query2 % (new_name, list_id))
-        name_present = cursor2.fetchall()
+        cursor.execute(query2 % (new_name, list_id))
+        name_present = cursor.fetchall()
 
         if not id_present:
             if name_present:
@@ -181,8 +169,6 @@ class ListDetails(Resource):
             else:
                 query = "UPDATE list SET name = '%s' WHERE id = %s;"
                 data = (new_name, list_id)
-
-                cursor = connection.cursor()
                 cursor.execute(query % data)
                 connection.commit()
 
@@ -206,6 +192,7 @@ class ListEvents(Resource):
 
         Will return error if the id does not exist
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument("event_id", type=int, location="form")
         parser.add_argument(
@@ -236,15 +223,13 @@ class ListEvents(Resource):
         added_user_id = args.get("added_user_id")
 
         if event_id:
-            cursor1 = connection.cursor()
             query1 = "SELECT * FROM list_event WHERE id = %s;"
-            cursor1.execute(query1 % event_id)
-            present = cursor1.fetchone()
+            cursor.execute(query1 % event_id)
+            present = cursor.fetchone()
 
             if present:
                 abort(409, error="Event id already exists")
             else:
-                cursor = connection.cursor()
                 query = (
                     "INSERT INTO list_event (id, task, description, added_by_user, list) "
                     "VALUES (%s, '%s', '%s', %s, %s);"
@@ -289,7 +274,7 @@ class ListEvents(Resource):
 
         If nothing is found, it will return error message
         """
-        cursor = connection.cursor()
+        cursor = get_db()
         query = "SELECT * FROM list_event WHERE list = %s;"
         cursor.execute(query % list_id)
         fetched_result = cursor.fetchall()
@@ -329,14 +314,13 @@ class ListEventDetails(Resource):
         if successful,
         {'message': 'List Event Deleted'}
         """
-        cursor = connection.cursor()
+        connection, cursor = get_conn()
         cursor.execute("SELECT * FROM list_event WHERE id = %s;" % list_event_id)
         present = cursor.fetchone()
 
         if present:
             query = "DELETE FROM list_event WHERE id = %s;"
-            cursor1 = connection.cursor()
-            cursor1.execute(query % list_event_id)
+            cursor.execute(query % list_event_id)
             connection.commit()
             return {"message": "List Event Deleted"}, 200
         else:
@@ -357,12 +341,12 @@ class ListEventDetails(Resource):
         if opposite,
         {"message": "Un-Checked"}
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument("user_id", type=int, location="form")
         args = parser.parse_args()
         user_id = args.get("user_id")
 
-        cursor = connection.cursor()
         cursor.execute(
             "SELECT * FROM list_event WHERE id = %s AND checked_off_by_user is NULL;"
             % list_event_id
@@ -401,6 +385,7 @@ class ListEventDetails(Resource):
 
         Will return error if the id does not exist
         """
+        connection, cursor = get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument(
             "new_task",
@@ -420,7 +405,6 @@ class ListEventDetails(Resource):
         new_task = args.get("new_task")
         new_description = args.get("new_description")
 
-        cursor = connection.cursor()
         cursor.execute("SELECT * FROM list_event WHERE id = %s;" % list_event_id)
         present = cursor.fetchone()
 
@@ -435,12 +419,3 @@ class ListEventDetails(Resource):
             return {"message": "Task details updated"}, 200
         else:
             abort(404, error="Event not found")
-
-
-api.add_resource(SharedList, "/shared_list/<int:household_id>")
-api.add_resource(ListDetails, "/list_details/<int:list_id>")
-api.add_resource(ListEvents, "/list_events/<int:list_id>")
-api.add_resource(ListEventDetails, "/list_event_details/<int:list_event_id>")
-
-if __name__ == "__main__":
-    app.run(debug=True)
