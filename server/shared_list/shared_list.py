@@ -4,6 +4,8 @@ The shared list methods are defined here
 
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
+from .Calendar_and_List_Builds import ListEventBuild, ListBuild
+from json import dumps
 
 class SharedList(Resource):
     def get(self, household_id):
@@ -29,15 +31,14 @@ class SharedList(Resource):
         fetched_result = cursor.fetchall()
 
         if fetched_result:
-            objects = {
-                "id": [],
-                "name": [],
-            }
+            all_lists = []
             for x in fetched_result:
-                objects["id"].append(x[0])
-                objects["name"].append(x[1])
-            print(objects)
-            return objects, 200
+                list_build = ListBuild(x)
+                all_lists.append(list_build.build_list())
+
+            all_lists = dumps(all_lists)
+
+            return all_lists, 200
         else:
             abort(404, error="No lists found")
 
@@ -279,25 +280,15 @@ class ListEvents(Resource):
         cursor.execute(query % list_id)
         fetched_result = cursor.fetchall()
 
+        list_events = []
         if fetched_result:
-            objects = {
-                "id": [],
-                "task_name": [],
-                "description_of_task": [],
-                "added_user_id": [],
-                "checked_off_by_user": [],
-                "list": [],
-            }
-
             for x in fetched_result:
-                objects["id"].append(x[0])
-                objects["task_name"].append(x[1])
-                objects["description_of_task"].append(x[2])
-                objects["added_user_id"].append(x[3])
-                objects["checked_off_by_user"].append(x[4])
-                objects["list"].append(x[5])
+                event_objects = ListEventBuild(x)
+                list_events.append(event_objects.build_list_event())
 
-            return objects, 200
+            list_events = dumps(list_events)
+
+            return list_events, 200
         else:
             abort(404, error="List id not found")
 

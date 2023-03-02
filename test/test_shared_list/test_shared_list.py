@@ -1,6 +1,7 @@
 import unittest
 import requests
 from random import randint
+from json import loads
 
 # from shared_list import SharedList, ListDetails
 
@@ -10,9 +11,11 @@ BASE = "http://127.0.0.1:5000/"
 class TestSharedList(unittest.TestCase):
     def test_shared_list_get(self):
         response = requests.get(BASE + "shared_list/620")
+        response = loads(response.json())
+        response = loads(response[0])
         valid = True
-        for i in response.json().keys():
-            if i not in ["id", "name"]:
+        for i in response.keys():
+            if i not in ["id", "name", "household_id"]:
                 valid = False
         self.assertTrue(valid)
 
@@ -99,7 +102,7 @@ class TestListDetails(unittest.TestCase):
         """
         Should fail as name already exists and id does not exist
         """
-        response = requests.patch(BASE + "list_details/659", {"new_name": "list c"})
+        response = requests.patch(BASE + "list_details/659", {"new_name": "list a"})
         self.assertEqual(
             response.json(), {"error": "List name already exists and id does not exist"}
         )
@@ -108,7 +111,7 @@ class TestListDetails(unittest.TestCase):
         """
         Should fail as name already exists but id is valid
         """
-        response = requests.patch(BASE + "list_details/652", {"new_name": "list d"})
+        response = requests.patch(BASE + "list_details/655", {"new_name": "list d"})
         self.assertEqual(response.json(), {"error": "List name already exists"})
 
     def test_list_patch_bad3(self):
@@ -154,8 +157,11 @@ class TestListEvents(unittest.TestCase):
         Gets all the events of a particular list
         """
         response = requests.get(BASE + "list_events/650")
+        response = loads(response.json())
+        response = loads(response[0])
+
         valid = True
-        for i in response.json().keys():
+        for i in response.keys():
             if i not in [
                 "id",
                 "task_name",

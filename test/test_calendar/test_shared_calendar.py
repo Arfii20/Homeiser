@@ -31,7 +31,8 @@ class TestSharedCalendar(unittest.TestCase):
             },
         )
         print(response.json())
-        response = loads(response.json()[0])
+        response = loads(response.json())
+        response = loads(response[0])
         valid = True
         for i in response.keys():
             if i not in [

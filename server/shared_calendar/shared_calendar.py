@@ -1,11 +1,11 @@
 """
 The shared calendar methods are defined here
 """
-import json
 
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
-from .calendar_objects import CalendarEventBuild
+from server.shared_list.Calendar_and_List_Builds import CalendarEventBuild
+from json import dumps
 import re
 
 
@@ -77,8 +77,9 @@ class SharedCalendar(Resource):
                         if i[2] != added_by:
                             added_by = i[2]
                 event_objects = CalendarEventBuild(x, tagged, added_by)
-                objects = event_objects.build_calendar_event()
-                all_events.append(objects)
+                all_events.append(event_objects.build_calendar_event())
+
+            all_events = dumps(all_events)
 
             return all_events, 200
         else:

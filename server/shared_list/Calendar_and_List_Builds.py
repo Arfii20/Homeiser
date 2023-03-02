@@ -30,3 +30,43 @@ class CalendarEventBuild:
             }
         )
         return dump
+
+
+class ListBuild:
+    def __init__(self, list_in: tuple):
+        self.id = list_in[0]
+        self.name = list_in[1]
+        self.household_id = list_in[2]
+
+    def build_list(self):
+        dump = json.dumps(
+            {
+                "id": self.id,
+                "name": self.name,
+                "household_id": self.household_id
+            }
+        )
+        return dump
+
+
+class ListEventBuild:
+    def __init__(self, event: tuple):
+        self.event_id = event[0]
+        self.task_name = event[1]
+        self.description = event[2]
+        self.added_user = event[3]
+        self.checked_off_by_user = event[4]
+        self.list_id = event[5]
+
+    def build_list_event(self):
+        dump = json.dumps(
+            {
+                "id": self.event_id,
+                "task_name": self.task_name,
+                "description_of_task": self.description,
+                "added_user_id": self.added_user,
+                "checked_off_by_user": self.checked_off_by_user,
+                "list": self.list_id
+            }
+        )
+        return dump
