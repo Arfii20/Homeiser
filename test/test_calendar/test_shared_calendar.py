@@ -30,7 +30,6 @@ class TestSharedCalendar(unittest.TestCase):
                 "ending_time": "2024-02-19 00:00:00",
             },
         )
-        print(response.json())
         response = loads(response.json())
         response = loads(response[0])
         valid = True

@@ -21,15 +21,21 @@ class SharedCalendar(Resource):
         :returns
         The server will return following json object:
         {
-        'event_id': [3, 5, 7],                                                                # list of ints
-        'title_of_event': ['event_a', 'event_b', 'event_c'],                                  # list of strings
-        'starting_time': ['2023-2-19 0:0:0', '2023-2-19 0:0:0', '2023-2-19 0:0:0'],           # list of strings
-        'ending_time': ['2023-2-19 20:0:0', '2023-2-19 20:0:0', '2023-2-19 20:0:0'],          # list of strings
-        'additional_notes': ['Do this', 'Do that', 'do this now'],                            # list of strings
-        'location_of_event': ['This address', 'That address', 'those addresses']              # list of strings
-        'added_by': [7, 7, 7]                                                                 # list of ints
+        [{event1}, {event2}, {event3}]
         }
-        ['{"event_id": 640, "title_of_event": "event a", "starting_time": "2023-2-1 11:0:0", "ending_time": "2023-2-1 12:0:0", "additional_notes": "description here", "location_of_event": "location of event", "household_id": 620, "tagged_users": [630, 632, 633], "added_by": 630}'}
+
+        Each event has the following structure
+        {
+        'event_id': 3,
+        'title_of_event': 'event_a',
+        'starting_time': '2023-2-19 0:0:0'
+        'ending_time': '2023-2-19 20:0:0',
+        'additional_notes': 'Do this',
+        'location_of_event': 'This address',
+        'household_id': 1,
+        'tagged_users': [1, 2, 4],
+        'added_by': 7
+        }
 
         *** For the times, have to use split() method of JS as it return 1 digit if the first digit is 0
         e.g. '2023-2-19 0:0:0' instead of '2023-02-19 00:00:00'
@@ -245,15 +251,15 @@ class CalendarEvent(Resource):
         :returns
         The server will return following json object:
         {
-        'event_id': [3],                                                                # list of int
-        'title_of_event': ['event_a'],                                                  # list of string
-        'starting_time': ["yyyy-mm-dd HH:MM:SS"],                                       # list of string
-        'ending_time': ["yyyy-mm-dd HH:MM:SS"],                                         # list of string
-        'additional_notes': ['Do this'],                                                # list of string
-        'location_of_event': ['This address']                                           # list of string
-        'household_id': [1],                                                            # list of int
-        'tagged_users': [2, 3, 5],                                                      # list of ints
-        'added_by': [7]                                                                 # list of int
+        'event_id': 3,
+        'title_of_event': 'event_a',
+        'starting_time': '2023-2-19 0:0:0'
+        'ending_time': '2023-2-19 20:0:0',
+        'additional_notes': 'Do this',
+        'location_of_event': 'This address',
+        'household_id': 1,
+        'tagged_users': [1, 2, 4],
+        'added_by': 7
         }
 
         *** For the times, have to use split() method of JS as it return 1 digit if the first digit is 0

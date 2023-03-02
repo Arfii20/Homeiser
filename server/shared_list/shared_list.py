@@ -18,8 +18,14 @@ class SharedList(Resource):
         :returns
         The server will return following json object:
         {
-        'id': [1, 52, 53],                                                              # list of ints
-        'name': ['list1', 'list2', 'list3'],                                            # list of strings
+        [{list1}, {list2}, {list3}],                                            # list of json objects
+        }
+
+        List has the following structure:
+        {
+        id': 1,
+        'name': 'list1',
+        'household_id': 1
         }
 
         if nothing is found, returns error message
@@ -54,7 +60,7 @@ class SharedList(Resource):
         {'message': 'List Created'}
 
         if same name exists, returns
-        {'error': '"List Name Must Be Unique'}
+        {'error': "List Name Must Be Unique"}
         """
         # Getting values from the website
         connection, cursor = get_conn()
@@ -264,6 +270,11 @@ class ListEvents(Resource):
 
         :returns
         The server will return following json object:
+        {
+            [{list_event1}, {list_event2}, {list_event3}]
+        }
+
+        The list event has the following structure:
         {
         'id': [3, 5, 6],
         'task_name': ['name1', 'name2', 'name3'],
