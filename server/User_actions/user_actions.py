@@ -1,24 +1,20 @@
-from flask import Flask, redirect, url_for
-from flask_restful import Resource, Api, reqparse, abort
-from mysql.connector import connect
-from server.host import *
 import re
+
+from flask import Flask
+from flask_restful import Resource, Api, reqparse, abort
+# from flask_login import login_user, logout_user, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
-#from flask_login import login_user, logout_user, LoginManager
 
-# create an instance of Flask
-app = Flask(__name__)
+from server import db_handler as db
 
-# create an instance of Flast RESTful API
-api = Api(app)
+# # create an instance of Flask
+# app = Flask(__name__)
+
+# # create an instance of Flast RESTful API
+# api = Api(app)
 
 # configure and get db
-connection = connect(
-    host="localhost",
-    user="root",
-    password="Computer123!",
-    database="x5db",
-)
+# connection, cursor = db.get_conn()
 
 
 class RegisterUser(Resource):
@@ -35,6 +31,7 @@ class RegisterUser(Resource):
         If successfully,
         {'message': 'User Created'}
         """
+        connection, cursor = db.get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=int, location='form')
         parser.add_argument('first_name', type=str, help='First name is a required field', required=True,
@@ -64,18 +61,18 @@ class RegisterUser(Resource):
 
         email_account = None
         if email:  # try and get email from database to see if it exists
-            cursor1 = connection.cursor()
-            cursor1.execute("SELECT * FROM user WHERE email = '%s';" % email)
-            email_account = cursor1.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM user WHERE email = '%s';" % email)
+            email_account = cursor.fetchone()
 
         user_account = None
         if user_id:  # try and get user_id from database to see if it exists
-            cursor2 = connection.cursor()
-            cursor2.execute("SELECT * FROM user WHERE id = %s;" % user_id)
-            user_account = cursor2.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM user WHERE id = %s;" % user_id)
+            user_account = cursor.fetchone()
 
         if email_account:
-            abort(409, Error="Account already exists !")  # email already in use
+            abort(406, Error="Account already exists !")  # email already in use
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):  # email of the wrong format
             abort(409, Error="Invalid email address entered!")
         elif user_account:
@@ -94,6 +91,7 @@ class LoginUser(Resource):
     """
 
     def post(self):
+        connection, cursor = db.get_conn()
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, location='form', required = True, help='Email is a required field')
         parser.add_argument('password', type=str, help='Password is a required field', required=True,
@@ -103,9 +101,9 @@ class LoginUser(Resource):
         email = args.get("email")
         password_entered = args.get("password")
         if email:  # try and get email from database to see if it exists
-            cursor1 = connection.cursor()
-            cursor1.execute("SELECT email,password FROM user WHERE email = '%s';" % email)
-            account = cursor1.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT email,password FROM user WHERE email = '%s';" % email)
+            account = cursor.fetchone()
             if account:
                 if check_password_hash(account.password, password_entered):
                     #login_user(account, remember=True)
@@ -138,6 +136,7 @@ class UserDetails(Resource):
 
         If no user that has that user_id, then list will return as empty and error message saying "No user found" returned
         """
+        connection, cursor = db.get_conn()
 
         cursor = connection.cursor()
 
@@ -187,6 +186,7 @@ class RegisterHouse(Resource):
         If successfully created,
         {'message': 'Household Created'}
         """
+        connection, cursor = db.get_conn()
 
         parser = reqparse.RequestParser()
         parser.add_argument('house_id', type=int, location='form')
@@ -219,15 +219,15 @@ class RegisterHouse(Resource):
 
         postcode_account = None
         if postcode_id:  # try and get email from database to see if it exists
-            cursor1 = connection.cursor()
-            cursor1.execute("SELECT * FROM postcode WHERE id = %s;" % postcode_id)
-            postcode_account = cursor1.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM postcode WHERE id = %s;" % postcode_id)
+            postcode_account = cursor.fetchone()
 
         house_account = None
         if house_id:  # try and get user_id from database to see if it exists
-            cursor2 = connection.cursor()
-            cursor2.execute("SELECT * FROM household WHERE id = %s;" % house_id)
-            house_account = cursor2.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM household WHERE id = %s;" % house_id)
+            house_account = cursor.fetchone()
 
         if postcode_account:
             abort(409, Error="Postcode already exists !")  # postcode already in use
@@ -242,9 +242,9 @@ class RegisterHouse(Resource):
 
             insert_postcode = "INSERT INTO postcode(id, code, road_name) VALUES (%s, '%s', '%s');"
             postcode_data = (postcode_id, postcode, road_name)
-            cursor3 = connection.cursor()
-            cursor3.execute(insert_postcode % postcode_data)
-            cursor3.commit()
+            cursor = connection.cursor()
+            cursor.execute(insert_postcode % postcode_data)
+            cursor.commit()
             return {"message": "House created successfully"}, 200
 
 
@@ -252,6 +252,8 @@ class LoginHouse(Resource):
     """ login in to household"""
 
     def post(self):
+        connection, cursor = db.get_conn()
+
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, location='form', required=True, help='Name of house is a required field')
         parser.add_argument('password', type=str, help='Password is a required field', required=True,
@@ -261,9 +263,9 @@ class LoginHouse(Resource):
         name = args.get("name")
         password_entered = args.get("password")
         if name:  # try and get email from database to see if it exists
-            cursor1 = connection.cursor()
-            cursor1.execute("SELECT name,password FROM household WHERE name = '%s';" % name)
-            house_account = cursor1.fetchone()
+            cursor = connection.cursor()
+            cursor.execute("SELECT name,password FROM household WHERE name = '%s';" % name)
+            house_account = cursor.fetchone()
             if house_account:
                 if check_password_hash(house_account.password, password_entered):
                     #login_user(house_account, remember=True)
@@ -273,11 +275,3 @@ class LoginHouse(Resource):
             else:
                 abort(406, Error="House name does not exist")
 
-
-api.add_resource(RegisterUser, "/register_user/")
-api.add_resource(LoginUser, "/login_user<int:user_id><string:password>")
-api.add_resource(RegisterHouse, "/register_house")
-api.add_resource(LoginHouse, "/login_house<int:house_id><string:password>")
-
-if __name__ == "__main__":
-    app.run(debug=True)

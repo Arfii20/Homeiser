@@ -1,20 +1,21 @@
-import requests
-import unittest
 import datetime
+import unittest
+
+import requests
 
 BASE = "http://127.0.0.1:5000/"
 
 
 class TestRegisterUser(unittest.TestCase):
     def test_user_post_bad(self):
-        response = requests.post(BASE + "register_user/1",
+        response = requests.post(BASE + "register_user",
                                  {"id": 1, "first_name": "Bob", "surname": "Smith", "password": "hello123",
                                   "email": "hello@gmail.com", "date_of_birth": datetime.datetime(2001, 12, 12),
                                   "color": 1})
-        self.assertEqual(response.json(), {"Error": "Account already exists !"})
+        self.assertEqual(response.json(), {'Error': "Account already exists !"})
 
     def test_user_post_good(self):
-        response = requests.post(BASE + "register_user/1",
+        response = requests.post(BASE + "register_user",
                                  {"id": 397, "first_name": "Bob", "surname": "Smith", "password1": "hello123",
                                   "password2": "hello123", "email": "hello397@gmail.com",
                                   "date_of_birth": datetime.datetime(2001, 12, 12), "color": 1})

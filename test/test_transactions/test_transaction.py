@@ -2,7 +2,6 @@ from typing import Any
 from unittest import TestCase
 
 import mysql.connector
-
 from transactions.transaction import *
 
 

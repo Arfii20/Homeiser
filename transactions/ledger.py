@@ -4,7 +4,6 @@ import json
 from dataclasses import dataclass
 
 from mysql.connector import cursor
-
 from transactions.transaction import Transaction
 
 

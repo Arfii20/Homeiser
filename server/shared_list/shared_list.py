@@ -2,7 +2,7 @@
 The shared list methods are defined here
 """
 
-from flask_restful import Resource, Api, reqparse, abort
+from flask_restful import Resource, reqparse, abort
 from mysql.connector import connect
 from server.host import *
 

@@ -19,7 +19,7 @@ sudo mysql
 
 ```mysql
 -- set password for root
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'YOUR_PASSWORD';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'I_love_stew!12';
 ```
 
 To configure other safety settings

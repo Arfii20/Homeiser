@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 import mysql.connector
-
 from transactions.ledger import Ledger, LedgerConstructionError
 
 

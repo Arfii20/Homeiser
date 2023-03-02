@@ -2,11 +2,11 @@
 The shared calendar methods are defined here
 """
 
-from flask_restful import Resource, Api, reqparse, abort
-from mysql.connector import connect
-from server.host import *
 import re
 
+from flask_restful import Resource, reqparse, abort
+from mysql.connector import connect
+from server.host import *
 
 # def get_db():
 connection = connect(
