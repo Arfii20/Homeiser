@@ -1,6 +1,6 @@
+import mysql.connector
 from unittest import TestCase
 
-import mysql.connector
 
 from transactions.ledger import Ledger, LedgerConstructionError
 
@@ -9,7 +9,7 @@ class TestLedger(TestCase):
     def test_build_from_id(self):
         # connect to db
         conn = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
         )
         db = conn.cursor()
 
@@ -22,6 +22,6 @@ class TestLedger(TestCase):
 
     def test_json(self):
         conn = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
         )
         db = conn.cursor()
