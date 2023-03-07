@@ -2,7 +2,9 @@
 from dataclasses import dataclass
 
 
-class FlowGraphError(Exception): ...
+class FlowGraphError(Exception):
+    ...
+
 
 @dataclass
 class Vertex:
@@ -84,19 +86,31 @@ class FlowGraph:
         but residual = false then -1 will be returned
         """
 
+        # use list comprehensions to pick out capacity from edges where target == v
+
+        # results in either a list of length 0 (where no edge exists)
+        # or a list of length 1 (in which one edge exists)
+
+        # at the moment it is assumed that there is maximum one edge between any two nodes in a flow graph
+        # this is not enforced, so it is possible for a list of length >1 to exist. Throw an error (for the moment)
+        # if this happens
+
         if residual:
-            unused: list[int] = [edge.unused_capacity for edge in self.graph[u] if edge.target == v]
+            unused: list[int] = [
+                edge.unused_capacity for edge in self.graph[u] if edge.target == v
+            ]
         else:
-            unused: list[int] = [edge.unused_capacity for edge in self.graph[u]  # type: ignore
-                                 if edge.target == v and not edge.residual]
+            unused: list[int] = [  # type: ignore
+                edge.unused_capacity
+                for edge in self.graph[u]
+                if edge.target == v and not edge.residual
+            ]
 
         if len(unused) == 0:
             return -1
         elif len(unused) > 1:
-            raise FlowGraphError("Multiple edges to the same target node originating from the same src node")
+            raise FlowGraphError(
+                "Multiple edges to the same target node originating from the same src node"
+            )
         else:
             return unused[0]
-
-
-
-

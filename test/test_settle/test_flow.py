@@ -22,7 +22,7 @@ class TestFlowGraph(TestCase):
 
         self.vertices = [self.a, self.b, self.c, self.d]
 
-        self.graph = FlowGraph(vertices=self.vertices)
+        self.blank_graph = FlowGraph(vertices=self.vertices)
 
         self.test_graph = FlowGraph(vertices=self.vertices)
 
@@ -30,7 +30,6 @@ class TestFlowGraph(TestCase):
         self.test_graph.add_edge(edge=Edge(self.b, 0, 10), from_vertex=self.a)
         self.test_graph.add_edge(edge=Edge(self.c, 0, 5), from_vertex=self.b)
         self.test_graph.add_edge(edge=Edge(self.c, 0, 15), from_vertex=self.a)
-
 
     def test_add_vertex(self):
         g = FlowGraph()
@@ -47,7 +46,7 @@ class TestFlowGraph(TestCase):
         # also test that the test graph had its vertices added correctly
         with self.subTest("Check test graph"):
             # compare graph dict keys with list of vertices (ignore edges)
-            self.assertEqual([v for v in self.graph.graph.keys()], self.vertices)
+            self.assertEqual([v for v in self.blank_graph.graph.keys()], self.vertices)
 
     def test_add_edge(self):
         """Checks that adding an edge works"""
@@ -55,28 +54,66 @@ class TestFlowGraph(TestCase):
         # add edge:  A -[0/10]-> B
         edge = Edge(self.b, 0, 10)
         res_edge = Edge(self.a, 0, 0)
-        self.graph.add_edge(edge=edge, from_vertex=self.a)
+        self.blank_graph.add_edge(edge=edge, from_vertex=self.a)
 
         # check to see if the edge has been added properly
         with self.subTest("Edge added"):
-            self.assertEqual(self.graph.graph[self.a], [edge])
+            self.assertEqual(self.blank_graph.graph[self.a], [edge])
 
         # Check residual edge
         with self.subTest("Residual edge added"):
-            self.assertEqual(self.graph.graph[self.b], [res_edge])
+            self.assertEqual(self.blank_graph.graph[self.b], [res_edge])
 
     def test_unused_capacity(self):
         """Checks that edge detection works, and that we return the correct unused capacities where they do exist"""
 
-        labels = ["A -[0/10]-> B", "B -[0/0]-> A (res=True)", "B -[0/0]-> A (res=False)", "A --X--> D"]
-        cases = [(self.a, self.b), (self.b, self.a, True), (self.b, self.a, False), (self.a, self.d)]
+        labels = [
+            "A -[0/10]-> B",
+            "B -[0/0]-> A (res=True)",
+            "B -[0/0]-> A (res=False)",
+            "A --X--> D",
+        ]
+        cases = [
+            (self.a, self.b),
+            (self.b, self.a, True),
+            (self.b, self.a, False),
+            (self.a, self.d),
+        ]
         expected = [10, 0, -1, -1]
 
         for label, case, exp in zip(labels, cases, expected):
             with self.subTest(label):
                 self.assertEqual(self.test_graph.unused_capacity(*case), exp)
 
-        # test that we throw an error when we
+        # test that we throw an error when we have two-way edges, and when we have two edges from u -> t
+
+        # set up test table
+        labels = [
+            "A -[0/10]-> B, A -[0/5]-> B",
+            "B <-[0/10]-> C (b, a)",
+            "B <-[0/10]-> C (a, b)"
+        ]
+
+        cases = [
+            (self.a, self.b),
+            (self.b, self.c, True),
+            (self.c, self.b, True)
+        ]
+
+        A, B, C, D = self.vertices
+
+        # set up blank graph fit test case structure
+        self.blank_graph.add_edge(edge=Edge(B, 0, 10), from_vertex=A)
+        self.blank_graph.add_edge(edge=Edge(B, 0, 5), from_vertex=A)
+
+        self.blank_graph.add_edge(edge=Edge(C, 0, 10), from_vertex=B)
+        self.blank_graph.add_edge(edge=Edge(B, 0, 10), from_vertex=C)
+
+
+        for label, case in zip(labels, cases):
+            with self.subTest(case), self.assertRaises(FlowGraphError):
+                self.blank_graph.unused_capacity(*case)
+
 
 
     def test_remove_vertex(self):
