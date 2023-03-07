@@ -2,6 +2,8 @@
 from dataclasses import dataclass
 
 
+class FlowGraphError(Exception): ...
+
 @dataclass
 class Vertex:
     v_id: int
@@ -24,11 +26,14 @@ class Edge:
     @property
     def residual(self) -> bool:
         """(Capacity = 0) <=> edge is residual. Thus use capacity to determine if edge residual"""
-        return bool(self.capacity)
+        return not bool(self.capacity)
 
 
 class FlowGraph:
-    """Graph with edges and residual edges. Stored as an adjacency list"""
+    """Graph with edges and residual edges. Stored as an adjacency list.
+
+    ASSUMPTION: Flow graph shouldn't have a two-way edge between two nodes. e.g. a <--> b is not allowed
+    """
 
     def __init__(self, vertices: list[Vertex] = None, graph: dict[Vertex, list[Edge]] = None):  # type: ignore
         """If a list of nodes is passed in, mapping from nodes to empty lists are created.
@@ -50,18 +55,20 @@ class FlowGraph:
 
         # remove outgoing by removing
 
-    def add_edge(self, *,  edge: Edge, from_vertex: Vertex, add_residual=True):
+    def add_edge(self, *, edge: Edge, from_vertex: Vertex, add_residual=True):
         """Adds an edge to the flow graph from a given vertex. Will also add the residual edge by default"""
         self.graph[from_vertex].append(edge)
 
-        if add_residual:
+        # TODO: add protection against a two way edge
+        # TODO: add functionality s.th. when an edge is added from u->v, but there is already an edge u->v, only one
+        #  edge is present in the graph who's flow and capacity are the sums of both edges
 
+        if add_residual:
             # create the residual edge going to from_vertex from e.target
             # flow and capacity set to 0 by def. of residual edge
             res = Edge(from_vertex, 0, 0)
 
             self.graph[edge.target].append(res)
-
 
     def remove_edge(self, e: Edge):
         ...
@@ -71,4 +78,25 @@ class FlowGraph:
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
         """Returns the unused capacity of an edge between two nodes. If there is no edge between the nodes return -1.
-        Should also be used as test to see if edge exists"""
+        Should also be used as test to see if edge exists.
+
+        When residual flag is set to false only non-residual edges will be returned. e.g. if a --[-1/0]-> exists,
+        but residual = false then -1 will be returned
+        """
+
+        if residual:
+            unused: list[int] = [edge.unused_capacity for edge in self.graph[u] if edge.target == v]
+        else:
+            unused: list[int] = [edge.unused_capacity for edge in self.graph[u]  # type: ignore
+                                 if edge.target == v and not edge.residual]
+
+        if len(unused) == 0:
+            return -1
+        elif len(unused) > 1:
+            raise FlowGraphError("Multiple edges to the same target node originating from the same src node")
+        else:
+            return unused[0]
+
+
+
+
