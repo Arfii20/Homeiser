@@ -27,9 +27,9 @@ class TestFlowGraph(TestCase):
         self.test_graph = FlowGraph(vertices=self.vertices)
 
         # add edges to the graph only between a, b, c; leave d unconnected
-        self.test_graph.add_edge(edge=Edge(self.b, 0, 10), from_vertex=self.a)
-        self.test_graph.add_edge(edge=Edge(self.c, 0, 5), from_vertex=self.b)
-        self.test_graph.add_edge(edge=Edge(self.c, 0, 15), from_vertex=self.a)
+        self.test_graph.add_edge(edge=Edge(self.b, 0, 10), src=self.a)
+        self.test_graph.add_edge(edge=Edge(self.c, 0, 5), src=self.b)
+        self.test_graph.add_edge(edge=Edge(self.c, 0, 15), src=self.a)
 
     def test_add_vertex(self):
         g = FlowGraph()
@@ -54,7 +54,7 @@ class TestFlowGraph(TestCase):
         # add edge:  A -[0/10]-> B
         edge = Edge(self.b, 0, 10)
         res_edge = Edge(self.a, 0, 0)
-        self.blank_graph.add_edge(edge=edge, from_vertex=self.a)
+        self.blank_graph.add_edge(edge=edge, src=self.a)
 
         # check to see if the edge has been added properly
         with self.subTest("Edge added"):
@@ -91,30 +91,36 @@ class TestFlowGraph(TestCase):
         labels = [
             "A -[0/10]-> B, A -[0/5]-> B",
             "B <-[0/10]-> C (b, a)",
-            "B <-[0/10]-> C (a, b)"
+            "B <-[0/10]-> C (a, b)",
         ]
 
-        cases = [
-            (self.a, self.b),
-            (self.b, self.c, True),
-            (self.c, self.b, True)
-        ]
+        cases = [(self.a, self.b), (self.b, self.c, True), (self.c, self.b, True)]
 
         A, B, C, D = self.vertices
 
         # set up blank graph fit test case structure
-        self.blank_graph.add_edge(edge=Edge(B, 0, 10), from_vertex=A)
-        self.blank_graph.add_edge(edge=Edge(B, 0, 5), from_vertex=A)
+        self.blank_graph.add_edge(edge=Edge(B, 0, 10), src=A)
+        self.blank_graph.add_edge(edge=Edge(B, 0, 5), src=A)
 
-        self.blank_graph.add_edge(edge=Edge(C, 0, 10), from_vertex=B)
-        self.blank_graph.add_edge(edge=Edge(B, 0, 10), from_vertex=C)
-
+        self.blank_graph.add_edge(edge=Edge(C, 0, 10), src=B)
+        self.blank_graph.add_edge(edge=Edge(B, 0, 10), src=C)
 
         for label, case in zip(labels, cases):
             with self.subTest(case), self.assertRaises(FlowGraphError):
                 self.blank_graph.unused_capacity(*case)
 
-
-
     def test_remove_vertex(self):
         ...
+
+    def test_remove_edge(self):
+        A, B, C, D = self.vertices
+        self.blank_graph.add_edge(edge=Edge(B, 0, 10), src=A)
+
+        with self.subTest("Edge exists"):
+            self.assertEqual(10, self.blank_graph.unused_capacity(A, B))
+
+        self.blank_graph.remove_edge(src=A, dest=B)
+
+        with self.subTest("Edge exists"):
+            self.assertEqual(-1, self.blank_graph.unused_capacity(A, B))
+

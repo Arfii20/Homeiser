@@ -6,6 +6,9 @@ class FlowGraphError(Exception):
     ...
 
 
+class EdgeNotFoundError(Exception): ...
+
+
 @dataclass
 class Vertex:
     v_id: int
@@ -29,6 +32,9 @@ class Edge:
     def residual(self) -> bool:
         """(Capacity = 0) <=> edge is residual. Thus use capacity to determine if edge residual"""
         return not bool(self.capacity)
+
+    def __hash__(self):
+        raise NotImplementedError
 
 
 class FlowGraph:
@@ -57,9 +63,9 @@ class FlowGraph:
 
         # remove outgoing by removing
 
-    def add_edge(self, *, edge: Edge, from_vertex: Vertex, add_residual=True):
+    def add_edge(self, *, edge: Edge, src: Vertex, add_residual=True):
         """Adds an edge to the flow graph from a given vertex. Will also add the residual edge by default"""
-        self.graph[from_vertex].append(edge)
+        self.graph[src].append(edge)
 
         # TODO: add protection against a two way edge
         # TODO: add functionality s.th. when an edge is added from u->v, but there is already an edge u->v, only one
@@ -68,12 +74,24 @@ class FlowGraph:
         if add_residual:
             # create the residual edge going to from_vertex from e.target
             # flow and capacity set to 0 by def. of residual edge
-            res = Edge(from_vertex, 0, 0)
+            res = Edge(src, 0, 0)
 
             self.graph[edge.target].append(res)
 
-    def remove_edge(self, e: Edge):
-        ...
+    def remove_edge(self, *, src: Vertex, dest: Vertex):
+        """Removes an edge given it exists. Can only remove edges that exist. Residual edges removed automatically"""
+        # make sure edge exists
+        if self.unused_capacity(src, dest) == -1:
+            raise FlowGraphError("Tried to delete edge which doesn't exist - maybe you are trying to delete a "
+                                 "residual edge?")
+
+        # delete edge
+        self.graph[src].remove(self._get_edge(src, dest))
+
+        # delete residual edge
+        self.graph[dest].remove(self._get_edge(dest, src, True))
+
+
 
     def neighbours(self, v: Vertex, residual: bool = False) -> list[Edge]:
         ...
@@ -86,7 +104,19 @@ class FlowGraph:
         but residual = false then -1 will be returned
         """
 
-        # use list comprehensions to pick out capacity from edges where target == v
+        try:
+            unused_cap = self._get_edge(u, v, residual).unused_capacity
+        except EdgeNotFoundError:
+            unused_cap = -1
+
+        return unused_cap
+
+
+    def _get_edge(self, u: Vertex, v: Vertex, residual = False) -> Edge:
+        """Returns the edge object given a src and a target node. Will return residual edges by default.
+        Will raise an EdgeNotFound error if there is no edge between u and v"""
+
+        # use list comprehensions to pick out edges where target == v
 
         # results in either a list of length 0 (where no edge exists)
         # or a list of length 1 (in which one edge exists)
@@ -96,21 +126,21 @@ class FlowGraph:
         # if this happens
 
         if residual:
-            unused: list[int] = [
-                edge.unused_capacity for edge in self.graph[u] if edge.target == v
+            uv_edge: list[Edge] = [
+                edge for edge in self.graph[u] if edge.target == v
             ]
         else:
-            unused: list[int] = [  # type: ignore
-                edge.unused_capacity
+            uv_edge: list[Edge] = [  # type: ignore
+                edge
                 for edge in self.graph[u]
                 if edge.target == v and not edge.residual
             ]
 
-        if len(unused) == 0:
-            return -1
-        elif len(unused) > 1:
+        if len(uv_edge) == 0:
+            raise EdgeNotFoundError
+        elif len(uv_edge) > 1:
             raise FlowGraphError(
                 "Multiple edges to the same target node originating from the same src node"
             )
         else:
-            return unused[0]
+            return uv_edge[0]
