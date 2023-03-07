@@ -1,21 +1,15 @@
 from unittest import TestCase
-
-
-class TestVertex(TestCase): ...
-
-
-class TestEdge(TestCase): ...
-
+from settle.flow import *
 
 class TestFlowGraph(TestCase):
-    def test_add_vertex(self): ...
+    def test_add_vertex(self):
+        g = FlowGraph()
 
-    def test_remove_vertex(self): ...
+        with self.subTest("Blank creation"):
+            self.assertEqual(g.graph, {})
 
-    def test_add_edge(self): ...
+        vertex = Vertex(0, 'Alice')
+        g.add_vertex(vertex)
 
-    def test_remove_edge(self): ...
-
-    def test_neighbours(self): ...
-
-    def test_edge_between(self): ...
+        with self.subTest("Check vertex added as expected"):
+            self.assertEqual(g.graph, {vertex: []})

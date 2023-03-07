@@ -2,11 +2,18 @@
 from dataclasses import dataclass
 
 
-class Vertex: ...
+@dataclass
+class Vertex:
+    v_id: int
+    label: str
+
+    def __hash__(self):
+        return hash(f"{self.v_id}{self.label}")
 
 
 @dataclass
-class Edge: ...
+class Edge:
+    ...
 
 
 class FlowGraph:
@@ -31,14 +38,25 @@ class FlowGraph:
         for e in edges:
             self.add_edge(e)
 
-    def add_vertex(self, v: Vertex): ...
+    def add_vertex(self, v: Vertex):
+        """Adds a vertex with no edges to the graph"""
+        self.graph[v] = []
 
-    def remove_vertex(self, v: Vertex): ...
+    def remove_vertex(self, v: Vertex):
+        """Removes a vertex, and all of its incoming / outgoing edges from a graph"""
 
-    def add_edge(self, e: Edge): ...
 
-    def remove_edge(self, e: Edge): ...
+        # remove outgoing by removing
 
-    def neighbours(self, v: Vertex) -> list[Edge]: ...
+    def add_edge(self, e: Edge):
+        ...
 
-    def edge_between(self, u: Vertex, v: Vertex, residual: bool = False) -> bool: ...
+    def remove_edge(self, e: Edge):
+        ...
+
+    def neighbours(self, v: Vertex, residual: bool = False) -> list[Edge]:
+        ...
+
+    def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
+        """Returns the unused capacity of an edge between two nodes. If there is no edge between the nodes return -1.
+        Should also be used as test to see if edge exists"""
