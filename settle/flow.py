@@ -6,7 +6,8 @@ class FlowGraphError(Exception):
     ...
 
 
-class EdgeNotFoundError(Exception): ...
+class EdgeNotFoundError(Exception):
+    ...
 
 
 @dataclass
@@ -61,7 +62,23 @@ class FlowGraph:
     def remove_vertex(self, v: Vertex):
         """Removes a vertex, and all of its incoming / outgoing edges from a graph"""
 
-        # remove outgoing by removing
+        # delete all edges which have v listed as the target
+        for src in self.graph.keys():
+            # skip the vertex we are deleting as we cannot have edges from v -> v
+            if src == v:
+                continue
+
+            # if an edge exists between vertex and v, delete it
+            if self.unused_capacity(src, v) != -1:
+                self.remove_edge(src=src, target=v)
+
+        # delete all outgoing edges via the remove_edge method s.th. residual edges are removed
+        edges_from_v = self.graph[v].copy()
+        for edge in edges_from_v:
+            self.remove_edge(src=v, target=edge.target)
+
+        # pop node from graph
+        self.graph.pop(v)
 
     def add_edge(self, *, edge: Edge, src: Vertex, add_residual=True):
         """Adds an edge to the flow graph from a given vertex. Will also add the residual edge by default"""
@@ -78,20 +95,20 @@ class FlowGraph:
 
             self.graph[edge.target].append(res)
 
-    def remove_edge(self, *, src: Vertex, dest: Vertex):
+    def remove_edge(self, *, src: Vertex, target: Vertex):
         """Removes an edge given it exists. Can only remove edges that exist. Residual edges removed automatically"""
         # make sure edge exists
-        if self.unused_capacity(src, dest) == -1:
-            raise FlowGraphError("Tried to delete edge which doesn't exist - maybe you are trying to delete a "
-                                 "residual edge?")
+        if self.unused_capacity(src, target) == -1:
+            raise FlowGraphError(
+                "Tried to delete edge which doesn't exist - maybe you are trying to delete a "
+                "residual edge?"
+            )
 
         # delete edge
-        self.graph[src].remove(self._get_edge(src, dest))
+        self.graph[src].remove(self._get_edge(src, target))
 
         # delete residual edge
-        self.graph[dest].remove(self._get_edge(dest, src, True))
-
-
+        self.graph[target].remove(self._get_edge(target, src, True))
 
     def neighbours(self, v: Vertex, residual: bool = False) -> list[Edge]:
         ...
@@ -111,8 +128,7 @@ class FlowGraph:
 
         return unused_cap
 
-
-    def _get_edge(self, u: Vertex, v: Vertex, residual = False) -> Edge:
+    def _get_edge(self, u: Vertex, v: Vertex, residual=False) -> Edge:
         """Returns the edge object given a src and a target node. Will return residual edges by default.
         Will raise an EdgeNotFound error if there is no edge between u and v"""
 
@@ -126,14 +142,10 @@ class FlowGraph:
         # if this happens
 
         if residual:
-            uv_edge: list[Edge] = [
-                edge for edge in self.graph[u] if edge.target == v
-            ]
+            uv_edge: list[Edge] = [edge for edge in self.graph[u] if edge.target == v]
         else:
             uv_edge: list[Edge] = [  # type: ignore
-                edge
-                for edge in self.graph[u]
-                if edge.target == v and not edge.residual
+                edge for edge in self.graph[u] if edge.target == v and not edge.residual
             ]
 
         if len(uv_edge) == 0:

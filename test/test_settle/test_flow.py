@@ -110,7 +110,13 @@ class TestFlowGraph(TestCase):
                 self.blank_graph.unused_capacity(*case)
 
     def test_remove_vertex(self):
-        ...
+
+        self.test_graph.remove_vertex(self.b)
+        self.test_graph.remove_vertex(self.d)
+
+        self.assertEqual({self.a: [Edge(self.c, 0, 15)],
+                          self.c: [Edge(self.a, 0, 0)]},
+                         self.test_graph.graph)
 
     def test_remove_edge(self):
         A, B, C, D = self.vertices
@@ -119,8 +125,8 @@ class TestFlowGraph(TestCase):
         with self.subTest("Edge exists"):
             self.assertEqual(10, self.blank_graph.unused_capacity(A, B))
 
-        self.blank_graph.remove_edge(src=A, dest=B)
+        self.blank_graph.remove_edge(src=A, target=B)
 
         with self.subTest("Edge exists"):
             self.assertEqual(-1, self.blank_graph.unused_capacity(A, B))
-
+            self.assertEqual(-1, self.blank_graph.unused_capacity(B, A, residual=True))
