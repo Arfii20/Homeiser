@@ -110,8 +110,13 @@ class FlowGraph:
         # delete residual edge
         self.graph[target].remove(self._get_edge(target, src, True))
 
-    def neighbours(self, v: Vertex, residual: bool = False) -> list[Edge]:
-        ...
+    def neighbours(self, current: Vertex) -> list[Vertex]:
+        """Returns the neighbours of the current node
+        All nodes which can be accessed by an edge (residual or not) will be
+        """
+
+        return [neighbouring_edge.target for neighbouring_edge in self.graph[current] if
+                neighbouring_edge.unused_capacity != -1 and neighbouring_edge]
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
         """Returns the unused capacity of an edge between two nodes. If there is no edge between the nodes return -1.
