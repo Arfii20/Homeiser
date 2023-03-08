@@ -114,7 +114,13 @@ class FlowGraph:
 
         # if we add an edge going opposite the edge that already exists throw an error
         # this should be cleaned **before**
-        if len([edge_ for edge_ in self.graph[edge.target] if (edge_.target == src) and not edge_.residual]):
+        if len(
+            [
+                edge_
+                for edge_ in self.graph[edge.target]
+                if (edge_.target == src) and not edge_.residual
+            ]
+        ):
             raise FlowGraphError("Edge going in two directions")
 
         if add_residual:
@@ -173,7 +179,6 @@ class FlowGraph:
 
         # results in either a list of length 0 (where no edge exists)
         # or a list of length 1 (in which one edge exists)
-
 
         if residual:
             uv_edge: list[Edge] = [edge for edge in self.graph[u] if edge.target == v]

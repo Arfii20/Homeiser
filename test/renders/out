@@ -1,0 +1,13 @@
+// Flow Graph
+digraph {
+	0 [label=A]
+	1 [label=B]
+	2 [label=C]
+	3 [label=D]
+	0 -> 1 [label="0 / 10"]
+	0 -> 2 [label="0 / 15"]
+	1 -> 0 [label="0 / 0" color=red fontcolor=red]
+	1 -> 2 [label="0 / 5"]
+	2 -> 1 [label="0 / 0" color=red fontcolor=red]
+	2 -> 0 [label="0 / 0" color=red fontcolor=red]
+}
