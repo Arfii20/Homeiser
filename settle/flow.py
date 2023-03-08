@@ -103,11 +103,19 @@ class FlowGraph:
         else:
             present_edge = self._get_edge(src, edge.target)
             self.remove_edge(src=src, target=present_edge.target)
-            self.add_edge(src=src, edge=Edge(edge.target,
-                                             edge.flow + present_edge.flow,
-                                             edge.capacity + present_edge.capacity))
+            self.add_edge(
+                src=src,
+                edge=Edge(
+                    edge.target,
+                    edge.flow + present_edge.flow,
+                    edge.capacity + present_edge.capacity,
+                ),
+            )
 
-        # TODO: add protection against a two way edge
+        # if we add an edge going opposite the edge that already exists throw an error
+        # this should be cleaned **before**
+        if len([edge_ for edge_ in self.graph[edge.target] if (edge_.target == src) and not edge_.residual]):
+            raise FlowGraphError("Edge going in two directions")
 
         if add_residual:
             # create the residual edge going to from_vertex from e.target
@@ -166,9 +174,6 @@ class FlowGraph:
         # results in either a list of length 0 (where no edge exists)
         # or a list of length 1 (in which one edge exists)
 
-        # at the moment it is assumed that there is maximum one edge between any two nodes in a flow graph
-        # this is not enforced, so it is possible for a list of length >1 to exist. Throw an error (for the moment)
-        # if this happens
 
         if residual:
             uv_edge: list[Edge] = [edge for edge in self.graph[u] if edge.target == v]
@@ -179,10 +184,6 @@ class FlowGraph:
 
         if len(uv_edge) == 0:
             raise EdgeNotFoundError
-        elif len(uv_edge) > 1:
-            raise FlowGraphError(
-                "Multiple edges to the same target node originating from the same src node"
-            )
         else:
             return uv_edge[0]
 

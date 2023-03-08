@@ -88,6 +88,10 @@ class TestFlowGraph(TestCase):
             with self.subTest(label):
                 self.assertEqual(case, exp)
 
+        # try and add an edge going in the opposite direction
+        with self.subTest("Block 2 way edge"), self.assertRaises(FlowGraphError):
+            self.blank_graph.add_edge(edge=Edge(self.a, 5, 5), src=self.b)
+
     def test_unused_capacity(self):
         """Checks that edge detection works, and that we return the correct unused capacities where they do exist"""
 
@@ -108,30 +112,6 @@ class TestFlowGraph(TestCase):
         for label, case, exp in zip(labels, cases, expected):
             with self.subTest(label):
                 self.assertEqual(self.test_graph.unused_capacity(*case), exp)
-
-        # test that we throw an error when we have two-way edges, and when we have two edges from u -> t
-
-        # set up test table
-        labels = [
-            "A -[0/10]-> B, A -[0/5]-> B",
-            "B <-[0/10]-> C (b, a)",
-            "B <-[0/10]-> C (a, b)",
-        ]
-
-        cases = [(self.b, self.c, True), (self.c, self.b, True)]
-
-        A, B, C, D = self.vertices
-
-        # set up blank graph fit test case structure
-        self.blank_graph.add_edge(edge=Edge(B, 0, 10), src=A)
-        self.blank_graph.add_edge(edge=Edge(B, 0, 5), src=A)
-
-        self.blank_graph.add_edge(edge=Edge(C, 0, 10), src=B)
-        self.blank_graph.add_edge(edge=Edge(B, 0, 10), src=C)
-
-        for label, case in zip(labels, cases):
-            with self.subTest(case), self.assertRaises(FlowGraphError):
-                self.blank_graph.unused_capacity(*case)
 
     def test_remove_vertex(self):
         self.test_graph.remove_vertex(self.b)
