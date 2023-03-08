@@ -17,8 +17,8 @@ class TestMaxFlow(TestCase):
         s, a, b, c, d, t = self.vertices
 
         edges = [
-            (a, 0, 10),
             (b, 0, 10),
+            (a, 0, 10),
             (c, 0, 25),
             (d, 0, 15),
             (t, 0, 10),
@@ -30,7 +30,7 @@ class TestMaxFlow(TestCase):
         for edge, src in zip(edges, srcs):
             self.test_graph.add_edge(edge=flow.Edge(*edge), src=src)
 
-        self.test_graph.draw("max_flow_test")
+        # self.test_graph.draw("max_flow_test")
 
     def test_edmunds_karp(self):
         ...
@@ -45,7 +45,13 @@ class TestMaxFlow(TestCase):
         ...
 
     def test__bfs(self):
-        ...
+        s, a, b, c, d, t = self.vertices
+
+        exp = [s, a, c, t]
+        actual = MaxFlow._bfs(self.test_graph, s, t)
+
+        self.assertEqual(exp, actual)
+
 
     def test__path_from_map(self):
         s, a, b, c, d, t = self.vertices

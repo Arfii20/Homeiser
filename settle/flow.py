@@ -153,7 +153,7 @@ class FlowGraph:
         return [
             neighbouring_edge.target
             for neighbouring_edge in self.graph[current]
-            if neighbouring_edge.unused_capacity != -1 and neighbouring_edge
+            if neighbouring_edge.unused_capacity != -1 and neighbouring_edge.unused_capacity
         ]
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:

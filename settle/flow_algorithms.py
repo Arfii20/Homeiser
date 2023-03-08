@@ -64,7 +64,7 @@ class MaxFlow:
                 if neighbour == sink:
                     break
 
-        return MaxFlow._path_from_map(came_from)
+        return MaxFlow._path_from_map(came_from, src=src, sink=sink)
 
     @staticmethod
     def _path_from_map(
