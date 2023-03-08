@@ -15,10 +15,14 @@ class MaxFlow:
         graph: flow.FlowGraph, src: flow.Vertex, sink: flow.Vertex
     ) -> list[flow.Vertex]:
         """Returns the shortest path from src -> sink"""
+        return MaxFlow._bfs(graph, src=src, sink=sink)
 
     @staticmethod
     def bottleneck(graph: flow.FlowGraph, path: list[flow.Vertex]) -> int:
         """Returns the bottleneck value from a path specified by a list of vertices"""
+        # Create a list of edges for each pair of adjacent nodes in the path. Pull the unused capacity from each edge
+        # Select the minimum unused capacity
+        return min(map(lambda u, v: graph.get_edge(u, v, residual=True).unused_capacity, path, path[1:]))
 
     @staticmethod
     def augment_flow(graph: flow.FlowGraph, path: list[flow.Vertex]) -> None:
@@ -82,7 +86,7 @@ class MaxFlow:
         # build path backtracking from sink
         path: list[flow.Vertex] = [sink]
 
-        current = sink
+        current: flow.Vertex = sink
         while current := came_from[current]:
             # add vertex to front of path if the map doesn't correspond to None
             path.insert(0, current) if current else 0

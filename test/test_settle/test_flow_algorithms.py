@@ -39,7 +39,9 @@ class TestMaxFlow(TestCase):
         ...
 
     def test_bottleneck(self):
-        ...
+        s, a, b, c, d, t = self.vertices
+
+        self.assertEqual(MaxFlow.bottleneck(self.test_graph, [s, a, c, t]), 10)
 
     def test_augment_flow(self):
         ...
@@ -51,7 +53,6 @@ class TestMaxFlow(TestCase):
         actual = MaxFlow._bfs(self.test_graph, s, t)
 
         self.assertEqual(exp, actual)
-
 
     def test__path_from_map(self):
         s, a, b, c, d, t = self.vertices

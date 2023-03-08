@@ -101,7 +101,7 @@ class FlowGraph:
         if self.unused_capacity(src, edge.target) == -1:
             self.graph[src].append(edge)
         else:
-            present_edge = self._get_edge(src, edge.target)
+            present_edge = self.get_edge(src, edge.target)
             self.remove_edge(src=src, target=present_edge.target)
             self.add_edge(
                 src=src,
@@ -140,10 +140,10 @@ class FlowGraph:
             )
 
         # delete edge
-        self.graph[src].remove(self._get_edge(src, target))
+        self.graph[src].remove(self.get_edge(src, target))
 
         # delete residual edge
-        self.graph[target].remove(self._get_edge(target, src, True))
+        self.graph[target].remove(self.get_edge(target, src, True))
 
     def neighbours(self, current: Vertex) -> list[Vertex]:
         """Returns the neighbours of the current node
@@ -153,7 +153,8 @@ class FlowGraph:
         return [
             neighbouring_edge.target
             for neighbouring_edge in self.graph[current]
-            if neighbouring_edge.unused_capacity != -1 and neighbouring_edge.unused_capacity
+            if neighbouring_edge.unused_capacity != -1
+            and neighbouring_edge.unused_capacity
         ]
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
@@ -165,13 +166,13 @@ class FlowGraph:
         """
 
         try:
-            unused_cap = self._get_edge(u, v, residual).unused_capacity
+            unused_cap = self.get_edge(u, v, residual).unused_capacity
         except EdgeNotFoundError:
             unused_cap = -1
 
         return unused_cap
 
-    def _get_edge(self, u: Vertex, v: Vertex, residual=False) -> Edge:
+    def get_edge(self, u: Vertex, v: Vertex, residual=False) -> Edge:
         """Returns the edge object given a src and a target node. Will return residual edges by default.
         Will raise an EdgeNotFound error if there is no edge between u and v"""
 

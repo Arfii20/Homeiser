@@ -78,7 +78,7 @@ class TestFlowGraph(TestCase):
         # Check that adding another edge with the same src/dest adds to flow and capacity
         self.blank_graph.add_edge(edge=Edge(self.b, 5, 5), src=self.a)
 
-        modified_edge = self.blank_graph._get_edge(self.a, self.b)
+        modified_edge = self.blank_graph.get_edge(self.a, self.b)
 
         labels = ["Flow", "Capacity"]
         cases = [modified_edge.flow, modified_edge.capacity]
