@@ -48,33 +48,36 @@ class TestMaxFlow(TestCase):
         ...
 
     def test__path_from_map(self):
-
         s, a, b, c, d, t = self.vertices
 
-        test_map: dict[flow.Vertex, flow.Vertex | None] = {s: None,
-                                                           a: d,
-                                                           b: s,
-                                                           c: None,
-                                                           d: b,
-                                                           t: None
-                                                           }
+        test_map: dict[flow.Vertex, flow.Vertex | None] = {
+            s: None,
+            a: d,
+            b: s,
+            c: None,
+            d: b,
+            t: None,
+        }
 
         # check that an error is thrown when a map with no pointer to the sink is provided
-        with self.subTest("Invalid map - nothing pointing to sink node"), self.assertRaises(PathError):
+        with self.subTest(
+            "Invalid map - nothing pointing to sink node"
+        ), self.assertRaises(PathError):
             MaxFlow._path_from_map(test_map, src=s, sink=t)
 
         # fix the map
         test_map[t] = d
 
         with self.subTest("Build map"):
-            self.assertEqual(MaxFlow._path_from_map(test_map, src=s, sink=t), [s, b, d, t])
+            self.assertEqual(
+                MaxFlow._path_from_map(test_map, src=s, sink=t), [s, b, d, t]
+            )
 
         # break the path and make sure an error is raised
         test_map[b] = None
 
         with self.subTest("Path broken midway through"), self.assertRaises(PathError):
             MaxFlow._path_from_map(test_map, src=s, sink=t)
-
 
 
 class TestSettle(TestCase):
