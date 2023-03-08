@@ -33,10 +33,11 @@ class TestMaxFlow(TestCase):
         # self.test_graph.draw("max_flow_test")
 
     def test_edmunds_karp(self):
-        ...
+        s, a, b, c, d, t = self.vertices
 
-    def test_augmenting_path(self):
-        ...
+        karp = MaxFlow.edmunds_karp(self.test_graph, s, t)
+        self.assertEqual(20, karp)
+
 
     def test_bottleneck(self):
         s, a, b, c, d, t = self.vertices
@@ -48,14 +49,15 @@ class TestMaxFlow(TestCase):
         s, a, b, c, d, t = self.vertices
 
         path = [s, a, c, t]
-        self.test_graph.augment_flow([s, a, c, t], MaxFlow.bottleneck(self.test_graph, path))
+        self.test_graph.augment_flow(
+            [s, a, c, t], MaxFlow.bottleneck(self.test_graph, path)
+        )
 
         # test that flow through relevant edges is 10
         flows = [self.test_graph.get_edge(u, v).flow for u, v in zip(path, path[1:])]
 
         # check that every item in the list is 10 (the bottleneck for the path)
         self.assertEqual(flows.count(10), len(flows))
-
 
     def test__bfs(self):
         s, a, b, c, d, t = self.vertices

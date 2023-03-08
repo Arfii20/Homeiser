@@ -4,7 +4,6 @@ import graphviz  # type: ignore
 from typing import Callable
 
 
-
 class FlowGraphError(Exception):
     ...
 
