@@ -1,6 +1,7 @@
 """Defines the flow graph structure"""
 from dataclasses import dataclass
-import graphviz
+import graphviz  # type: ignore
+
 
 class FlowGraphError(Exception):
     ...
@@ -8,6 +9,9 @@ class FlowGraphError(Exception):
 
 class EdgeNotFoundError(Exception):
     ...
+
+
+class OverFlowError(Exception): ...
 
 
 @dataclass
@@ -34,8 +38,15 @@ class Edge:
         """(Capacity = 0) <=> edge is residual. Thus use capacity to determine if edge residual"""
         return not bool(self.capacity)
 
-    def __hash__(self):
-        raise NotImplementedError
+    def push_flow(self, flow: int):
+        """Pushes flow down an edge"""
+
+        if flow > self.unused_capacity:
+            raise OverFlowError(f"Tried to push {flow} units down an edge with an unused capacity of "
+                                f"{self.unused_capacity}")
+
+        else:
+            self.flow += flow
 
 
 class FlowGraph:
@@ -165,8 +176,8 @@ class FlowGraph:
         else:
             return uv_edge[0]
 
-    def draw(self, filename='out'):
-        dot = graphviz.Digraph(comment='Flow Graph')
+    def draw(self, filename="out"):
+        dot = graphviz.Digraph(comment="Flow Graph")
 
         # create nodes
         [dot.node(f"{v.v_id}", v.label) for v in self.graph.keys()]
@@ -175,12 +186,19 @@ class FlowGraph:
         for src, target_edges in self.graph.items():
             for target_edge in target_edges:
                 if not target_edge.residual:
-                    dot.edge(str(src.v_id), str(target_edge.target.v_id),
-                             label=f"{target_edge.flow} / {target_edge.capacity}")
+                    dot.edge(
+                        str(src.v_id),
+                        str(target_edge.target.v_id),
+                        label=f"{target_edge.flow} / {target_edge.capacity}",
+                    )
                 else:
-                    dot.edge(str(src.v_id), str(target_edge.target.v_id),
-                             label=f"{target_edge.flow} / {target_edge.capacity}",
-                             color='red', fontcolor='red')
+                    dot.edge(
+                        str(src.v_id),
+                        str(target_edge.target.v_id),
+                        label=f"{target_edge.flow} / {target_edge.capacity}",
+                        color="red",
+                        fontcolor="red",
+                    )
 
         print(dot.source)
-        dot.render(filename=filename, directory='./renders', format='png')
+        dot.render(filename=filename, directory="./renders", format="png")

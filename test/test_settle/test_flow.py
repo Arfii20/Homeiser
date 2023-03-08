@@ -2,6 +2,17 @@ from unittest import TestCase
 from settle.flow import *
 
 
+class TestEdge(TestCase):
+    def test_push_flow(self):
+        edge = Edge(Vertex(0, 'A'), 0, 5)
+
+        edge.push_flow(2)
+        self.assertEqual(edge.unused_capacity, 3)
+
+        with self.assertRaises(OverFlowError):
+            edge.push_flow(4)
+
+
 class TestFlowGraph(TestCase):
     def setUp(self) -> None:
         """create a blank test graph with three nodes: {A, B, C}
