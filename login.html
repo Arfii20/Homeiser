@@ -15,6 +15,8 @@
 
 
 <body>
+ 
+
   <header id="header1">
   </header>
   <header id="header2">
@@ -67,7 +69,7 @@
   </div>
 
   <div style="text-align: center;font-size: 10px;font-weight: bold;">
-  <a>Log in using your username and the password  <br> you created, then start to use our application !!! <br> </a>
+  <a>Log in using your email address and the password  <br> you created, then start to use our application !!! <br> </a>
   
 
 
@@ -75,13 +77,42 @@
 
   	<a style="font-size: 20px;">Log in</a>
 
-    <div class="text">Username</div>
+    <div class="text">Email</div>
     <input type="text-left" class="textbox">
-    
+
     <div class="spacer"></div>
     
     <div class="text">Password</div>
     <input type="text-right" class="textbox">
+
+    <script type="text/javascript">
+		const Email = document.querySelector('.username')
+		const Password = document.querySelector('.password')
+		const button = document.querySelector('button')
+		
+		button.onclick = function () {
+			const username = Email.value
+			const pwd = Password.value
+
+			if (!name || ! pwd) return
+
+			const data = `username=${ name }'&password=${ password }`
+
+			const xhr = new XMLHttpRequest()
+
+			xhr.open('')
+
+			xhr.onload = function () {
+				const res = JSON.parse(xhr.responseText)
+				console.log(res)
+				alert(res.message)
+			}
+
+			xhr.setRequestHeader('content-type', '')
+			xhr.send(data)
+		}
+
+	</script>
     
 
     <button style="font-size: 20px;background-color: black;color: white;padding: 10px 100px;border: none;margin: 30px 10px">Log in</button>
