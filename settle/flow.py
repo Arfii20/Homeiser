@@ -1,6 +1,6 @@
 """Defines the flow graph structure"""
 from dataclasses import dataclass
-
+import graphviz
 
 class FlowGraphError(Exception):
     ...
@@ -115,8 +115,11 @@ class FlowGraph:
         All nodes which can be accessed by an edge (residual or not) will be
         """
 
-        return [neighbouring_edge.target for neighbouring_edge in self.graph[current] if
-                neighbouring_edge.unused_capacity != -1 and neighbouring_edge]
+        return [
+            neighbouring_edge.target
+            for neighbouring_edge in self.graph[current]
+            if neighbouring_edge.unused_capacity != -1 and neighbouring_edge
+        ]
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
         """Returns the unused capacity of an edge between two nodes. If there is no edge between the nodes return -1.
@@ -161,3 +164,23 @@ class FlowGraph:
             )
         else:
             return uv_edge[0]
+
+    def draw(self, filename='out'):
+        dot = graphviz.Digraph(comment='Flow Graph')
+
+        # create nodes
+        [dot.node(f"{v.v_id}", v.label) for v in self.graph.keys()]
+
+        # add normal edges in black, residual edges in red
+        for src, target_edges in self.graph.items():
+            for target_edge in target_edges:
+                if not target_edge.residual:
+                    dot.edge(str(src.v_id), str(target_edge.target.v_id),
+                             label=f"{target_edge.flow} / {target_edge.capacity}")
+                else:
+                    dot.edge(str(src.v_id), str(target_edge.target.v_id),
+                             label=f"{target_edge.flow} / {target_edge.capacity}",
+                             color='red', fontcolor='red')
+
+        print(dot.source)
+        dot.render(filename=filename, directory='./renders', format='png')
