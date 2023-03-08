@@ -4,7 +4,7 @@ from settle.flow import *
 
 class TestEdge(TestCase):
     def test_push_flow(self):
-        edge = Edge(Vertex(0, 'A'), 0, 5)
+        edge = Edge(Vertex(0, "A"), 0, 5)
 
         edge.push_flow(2)
         self.assertEqual(edge.unused_capacity, 3)
@@ -75,6 +75,19 @@ class TestFlowGraph(TestCase):
         with self.subTest("Residual edge added"):
             self.assertEqual(self.blank_graph.graph[self.b], [res_edge])
 
+        # Check that adding another edge with the same src/dest adds to flow and capacity
+        self.blank_graph.add_edge(edge=Edge(self.b, 5, 5), src=self.a)
+
+        modified_edge = self.blank_graph._get_edge(self.a, self.b)
+
+        labels = ["Flow", "Capacity"]
+        cases = [modified_edge.flow, modified_edge.capacity]
+        expected = [5, 15]
+
+        for label, case, exp in zip(labels, cases, expected):
+            with self.subTest(label):
+                self.assertEqual(case, exp)
+
     def test_unused_capacity(self):
         """Checks that edge detection works, and that we return the correct unused capacities where they do exist"""
 
@@ -105,7 +118,7 @@ class TestFlowGraph(TestCase):
             "B <-[0/10]-> C (a, b)",
         ]
 
-        cases = [(self.a, self.b), (self.b, self.c, True), (self.c, self.b, True)]
+        cases = [(self.b, self.c, True), (self.c, self.b, True)]
 
         A, B, C, D = self.vertices
 

@@ -11,7 +11,8 @@ class EdgeNotFoundError(Exception):
     ...
 
 
-class OverFlowError(Exception): ...
+class OverFlowError(Exception):
+    ...
 
 
 @dataclass
@@ -42,8 +43,10 @@ class Edge:
         """Pushes flow down an edge"""
 
         if flow > self.unused_capacity:
-            raise OverFlowError(f"Tried to push {flow} units down an edge with an unused capacity of "
-                                f"{self.unused_capacity}")
+            raise OverFlowError(
+                f"Tried to push {flow} units down an edge with an unused capacity of "
+                f"{self.unused_capacity}"
+            )
 
         else:
             self.flow += flow
@@ -93,11 +96,18 @@ class FlowGraph:
 
     def add_edge(self, *, edge: Edge, src: Vertex, add_residual=True):
         """Adds an edge to the flow graph from a given vertex. Will also add the residual edge by default"""
-        self.graph[src].append(edge)
+
+        # append edge to the list if the edge doesn't exist
+        if self.unused_capacity(src, edge.target) == -1:
+            self.graph[src].append(edge)
+        else:
+            present_edge = self._get_edge(src, edge.target)
+            self.remove_edge(src=src, target=present_edge.target)
+            self.add_edge(src=src, edge=Edge(edge.target,
+                                             edge.flow + present_edge.flow,
+                                             edge.capacity + present_edge.capacity))
 
         # TODO: add protection against a two way edge
-        # TODO: add functionality s.th. when an edge is added from u->v, but there is already an edge u->v, only one
-        #  edge is present in the graph who's flow and capacity are the sums of both edges
 
         if add_residual:
             # create the residual edge going to from_vertex from e.target
