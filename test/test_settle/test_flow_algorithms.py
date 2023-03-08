@@ -44,7 +44,18 @@ class TestMaxFlow(TestCase):
         self.assertEqual(MaxFlow.bottleneck(self.test_graph, [s, a, c, t]), 10)
 
     def test_augment_flow(self):
-        ...
+        """This test is very much in the wrong place but that's okay"""
+        s, a, b, c, d, t = self.vertices
+
+        path = [s, a, c, t]
+        self.test_graph.augment_flow([s, a, c, t], MaxFlow.bottleneck(self.test_graph, path))
+
+        # test that flow through relevant edges is 10
+        flows = [self.test_graph.get_edge(u, v).flow for u, v in zip(path, path[1:])]
+
+        # check that every item in the list is 10 (the bottleneck for the path)
+        self.assertEqual(flows.count(10), len(flows))
+
 
     def test__bfs(self):
         s, a, b, c, d, t = self.vertices

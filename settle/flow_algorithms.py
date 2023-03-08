@@ -22,11 +22,14 @@ class MaxFlow:
         """Returns the bottleneck value from a path specified by a list of vertices"""
         # Create a list of edges for each pair of adjacent nodes in the path. Pull the unused capacity from each edge
         # Select the minimum unused capacity
-        return min(map(lambda u, v: graph.get_edge(u, v, residual=True).unused_capacity, path, path[1:]))
+        return min(
+            map(
+                lambda u, v: graph.get_edge(u, v, residual=True).unused_capacity,
+                path,
+                path[1:],
+            )
+        )
 
-    @staticmethod
-    def augment_flow(graph: flow.FlowGraph, path: list[flow.Vertex]) -> None:
-        """Augments the flow down a path"""
 
     @staticmethod
     def _bfs(

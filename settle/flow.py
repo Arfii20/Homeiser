@@ -1,6 +1,8 @@
 """Defines the flow graph structure"""
 from dataclasses import dataclass
 import graphviz  # type: ignore
+from typing import Callable
+
 
 
 class FlowGraphError(Exception):
@@ -72,6 +74,10 @@ class FlowGraph:
     def add_vertex(self, v: Vertex):
         """Adds a vertex with no edges to the graph"""
         self.graph[v] = []
+
+    def augment_flow(self, path: list[Vertex], flow: int):
+        for u, v in zip(path, path[1:]):
+            [edge.push_flow(flow) for edge in self.graph[u] if edge.target == v]
 
     def remove_vertex(self, v: Vertex):
         """Removes a vertex, and all of its incoming / outgoing edges from a graph"""
@@ -192,6 +198,9 @@ class FlowGraph:
             raise EdgeNotFoundError
         else:
             return uv_edge[0]
+
+    def operate_on_edge(self, u: Vertex, v: Vertex, fn: Callable, *args, **kwargs):
+        [fn(edge, *args, **kwargs) for edge in self.graph[u] if edge.target == v]
 
     def draw(self, filename="out"):
         dot = graphviz.Digraph(comment="Flow Graph")
