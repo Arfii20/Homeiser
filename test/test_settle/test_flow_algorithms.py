@@ -38,7 +38,6 @@ class TestMaxFlow(TestCase):
         karp = MaxFlow.edmunds_karp(self.test_graph, s, t)
         self.assertEqual(20, karp)
 
-
     def test_bottleneck(self):
         s, a, b, c, d, t = self.vertices
 

@@ -7,9 +7,11 @@ class TestEdge(TestCase):
         edge = Edge(Vertex(0, "A"), 0, 5)
 
         edge.push_flow(2)
-        self.assertEqual(edge.unused_capacity, 3)
 
-        with self.assertRaises(OverFlowError):
+        with self.subTest("push flow"):
+            self.assertEqual(edge.unused_capacity, 3)
+
+        with self.subTest("Trigger Overflow"), self.assertRaises(OverFlowError):
             edge.push_flow(4)
 
 

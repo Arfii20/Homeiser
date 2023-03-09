@@ -18,7 +18,6 @@ class MaxFlow:
 
         return max_flow
 
-
     @staticmethod
     def augmenting_path(
         graph: flow.FlowGraph, src: flow.Vertex, sink: flow.Vertex
