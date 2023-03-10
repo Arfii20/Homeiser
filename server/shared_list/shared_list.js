@@ -24,12 +24,12 @@ async function get_lists(household_id){
 
 			// Create a new div element and set its ID
 			const divElement = document.createElement('div');
-			divElement.setAttribute('id', 'tasks');
+			divElement.setAttribute('id', 'list-desc');
 			divElement.setAttribute('class', 'list-name');
 
 			// Create a new div element and set its class
 			const taskDivElement = document.createElement('div');
-			taskDivElement.setAttribute('class', 'task');
+			taskDivElement.setAttribute('class', 'list-name');
 
 			// Create a new div element and set its class
 			const contentDivElement = document.createElement('div');
@@ -74,10 +74,9 @@ async function get_lists(household_id){
 			// Append the h2 and tasks div elements to the section element
 			headerElement.appendChild(divElement);
 
-
-
-
-
+			// Create a horizontal line element
+			const hrElement = document.createElement('hr');
+			hrElement.className = 'hr-element';
 
 			// Create a new form element and set its attributes
 			const new_task_form_id = 'new-task-form-' + obj.list_id;
@@ -118,6 +117,9 @@ async function get_lists(household_id){
 			parentElement.appendChild(headerElement);
 
 			get_list_event(obj.id);
+
+			parentElement.appendChild(hrElement);
+
 		}
 	}else{
 		const response_error = await response.json();
@@ -185,7 +187,7 @@ async function get_list_event(list_id){
 			inputElement.setAttribute('class', 'text');
 			inputElement.setAttribute('value', obj.task_name);
 			inputElement.setAttribute('readonly', '');
-			inputElement.setAttribute('maxlength', '100')
+			inputElement.setAttribute('maxlength', '100');
 
 			// Cheate a new input element for showing description
 			const inputElementName = document.createElement('input');
@@ -193,7 +195,7 @@ async function get_list_event(list_id){
 			inputElementName.setAttribute('class', 'text');
 			inputElementName.setAttribute('value', obj.description_of_task);
 			inputElementName.setAttribute('readonly', '');
-			inputElementName.setAttribute('maxlength', '100')
+			inputElementName.setAttribute('maxlength', '100');
 
 			// Append the input element to the content div element
 			contentDivElement.appendChild(inputElement);
@@ -213,9 +215,15 @@ async function get_list_event(list_id){
 			deleteButtonElement.setAttribute('class', 'delete');
 			deleteButtonElement.textContent = 'Delete';
 
+			// Create a new checkbox element and set its class and text content
+			const checkboxInput = document.createElement('input');
+			checkboxInput.type = 'checkbox';
+			checkboxInput.className = 'checkbox';
+
 			// Append the button elements to the actions div element
 			actionsDivElement.appendChild(editButtonElement);
 			actionsDivElement.appendChild(deleteButtonElement);
+			actionsDivElement.appendChild(checkboxInput);
 
 			// Append the content and actions div elements to the task div element
 			taskDivElement.appendChild(contentDivElement);

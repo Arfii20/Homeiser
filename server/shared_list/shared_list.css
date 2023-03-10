@@ -29,11 +29,73 @@ header {
 	margin: 0 auto;
 }
 
+#list-desc .list-name {
+	display: flex;
+	justify-content: space-between;
+	background-color: var(--darkest);
+	padding: 1rem;
+	border-radius: 1rem;
+	margin-bottom: 1rem;
+}
+
 .list-name{ 
 	font-size: 2.5rem;
 	font-weight: 300;
 	color: var(--grey);
 	margin-bottom: 0.5rem;
+}
+
+.list-name .content {
+	flex: 1 1 0%;
+}
+
+.list-name .content .text {
+	color: var(--light);
+	font-size: 1.125rem;
+	width: 100%;
+	display: block;
+	transition: 0.4s;
+}
+
+.list-name .content .text:not(:read-only) {
+	color: var(--pink);
+}
+
+.list-name .actions {
+	display: flex;
+	margin: 0 -0.5rem;
+}
+
+.list-name .actions button {
+	cursor: pointer;
+	margin: 0 0.5rem;
+	font-size: 1.125rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	transition: 0.4s;
+}
+
+.list-name .actions button:hover {
+	opacity: 0.8;
+}
+
+.list-name .actions button:active {
+	opacity: 0.6;
+}
+
+.list-name .actions .edit {
+	background-image: linear-gradient(to right, var(--pink), var(--purple));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.list-name .actions .delete {
+	color: crimson;
+}
+
+.hr-element {
+  border-style: dotted;
+  border-color: var(--grey);
 }
 
 header h2 {
@@ -111,7 +173,7 @@ main {
 #tasks .task {
 	display: flex;
 	justify-content: space-between;
-	background-color: var(--darkest);
+	background-color: var(--darker);
 	padding: 1rem;
 	border-radius: 1rem;
 	margin-bottom: 1rem;
@@ -163,4 +225,36 @@ main {
 
 .task .actions .delete {
 	color: crimson;
+}
+
+/*.task .actions .checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid black;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+}*/
+
+.task .actions .checkbox {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  vertical-align: middle;
+  margin: 15px 10px 10px 10px;
+}
+
+.task .actions .checkbox:checked {
+  background-color: black;
+  background-image: url('dot.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 4px solid #ccc;
+  border-radius: 8px;
 }
