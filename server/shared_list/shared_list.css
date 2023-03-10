@@ -29,6 +29,15 @@ header {
 	margin: 0 auto;
 }
 
+h1 {
+	font-size: 3rem;
+	font-weight: 300;
+	color: var(--grey);
+	margin-top: 1rem;
+	margin-bottom: 0rem;
+	text-align: center;
+}
+
 #list-desc .list-name {
 	display: flex;
 	justify-content: space-between;
@@ -115,6 +124,53 @@ header h2 {
 	margin-right: 10px;	
 }
 
+/*New list CSS*/
+
+#new-list {
+	padding: 2rem 1rem;
+	max-width: 700px;
+	width: 100%;
+	margin: 0 auto;
+}
+
+.new-list-form {
+	display: flex;;
+}
+
+.new-list-input {
+	flex: 1 1 0%;
+	background-color: var(--darker);
+	padding: 1rem;
+	border-radius: 1rem;
+	margin-right: 1rem;
+	color: var(--light);
+	font-size: 1.25rem;
+}
+
+.new-list-input::placeholder {
+	color: var(--grey);
+}
+
+.new-list-submit {
+	color: var(--pink);
+	font-size: 1.25rem;
+	font-weight: 700;
+	background-image: linear-gradient(to right, var(--pink), var(--purple));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	cursor: pointer;
+	transition: 0.4s;
+}
+
+.new-list-submit:hover {
+	opacity: 0.8;
+}
+
+.new-list-submit:active {
+	opacity: 0.6;
+}
+
+/* Each Task CSS */
 .new-task-form {
 	display: flex;;
 }
@@ -227,24 +283,12 @@ main {
 	color: crimson;
 }
 
-/*.task .actions .checkbox {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 1px solid black;
-  border-radius: 50%;
-  outline: none;
-  cursor: pointer;
-}*/
-
 .task .actions .checkbox {
   display: inline-block;
   width: 16px;
   height: 16px;
   background-color: #fff;
-  border: 1px solid #ccc;
+  border: 1px solid #fff;
   border-radius: 8px;
   vertical-align: middle;
   margin: 15px 10px 10px 10px;

@@ -276,12 +276,12 @@ class ListEvents(Resource):
 
         The list event has the following structure:
         {
-        'id': [3, 5, 6],
-        'task_name': ['name1', 'name2', 'name3'],
-        'description_of_task': ['description1', 'description2', 'description3'],
-        'added_user_id': [1, 1, 1],
-        'checked_off_by_user': [None, 1, 3],
-        'list': [1, 1, 1]
+        'id': 3,
+        'task_name': 'name1',
+        'description_of_task': 'description1',
+        'added_user_id': 1,
+        'checked_off_by_user': None,
+        'list': 1,
         }
 
         If nothing is found, it will return error message

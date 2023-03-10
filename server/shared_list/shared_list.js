@@ -152,21 +152,7 @@ async function get_list_event(list_id){
 		for (let i = 0; i < response_array.length; i++) {
 			const obj = JSON.parse(response_array[i]);
 
-			// const spanElement = document.createElement("span");
-			// spanElement.setAttribute("id", obj.id);
-			// spanElement.innerHTML = `List Event ${i+1} Name: ${obj.task_name}.<br>` +
-			//                         `Description: ${obj.description_of_task}.<br>` +
-			//                         `Checked_off: ${obj.checked_off_by_user == null}.<br>`;
-			// document.getElementById(list_id).appendChild(document.createElement("br"));
-			// document.getElementById(list_id).appendChild(spanElement);
-			// Get the parent element where you want to append the HTML
-			// const header_selector = 'header#' + list_id;
-			// console.log(header_selector);
 			const parentElement = document.getElementById(list_id);
-
-			// Create a new section element and set its class
-			// const sectionElement = document.createElement('section');
-			// sectionElement.setAttribute('class', 'task-list');
 
 			// Create a new div element and set its ID
 			const divElement = document.createElement('div');
@@ -176,6 +162,9 @@ async function get_list_event(list_id){
 			// Create a new div element and set its class
 			const taskDivElement = document.createElement('div');
 			taskDivElement.setAttribute('class', 'task');
+			taskDivElement.setAttribute('id', obj.id);
+			taskDivElement.setAttribute('data-added-user-id', obj.added_user_id);
+			taskDivElement.setAttribute('data-checked-off-by-user', obj.checked_off_by_user);
 
 			// Create a new div element and set its class
 			const contentDivElement = document.createElement('div');
