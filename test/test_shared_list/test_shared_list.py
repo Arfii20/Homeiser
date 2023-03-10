@@ -10,10 +10,12 @@ BASE = "http://127.0.0.1:5000/"
 
 class TestSharedList(unittest.TestCase):
     def test_shared_list_get(self):
-        response = requests.get(BASE + "shared_list/620")
+        response = requests.get(BASE + "shared_list/621")
         response = loads(response.json())
+        print(response)
         response = loads(response[0])
         valid = True
+
         for i in response.keys():
             if i not in ["id", "name", "household_id"]:
                 valid = False
