@@ -36,6 +36,14 @@ header h1{
 	margin-bottom: 0.5rem;
 }
 
+header h2 {
+	font-size: 1.5rem;
+	font-weight: 300;
+	color: var(--grey);
+	margin-top: 1rem;
+	margin-bottom: 0.5rem;
+}
+
 .new-task-form {
 	display: flex;;
 }
@@ -87,16 +95,9 @@ main {
 	margin: 0 auto;
 }
 
-.task-list {
-	padding: 1rem;
-}
-
-.task-list h2 {
-	font-size: 1.5rem;
-	font-weight: 300;
-	color: var(--grey);
-	margin-bottom: 1rem;
-}
+/*.task-list {
+	padding: 0.2rem;
+}*/
 
 #tasks .task {
 	display: flex;
