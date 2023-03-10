@@ -10,13 +10,6 @@ async function get_lists(household_id){
 		for (let i = 0; i < response_array.length; i++) {
 			const obj = JSON.parse(response_array[i]);
 
-			// const spanElement = document.createElement("span");
-			// spanElement.setAttribute("id", obj.id);
-			// spanElement.innerHTML = `<u><b>List${i+1} Name: ${obj.name}</b></u>`;
-			// document.getElementById('lists').appendChild(spanElement);
-			// document.getElementById('lists').appendChild(document.createElement("br"));
-
-
 			// Get the parent element where you want to append the HTML
 			const parentElement = document.querySelector('div#lists');
 
@@ -29,22 +22,26 @@ async function get_lists(household_id){
 			h1Element.textContent = obj.name;
 
 			// Create a new form element and set its attributes
+			const new_task_form_id = 'new-task-form-' + obj.list_id;
 			const formElement = document.createElement('form');
+			formElement.setAttribute('class', 'new-task-form');
 			formElement.setAttribute('id', 'new-task-form');
 
 			// Create a new input element and set its attributes
+			const new_task_input_id = 'new-task-input-' + obj.list_id;
 			const inputElement = document.createElement('input');
 			inputElement.setAttribute('type', 'text');
 			inputElement.setAttribute('name', 'new-task-input');
-			inputElement.setAttribute('id', 'new-task-input');
+			inputElement.setAttribute('class', 'new-task-input');
+			inputElement.setAttribute('id', new_task_input_id);
 			inputElement.setAttribute('placeholder', 'What do you have planned?');
 
 			// Create a new input element and set its attributes
-			const submit_id = 'submit' + obj.list_id;
+			const new_task_submit_id = 'new-task-submit-' + obj.list_id;
 			const submitElement = document.createElement('input');
 			submitElement.setAttribute('type', 'submit');
-
-			submitElement.setAttribute('id', submit_id);
+			submitElement.setAttribute('class', 'new-task-submit');
+			submitElement.setAttribute('id', new_task_submit_id);
 			submitElement.setAttribute('value', 'Add task');
 
 			// Append the input elements to the form element
