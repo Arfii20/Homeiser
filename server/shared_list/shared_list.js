@@ -31,9 +31,11 @@ async function get_lists(household_id){
 			contentDivElement.setAttribute('class', 'content');
 
 			// Create a new input element and set its attributes
+			const inputElementH1Id = 'input-element-h1-' + obj.id;
 			const inputElementH1 = document.createElement('input');
 			inputElementH1.setAttribute('type', 'text');
 			inputElementH1.setAttribute('class', 'text');
+			inputElementH1.setAttribute('id', inputElementH1Id);
 			inputElementH1.setAttribute('value', obj.name);
 			inputElementH1.setAttribute('readonly', '');
 			inputElementH1.setAttribute('maxlength', '100')
@@ -46,11 +48,14 @@ async function get_lists(household_id){
 			actionsDivElement.setAttribute('class', 'actions');
 
 			// Create a new button element and set its class and text content
+			const editButtonId = 'input-element-h1-' + obj.id;
 			const editButtonElement = document.createElement('button');
 			editButtonElement.setAttribute('class', 'edit');
+			editButtonElement.setAttribute('id', editButtonId);
 			editButtonElement.textContent = 'Edit';
 
 			// Create a new button element and set its class and text content
+			const editButtonId = 'input-element-h1-' + obj.id;
 			const deleteButtonElement = document.createElement('button');
 			deleteButtonElement.setAttribute('class', 'delete');
 			deleteButtonElement.textContent = 'Delete';
@@ -168,7 +173,7 @@ async function post_list(event){
 		children.forEach(function(child) {
 			child.remove();
 		})
-		
+
 		console.clear();
 		location.reload()
 		closestForm.reset();
@@ -190,9 +195,58 @@ async function delete_list(event){
 	console.log(response_error);
 }
 
-// async function patch_list(list_id){
-// 	// body...
-// }
+async function patch_list(list_id){
+	const closestHeader = event.target.closest('header');
+	const listID = closestHeader.id;
+
+	const editButtonElement = document.querySelector('#edit-' + listEventID);
+	const inputElement = document.querySelector('#input-' + listEventID);
+
+	if (editButtonElement.innerText.toLowerCase() == "edit") {
+		editButtonElement.innerText = "Save";
+		inputName.removeAttribute("readonly");
+		inputElement.removeAttribute("readonly");		
+		inputElement.focus();
+		inputElement.setSelectionRange(0, inputElement.value.length);
+		
+
+	}
+	else {
+		editButtonElement.innerText = "Edit";
+
+		inputElement.setAttribute("readonly", "readonly");
+		inputName.setAttribute("readonly", "readonly");
+		const inputValue = inputElement.value;
+		const inputDescriptionValue = inputName.value;
+
+		if (!inputValue && !inputDescriptionValue){
+			alert("NAME and DESCRIPTION cannot be empty!")
+		}
+		else if (!inputValue){
+			alert("NAME cannot be empty!")
+		}
+		else if (!inputDescriptionValue){
+			alert("DESCRIPTION cannot be empty!")
+		}
+		else{
+		  	const url = BASE + "list_details/" + listEventID;
+			const data = new URLSearchParams();
+
+			data.append('new_task', inputValue);
+			data.append('new_description', inputDescriptionValue);
+
+			await fetch(url, {
+			  method: 'PATCH',
+			  body: data,
+			  headers: {
+			    'Content-Type': 'application/x-www-form-urlencoded'
+			  }
+			}).then(response => response.json())
+			  .then(data => console.log(data))
+			  .catch(error => console.error(error));
+		}
+	}
+}
 
 // All List Event methods start from here
 async function get_list_event(list_id){
@@ -224,17 +278,21 @@ async function get_list_event(list_id){
 			contentDivElement.setAttribute('class', 'content');
 
 			// Create a new input element and set its attributes
+			const inputId = 'input-' + obj.id;
 			const inputElement = document.createElement('input');
 			inputElement.setAttribute('type', 'text');
 			inputElement.setAttribute('class', 'text');
+			inputElement.setAttribute('id', inputId)
 			inputElement.setAttribute('value', obj.task_name);
 			inputElement.setAttribute('readonly', '');
 			inputElement.setAttribute('maxlength', '100');
 
 			// Cheate a new input element for showing description
+			const inputNameId = 'input-name-' + obj.id;
 			const inputElementName = document.createElement('input');
 			inputElementName.setAttribute('type', 'text');
 			inputElementName.setAttribute('class', 'text');
+			inputElementName.setAttribute('id', inputNameId)
 			inputElementName.setAttribute('value', obj.description_of_task);
 			inputElementName.setAttribute('readonly', '');
 			inputElementName.setAttribute('maxlength', '100');
@@ -248,10 +306,12 @@ async function get_list_event(list_id){
 			actionsDivElement.setAttribute('class', 'actions');
 
 			// Create a new button element and set its class and text content
+			const editButtonId = 'edit-' + obj.id;
 			const editButtonElement = document.createElement('button');
 			editButtonElement.setAttribute('class', 'edit');
 			editButtonElement.textContent = 'Edit';
-			// editButtonElement.setAttribute('onclick', 'post_list_event(event)')
+			editButtonElement.setAttribute('id', editButtonId)
+			editButtonElement.setAttribute('onclick', 'put_list_event(event)')
 
 			// Create a new button element and set its class and text content
 			const deleteButtonElement = document.createElement('button');
@@ -346,10 +406,59 @@ async function delete_list_event(event){
 	console.log(response_error);
 }
 
-// async function patch_list_event(list_event_id){
-// 	// body...
+// async function patch_list_event(event){
 // }
 
-// async function put_list_event(list_event_id){
-// 	// body...	
-// }
+async function put_list_event(event){
+	const closestDiv = event.target.closest('div');
+  	const listEventID = closestDiv.parentNode.id;
+
+	const editButtonElement = document.querySelector('#edit-' + listEventID);
+	const inputElement = document.querySelector('#input-' + listEventID);
+	const inputName = document.querySelector('#input-name-' + listEventID);
+
+	if (editButtonElement.innerText.toLowerCase() == "edit") {
+		editButtonElement.innerText = "Save";
+		inputName.removeAttribute("readonly");
+		inputElement.removeAttribute("readonly");		
+		inputElement.focus();
+		inputElement.setSelectionRange(0, inputElement.value.length);
+		
+
+	}
+	else {
+		editButtonElement.innerText = "Edit";
+
+		inputElement.setAttribute("readonly", "readonly");
+		inputName.setAttribute("readonly", "readonly");
+		const inputValue = inputElement.value;
+		const inputDescriptionValue = inputName.value;
+
+		if (!inputValue && !inputDescriptionValue){
+			alert("NAME and DESCRIPTION cannot be empty!")
+		}
+		else if (!inputValue){
+			alert("NAME cannot be empty!")
+		}
+		else if (!inputDescriptionValue){
+			alert("DESCRIPTION cannot be empty!")
+		}
+		else{
+		  	const url = BASE + "list_event_details/" + listEventID;
+			const data = new URLSearchParams();
+
+			data.append('new_task', inputValue);
+			data.append('new_description', inputDescriptionValue);
+
+			await fetch(url, {
+			  method: 'PUT',
+			  body: data,
+			  headers: {
+			    'Content-Type': 'application/x-www-form-urlencoded'
+			  }
+			}).then(response => response.json())
+			  .then(data => console.log(data))
+			  .catch(error => console.error(error));
+		}
+	}
+}
