@@ -269,10 +269,54 @@ function handleFormSubmission(event) {
   const closestHeader = closestForm.closest('header');
   const headerId = closestHeader.id;
 
-  const task_input_id = '#new-task-input-' + headerId;
-  const inputValue = closestForm.querySelector(task_input_id).value;
-  console.log(`Form with the value ${inputValue} submitted`);
-  console.log(`Form with ID ${headerId} submitted`);
+  const inputValue = closestForm.querySelector('#new-task-input-' + headerId).value;
+  const inputDescriptionValue = closestForm.querySelector('#new-task-description-' + headerId).value;
+
+  const added_user = 630;
+
+  if (!inputValue && !inputDescriptionValue){
+  	alert("NAME and DESCRIPTION cannot be empty!")
+  }
+  else if (!inputValue){
+  	alert("NAME cannot be empty!")
+  }
+  else if (!inputDescriptionValue){
+  	alert("DESCRIPTION cannot be empty!")
+  }
+  else{
+  	const url = BASE + "list_events/" + headerId;
+	const data = new URLSearchParams();
+
+	data.append('task_name', inputValue);
+	data.append('description_of_task', inputDescriptionValue);
+	data.append('added_user_id', parseInt(added_user));
+
+	fetch(url, {
+	  method: 'POST',
+	  body: data,
+	  headers: {
+	    'Content-Type': 'application/x-www-form-urlencoded'
+	  }
+	}).then(response => response.json())
+	  .then(data => console.log(data))
+	  .catch(error => console.error(error));
+
+	console.log(`Description: ${inputDescriptionValue}`)
+	console.log(`Name: ${inputValue}`);
+	console.log(`Form with ID ${headerId} submitted`);
+	closestForm.reset();
+  }
+
+
+
+  // const added
+
+
+
+
+
+
+
 }
 
 

@@ -31,7 +31,6 @@ class SharedList(Resource):
         if nothing is found, returns error message
         """
         cursor = get_db()
-        print()
 
         cursor.execute("SELECT * FROM list WHERE household_id = %s;" % household_id)
         fetched_result = cursor.fetchall()
