@@ -136,18 +136,54 @@ async function get_lists(household_id){
 	}
 }
 
-// async function post_list(household_id){
+async function post_list(event){
+	event.preventDefault();
+	house_id = 620;
+	const closestForm = event.target.closest('form');
 
-	    // handle form submission based on formId
-// }
+	const inputValue = closestForm.querySelector('.new-list-input').value;
 
-async function delete_list(list_id){
+	if (!inputValue){
+		alert("NAME of list cannot be empty!");
+	}
+	else {
+		const url = BASE + "shared_list/" + house_id;
+		const data = new URLSearchParams();
+
+		data.append('name', inputValue);
+
+		await fetch(url, {
+		  method: 'POST',
+		  body: data,
+		  headers: {
+		    'Content-Type': 'application/x-www-form-urlencoded'
+		  }
+		}).then(response => response.json())
+		  .then(data => console.log(data))
+		  .catch(error => console.error(error));
+
+		const children = document.querySelectorAll('div#lists');
+		children.forEach(function(child) {
+			child.remove();
+		})
+
+		get_lists(house_id)
+		closestForm.reset();
+	}
+}
+
+async function delete_list(event){
+	event.preventDefault();
+	// handle form submission
+	const closestForm = event.target.closest('form');
+	const closestHeader = closestForm.closest('header');
+	const listID = closestHeader.id;
+
 	const response = await fetch(`${BASE}list_details/${list_id}`, {method: 'DELETE'});
 	const response_error = await response.json();
 	console.log(response_error.error);
 	location.reload();
-
-	}
+}
 
 // async function patch_list(list_id){
 // 	// body...
@@ -246,56 +282,54 @@ async function get_list_event(list_id){
 }
 
 
+
 async function post_list_event(event) {
-  event.preventDefault();
-  // handle form submission
-  const closestForm = event.target.closest('form');
-  const closestHeader = closestForm.closest('header');
-  const headerId = closestHeader.id;
+	event.preventDefault();
+	// handle form submission
+	const closestForm = event.target.closest('form');
+	const closestHeader = closestForm.closest('header');
+	const headerId = closestHeader.id;
 
-  const inputValue = closestForm.querySelector('#new-task-input-' + headerId).value;
-  const inputDescriptionValue = closestForm.querySelector('#new-task-description-' + headerId).value;
+	const inputValue = closestForm.querySelector('#new-task-input-' + headerId).value;
+	const inputDescriptionValue = closestForm.querySelector('#new-task-description-' + headerId).value;
 
-  const added_user = 630;
+	const added_user = 630;
 
-  if (!inputValue && !inputDescriptionValue){
-  	alert("NAME and DESCRIPTION cannot be empty!")
-  }
-  else if (!inputValue){
-  	alert("NAME cannot be empty!")
-  }
-  else if (!inputDescriptionValue){
-  	alert("DESCRIPTION cannot be empty!")
-  }
-  else{
-  	const url = BASE + "list_events/" + headerId;
-	const data = new URLSearchParams();
+	if (!inputValue && !inputDescriptionValue){
+		alert("NAME and DESCRIPTION cannot be empty!")
+	}
+	else if (!inputValue){
+		alert("NAME cannot be empty!")
+	}
+	else if (!inputDescriptionValue){
+		alert("DESCRIPTION cannot be empty!")
+	}
+	else{
+	  	const url = BASE + "list_events/" + headerId;
+		const data = new URLSearchParams();
 
-	data.append('task_name', inputValue);
-	data.append('description_of_task', inputDescriptionValue);
-	data.append('added_user_id', parseInt(added_user));
+		data.append('task_name', inputValue);
+		data.append('description_of_task', inputDescriptionValue);
+		data.append('added_user_id', parseInt(added_user));
 
-	await fetch(url, {
-	  method: 'POST',
-	  body: data,
-	  headers: {
-	    'Content-Type': 'application/x-www-form-urlencoded'
-	  }
-	}).then(response => response.json())
-	  .then(data => console.log(data))
-	  .catch(error => console.error(error));
+		await fetch(url, {
+		  method: 'POST',
+		  body: data,
+		  headers: {
+		    'Content-Type': 'application/x-www-form-urlencoded'
+		  }
+		}).then(response => response.json())
+		  .then(data => console.log(data))
+		  .catch(error => console.error(error));
 
-	// console.log(`Description: ${inputDescriptionValue}`)
-	// console.log(`Name: ${inputValue}`);
-	// console.log(`Form with ID ${headerId} submitted`);
-	const header = document.getElementById(headerId);
-	const children = header.querySelectorAll('.task-list');
-	children.forEach(function(child) {
-		child.remove();
-	})
+		const header = document.getElementById(headerId);
+		const children = header.querySelectorAll('.task-list');
+		children.forEach(function(child) {
+			child.remove();
+		})
 
-	get_list_event(headerId)
-	closestForm.reset();
+		get_list_event(headerId)
+		closestForm.reset();
 	}
 }
 
