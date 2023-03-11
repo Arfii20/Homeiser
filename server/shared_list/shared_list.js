@@ -71,8 +71,10 @@ async function get_lists(household_id){
 			headerElement.appendChild(divElement);
 
 			// Create a horizontal line element
+			const hrID = 'hr-' + obj.id
 			const hrElement = document.createElement('hr');
 			hrElement.className = 'hr-element';
+			hrElement.setAttribute('id', hrID)
 
 			// Create a new form element and set its attributes
 			const new_task_form_id = 'new-task-form-' + obj.id;
@@ -129,7 +131,6 @@ async function get_lists(household_id){
 			get_list_event(obj.id);
 
 			parentElement.appendChild(hrElement);
-
 		}
 	}else{
 		const response_error = await response.json();
@@ -167,8 +168,9 @@ async function post_list(event){
 		children.forEach(function(child) {
 			child.remove();
 		})
-
-		get_lists(house_id)
+		
+		console.clear();
+		location.reload()
 		closestForm.reset();
 	}
 }
@@ -180,6 +182,9 @@ async function delete_list(event){
 	const listID = closestHeader.id;
 	closestHeader.remove();
 
+	const closestHr = document.querySelector('hr#hr-' + listID);
+	closestHr.remove();
+
 	const response = await fetch(`${BASE}list_details/${listID}`, {method: 'DELETE'});
 	const response_error = await response.json();
 	console.log(response_error);
@@ -189,7 +194,7 @@ async function delete_list(event){
 // 	// body...
 // }
 
-// List Events
+// All List Event methods start from here
 async function get_list_event(list_id){
 	const response = await fetch(BASE + "list_events/" + list_id);
 	if (response.ok){
@@ -281,8 +286,6 @@ async function get_list_event(list_id){
 	}
 }
 
-
-
 async function post_list_event(event) {
 	event.preventDefault();
 	// handle form submission
@@ -350,4 +353,3 @@ async function delete_list_event(event){
 // async function put_list_event(list_event_id){
 // 	// body...	
 // }
-
