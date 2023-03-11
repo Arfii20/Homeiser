@@ -193,7 +193,7 @@ input, button {
 }
 
 .new-task-description {
-	flex: 1 1 40%;
+	flex: 1 1 60%;
 	background-color: var(--darker);
 	padding: 1rem;
 	border-radius: 1rem;

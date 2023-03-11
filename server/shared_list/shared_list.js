@@ -78,7 +78,7 @@ async function get_lists(household_id){
 			const formElement = document.createElement('form');
 			formElement.setAttribute('class', 'new-task-form');
 			formElement.setAttribute('id', new_task_form_id);
-			formElement.setAttribute('onsubmit', 'handleFormSubmission(event)')
+			formElement.setAttribute('onsubmit', 'post_list_event(event)')
 
 			// Create a new input element and set its attributes
 			const new_task_input_id = 'new-task-input-' + obj.id;
@@ -210,11 +210,13 @@ async function get_list_event(list_id){
 			const editButtonElement = document.createElement('button');
 			editButtonElement.setAttribute('class', 'edit');
 			editButtonElement.textContent = 'Edit';
+			// editButtonElement.setAttribute('onclick', 'post_list_event(event)')
 
 			// Create a new button element and set its class and text content
 			const deleteButtonElement = document.createElement('button');
 			deleteButtonElement.setAttribute('class', 'delete');
 			deleteButtonElement.textContent = 'Delete';
+			deleteButtonElement.setAttribute('onclick', 'delete_list_event(event)')
 
 			// Create a new checkbox element and set its class and text content
 			const checkboxInput = document.createElement('input');
@@ -243,26 +245,8 @@ async function get_list_event(list_id){
 	}
 }
 
-// async function post_list_event(list_id){
-// 	// body...
-// }
 
-async function delete_list_event(list_event_id){
-	const response = await fetch(`${BASE}list_events/${list_event_id}`, {method: 'DELETE'});
-	const response_error = await response.json();
-	console.log(response_error.error);
-	location.reload();
-}
-
-// async function patch_list_event(list_event_id){
-// 	// body...
-// }
-
-// async function put_list_event(list_event_id){
-// 	// body...	
-// }
-
-function handleFormSubmission(event) {
+async function post_list_event(event) {
   event.preventDefault();
   // handle form submission
   const closestForm = event.target.closest('form');
@@ -291,7 +275,7 @@ function handleFormSubmission(event) {
 	data.append('description_of_task', inputDescriptionValue);
 	data.append('added_user_id', parseInt(added_user));
 
-	fetch(url, {
+	await fetch(url, {
 	  method: 'POST',
 	  body: data,
 	  headers: {
@@ -301,35 +285,35 @@ function handleFormSubmission(event) {
 	  .then(data => console.log(data))
 	  .catch(error => console.error(error));
 
-	console.log(`Description: ${inputDescriptionValue}`)
-	console.log(`Name: ${inputValue}`);
-	console.log(`Form with ID ${headerId} submitted`);
+	// console.log(`Description: ${inputDescriptionValue}`)
+	// console.log(`Name: ${inputValue}`);
+	// console.log(`Form with ID ${headerId} submitted`);
+	const header = document.getElementById(headerId);
+	const children = header.querySelectorAll('.task-list');
+	children.forEach(function(child) {
+		child.remove();
+	})
+
+	get_list_event(headerId)
 	closestForm.reset();
-  }
-
-
-
-  // const added
-
-
-
-
-
-
-
+	}
 }
 
+async function delete_list_event(event){
+	const closestDiv = event.target.closest('div');
+  	const listEventID = closestDiv.parentNode.id;
+  	closestDiv.parentNode.remove();
 
-window.addEventListener('load', () => {
-const submitButtons = document.querySelectorAll('.new-task-form');
+	const response = await fetch(`${BASE}list_event_details/${listEventID}`, {method: 'DELETE'});
+	const response_error = await response.json();
+	console.log(response_error);
+}
 
-submitButtons.forEach((form) => {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const form = button.closest('form');
-    const formId = form.id;
-    console.log(`Form with ID ${formId} submitted`);
+// async function patch_list_event(list_event_id){
+// 	// body...
+// }
 
-	})
-})
-})
+// async function put_list_event(list_event_id){
+// 	// body...	
+// }
+
