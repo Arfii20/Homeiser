@@ -54,6 +54,7 @@ async function get_lists(household_id){
 			const deleteButtonElement = document.createElement('button');
 			deleteButtonElement.setAttribute('class', 'delete');
 			deleteButtonElement.textContent = 'Delete';
+			deleteButtonElement.setAttribute('onclick', 'delete_list(event)');
 
 			// Append the button elements to the actions div element
 			actionsDivElement.appendChild(editButtonElement);
@@ -175,14 +176,13 @@ async function post_list(event){
 async function delete_list(event){
 	event.preventDefault();
 	// handle form submission
-	const closestForm = event.target.closest('form');
-	const closestHeader = closestForm.closest('header');
+	const closestHeader = event.target.closest('header');
 	const listID = closestHeader.id;
+	closestHeader.remove();
 
-	const response = await fetch(`${BASE}list_details/${list_id}`, {method: 'DELETE'});
+	const response = await fetch(`${BASE}list_details/${listID}`, {method: 'DELETE'});
 	const response_error = await response.json();
-	console.log(response_error.error);
-	location.reload();
+	console.log(response_error);
 }
 
 // async function patch_list(list_id){

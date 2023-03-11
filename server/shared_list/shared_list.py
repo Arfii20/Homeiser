@@ -118,17 +118,19 @@ class ListDetails(Resource):
         {'message': 'List Deleted'}
         """
         connection, cursor = get_conn()
+
         cursor.execute("SELECT * FROM list WHERE id = %s;" % list_id)
         present = cursor.fetchone()
 
         if present is not None:
+            query2 = "DELETE FROM list_event WHERE list_event.list = %s;"
+            cursor.execute(query2 % list_id)
+            connection.commit()
+
             query1 = "DELETE FROM list WHERE list.id = %s;"
             cursor.execute(query1 % list_id)
             connection.commit()
 
-            query2 = "DELETE FROM list_event WHERE list_event.list = %s;"
-            cursor.execute(query2 % list_id)
-            connection.commit()
             return {"message": "List Deleted"}, 200
         else:
             abort(404, error="List Doesnt Exist")
