@@ -17,11 +17,6 @@ async function get_lists(household_id){
 			const headerElement = document.createElement('header');
 			headerElement.setAttribute("id", obj.id);
 
-			// // Create a new h1 element and set its text content
-			// const h1Element = document.createElement('h1');
-			// h1Element.textContent = obj.name;
-
-
 			// Create a new div element and set its ID
 			const divElement = document.createElement('div');
 			divElement.setAttribute('id', 'list-desc');
@@ -79,22 +74,34 @@ async function get_lists(household_id){
 			hrElement.className = 'hr-element';
 
 			// Create a new form element and set its attributes
-			const new_task_form_id = 'new-task-form-' + obj.list_id;
+			const new_task_form_id = 'new-task-form-' + obj.id;
 			const formElement = document.createElement('form');
 			formElement.setAttribute('class', 'new-task-form');
 			formElement.setAttribute('id', new_task_form_id);
+			formElement.setAttribute('onsubmit', 'handleFormSubmission(event)')
 
 			// Create a new input element and set its attributes
-			const new_task_input_id = 'new-task-input-' + obj.list_id;
+			const new_task_input_id = 'new-task-input-' + obj.id;
 			const inputElement = document.createElement('input');
 			inputElement.setAttribute('type', 'text');
 			inputElement.setAttribute('name', 'new-task-input');
 			inputElement.setAttribute('class', 'new-task-input');
 			inputElement.setAttribute('id', new_task_input_id);
-			inputElement.setAttribute('placeholder', 'What do you have planned?');
+			inputElement.setAttribute('placeholder', 'Enter new task name');
+			inputElement.setAttribute('maxlength', '100');
 
 			// Create a new input element and set its attributes
-			const new_task_submit_id = 'new-task-submit-' + obj.list_id;
+			const new_task_description_id = 'new-task-description-' + obj.id;
+			const inputElementDescription = document.createElement('input');
+			inputElementDescription.setAttribute('type', 'text');
+			inputElementDescription.setAttribute('name', 'new-task-description');
+			inputElementDescription.setAttribute('class', 'new-task-description');
+			inputElementDescription.setAttribute('id', new_task_description_id);
+			inputElementDescription.setAttribute('placeholder', 'Enter new task description');
+			inputElementDescription.setAttribute('maxlength', '100');
+
+			// Create a new input element and set its attributes
+			const new_task_submit_id = 'new-task-submit-' + obj.id;
 			const submitElement = document.createElement('input');
 			submitElement.setAttribute('type', 'submit');
 			submitElement.setAttribute('class', 'new-task-submit');
@@ -107,8 +114,10 @@ async function get_lists(household_id){
 
 			// Append the input elements to the form element
 			formElement.appendChild(inputElement);
+			formElement.appendChild(inputElementDescription);
 			formElement.appendChild(submitElement);
 
+			
 			// Append the form element to the header element
 			headerElement.appendChild(formElement);
 			headerElement.appendChild(h2Element);
@@ -128,7 +137,8 @@ async function get_lists(household_id){
 }
 
 // async function post_list(household_id){
-// 	// body...
+
+	    // handle form submission based on formId
 // }
 
 async function delete_list(list_id){
@@ -136,7 +146,8 @@ async function delete_list(list_id){
 	const response_error = await response.json();
 	console.log(response_error.error);
 	location.reload();
-}
+
+	}
 
 // async function patch_list(list_id){
 // 	// body...
@@ -163,6 +174,7 @@ async function get_list_event(list_id){
 			const taskDivElement = document.createElement('div');
 			taskDivElement.setAttribute('class', 'task');
 			taskDivElement.setAttribute('id', obj.id);
+			taskDivElement.setAttribute('data-list_id', obj.list);
 			taskDivElement.setAttribute('data-added-user-id', obj.added_user_id);
 			taskDivElement.setAttribute('data-checked-off-by-user', obj.checked_off_by_user);
 
@@ -249,3 +261,31 @@ async function delete_list_event(list_event_id){
 // async function put_list_event(list_event_id){
 // 	// body...	
 // }
+
+function handleFormSubmission(event) {
+  event.preventDefault();
+  // handle form submission
+  const closestForm = event.target.closest('form');
+  const closestHeader = closestForm.closest('header');
+  const headerId = closestHeader.id;
+
+  const task_input_id = '#new-task-input-' + headerId;
+  const inputValue = closestForm.querySelector(task_input_id).value;
+  console.log(`Form with the value ${inputValue} submitted`);
+  console.log(`Form with ID ${headerId} submitted`);
+}
+
+
+window.addEventListener('load', () => {
+const submitButtons = document.querySelectorAll('.new-task-form');
+
+submitButtons.forEach((form) => {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = button.closest('form');
+    const formId = form.id;
+    console.log(`Form with ID ${formId} submitted`);
+
+	})
+})
+})

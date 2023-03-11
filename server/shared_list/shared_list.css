@@ -172,7 +172,7 @@ header h2 {
 
 /* Each Task CSS */
 .new-task-form {
-	display: flex;;
+	display: flex;
 }
 
 input, button {
@@ -184,6 +184,16 @@ input, button {
 
 .new-task-input {
 	flex: 1 1 0%;
+	background-color: var(--darker);
+	padding: 1rem;
+	border-radius: 1rem;
+	margin-right: 1rem;
+	color: var(--light);
+	font-size: 1.25rem;
+}
+
+.new-task-description {
+	flex: 1 1 40%;
 	background-color: var(--darker);
 	padding: 1rem;
 	border-radius: 1rem;
