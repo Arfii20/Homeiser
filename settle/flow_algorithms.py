@@ -135,9 +135,9 @@ class Settle:
         nodes = [v for v in debt_network.graph.keys()]
         simplified_debt = flow.FlowGraph(vertices=nodes)
 
-        # draw initial graphs
-        debt_network.draw("intra-settle", subdir="test_settle")
-        simplified_debt.draw("simplified", subdir="test_settle", res=False)
+        # # draw initial graphs
+        # debt_network.draw("intra-settle", subdir="test_settle")
+        # simplified_debt.draw("simplified", subdir="test_settle", res=False)
 
         # go through all nodes and their neighbours
         for node in nodes:
@@ -156,7 +156,7 @@ class Settle:
 
                 debt_network.prune_edges()
 
-                debt_network.draw("intra-settle", subdir="test_settle")
-                simplified_debt.draw("simplified", subdir="test_settle")
+                # debt_network.draw("intra-settle", subdir="test_settle")
+                # simplified_debt.draw("simplified", subdir="test_settle")
 
         return simplified_debt
