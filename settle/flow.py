@@ -41,6 +41,10 @@ class Edge:
         """(Capacity = 0) <=> edge is residual. Thus use capacity to determine if edge residual"""
         return not bool(self.capacity)
 
+    @property
+    def saturated(self) -> bool:
+        return not self.unused_capacity
+
     def push_flow(self, flow: int):
         """Pushes flow down an edge"""
 
@@ -202,7 +206,17 @@ class FlowGraph:
     def operate_on_edge(self, u: Vertex, v: Vertex, fn: Callable, *args, **kwargs):
         [fn(edge, *args, **kwargs) for edge in self.graph[u] if edge.target == v]
 
-    def draw(self, filename="out"):
+    def prune_edges(self):
+        """Removes any saturated edges from the graph, as well as their residual edges"""
+
+        # for every edge in the graph
+        for node, edges in self.graph.items():
+            for edge in edges:
+                # remove the edge if it is saturated (ignoring residual edges)
+                if edge.saturated and not edge.residual:
+                    self.remove_edge(src=node, target=edge.target)
+
+    def draw(self, filename="out", *, dir_ext=""):
         dot = graphviz.Digraph(comment="Flow Graph")
 
         # create nodes
@@ -227,4 +241,6 @@ class FlowGraph:
                     )
 
         print(dot.source)
-        dot.render(filename=f"{filename}", directory=f"{getcwd()}/renders", format='png')
+        dot.render(
+            filename=f"{filename}", directory=f"{getcwd()}/renders{'/' + dir_ext if dir_ext else ''}", format="png"
+        )

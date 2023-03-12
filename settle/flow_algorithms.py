@@ -115,4 +115,13 @@ class MaxFlow:
 class Settle:
     @staticmethod
     def simplify_debt(debt_network: flow.FlowGraph) -> flow.FlowGraph:
-        """Returns the debt network, simplified, in graph form"""
+        """Returns the debt network, simplified, in graph form
+
+        in pseudocode
+
+        for edge(u, v) in graph:
+            if new := maxflow(u, v):
+                clean.add_edge(u, (v, new)
+                messy.prune_edges()  # remove all saturated edges from the graph, and their residual edges
+
+        """

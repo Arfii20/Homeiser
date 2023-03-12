@@ -137,5 +137,30 @@ class TestFlowGraph(TestCase):
             self.assertEqual(-1, self.blank_graph.unused_capacity(A, B))
             self.assertEqual(-1, self.blank_graph.unused_capacity(B, A, residual=True))
 
+    def test_prune_edges(self):
+        """Push 15 units of flow along the edge a --[0/15]--> c and prune
+        Make sure A->B and B-> C still exist, and that a --> c (or its residual edge)
+         no longer exists"""
+
+        a, b, c, d = self.vertices
+
+        # push flow and prune graph
+        self.test_graph.augment_flow([a, c], 15)
+        self.test_graph.draw('a-15_15_c', dir_ext='test_prune_edges')
+        self.test_graph.prune_edges()
+        self.test_graph.draw('pruned', dir_ext='test_prune_edges')
+
+        # configure test table to run 4 tests above
+        tests = ["A->C removed", "C->A (residual) removed", "A->B exists", "B->C exists"]
+        cases = [(a, c), (c, a, True), (a, b), (b, c)]
+        expected = [-1, -1, 10, 5]
+
+        # run tests
+
+        for test, case, exp in zip(tests, cases, expected):
+            with self.subTest(test):
+                self.assertEqual(self.test_graph.unused_capacity(*case), exp)
+
+
     def test_draw(self):
         self.test_graph.draw(filename="test")
