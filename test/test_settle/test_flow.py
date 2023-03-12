@@ -138,4 +138,4 @@ class TestFlowGraph(TestCase):
             self.assertEqual(-1, self.blank_graph.unused_capacity(B, A, residual=True))
 
     def test_draw(self):
-        self.test_graph.draw()
+        self.test_graph.draw(filename="test")

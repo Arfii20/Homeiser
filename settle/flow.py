@@ -1,6 +1,7 @@
 """Defines the flow graph structure"""
 from dataclasses import dataclass
 import graphviz  # type: ignore
+from os import getcwd
 from typing import Callable
 
 
@@ -226,4 +227,4 @@ class FlowGraph:
                     )
 
         print(dot.source)
-        dot.render(filename=filename, directory="./renders", format="png")
+        dot.render(filename=f"{filename}", directory=f"{getcwd()}/renders", format='png')
