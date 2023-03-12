@@ -1,4 +1,5 @@
 """Defines the flow graph structure"""
+import copy
 from dataclasses import dataclass
 import graphviz  # type: ignore
 from os import getcwd
@@ -43,6 +44,7 @@ class Edge:
 
     @property
     def saturated(self) -> bool:
+        """Edges are saturated where the unused capacity of an edge is 0"""
         return not self.unused_capacity
 
     def push_flow(self, flow: int):
@@ -81,7 +83,13 @@ class FlowGraph:
 
     def augment_flow(self, path: list[Vertex], flow: int):
         for u, v in zip(path, path[1:]):
-            [edge.push_flow(flow) for edge in self.graph[u] if edge.target == v]
+            for edge in self.graph[u]:
+                if edge.target == v:
+                    edge.push_flow(flow)
+
+            for edge in self.graph[v]:
+                if edge.target == u:
+                    edge.push_flow(-1 * flow)
 
     def remove_vertex(self, v: Vertex):
         """Removes a vertex, and all of its incoming / outgoing edges from a graph"""
@@ -164,7 +172,7 @@ class FlowGraph:
             neighbouring_edge.target
             for neighbouring_edge in self.graph[current]
             if neighbouring_edge.unused_capacity != -1
-            and neighbouring_edge.unused_capacity
+            and not neighbouring_edge.saturated
         ]
 
     def unused_capacity(self, u: Vertex, v: Vertex, residual: bool = False) -> int:
@@ -207,16 +215,33 @@ class FlowGraph:
         [fn(edge, *args, **kwargs) for edge in self.graph[u] if edge.target == v]
 
     def prune_edges(self):
-        """Removes any saturated edges from the graph, as well as their residual edges"""
+        """Replace edges in graph with an edge of flow 0, capacity of unused capacity"""
+
+        # create deep copy of original graph structure so we can change graph while pruning
+        items = copy.deepcopy([(k, v) for k, v in self.graph.items()])
 
         # for every edge in the graph
-        for node, edges in self.graph.items():
+        for node, edges in items:
             for edge in edges:
-                # remove the edge if it is saturated (ignoring residual edges)
-                if edge.saturated and not edge.residual:
-                    self.remove_edge(src=node, target=edge.target)
+                # self.draw("intra-settle", subdir='test_settle')
 
-    def draw(self, filename="out", *, dir_ext=""):
+                # skip residual edges
+                if edge.residual:
+                    continue
+
+                # remove the edge
+                self.remove_edge(src=node, target=edge.target)
+
+                # if the edge isn't saturated add an edge back to the graph with flow=0,
+                # and capacity=old_edge.unused_capacity
+                if edge.saturated:
+                    continue
+                else:
+                    self.add_edge(
+                        edge=Edge(edge.target, 0, edge.unused_capacity), src=node
+                    )
+
+    def draw(self, filename="out", *, subdir="", res=True):
         dot = graphviz.Digraph(comment="Flow Graph")
 
         # create nodes
@@ -229,9 +254,9 @@ class FlowGraph:
                     dot.edge(
                         str(src.v_id),
                         str(target_edge.target.v_id),
-                        label=f"{target_edge.flow} / {target_edge.capacity}",
+                        label=f"{f'{target_edge.flow} / {target_edge.capacity}' if res else f'{target_edge.capacity}'}",
                     )
-                else:
+                elif res:
                     dot.edge(
                         str(src.v_id),
                         str(target_edge.target.v_id),
@@ -242,5 +267,7 @@ class FlowGraph:
 
         print(dot.source)
         dot.render(
-            filename=f"{filename}", directory=f"{getcwd()}/renders{'/' + dir_ext if dir_ext else ''}", format="png"
+            filename=f"{filename}",
+            directory=f"{getcwd()}/renders{'/' + subdir if subdir else ''}",
+            format="svg",
         )

@@ -1,5 +1,7 @@
 import settle.flow as flow
 
+import copy
+
 
 class PathError(Exception):
     ...
@@ -10,11 +12,11 @@ class MaxFlow:
     def edmunds_karp(graph: flow.FlowGraph, src: flow.Vertex, sink: flow.Vertex) -> int:
         """Returns the max flow between src and sink nodes"""
         max_flow = 0
-
         while aug_path := MaxFlow.augmenting_path(graph, src, sink):
             bottleneck = MaxFlow.bottleneck(graph, aug_path)
             max_flow += bottleneck
             graph.augment_flow(aug_path, bottleneck)
+            # graph.draw(f"intra-settle", subdir='test_settle')
 
         return max_flow
 
@@ -93,9 +95,9 @@ class MaxFlow:
         if list(came_from.values()).count(None) == len(came_from.values()):
             return []
 
-        # raise an error if we don't have a pointer to sink
+        # raise an error if we don't have a pointer to sink, as no path was found that leads to the sink
         if came_from[sink] is None:
-            raise PathError("Failed to generate a valid path from src -> sink")
+            return []
 
         # build path backtracking from sink
         path: list[flow.Vertex] = [sink]
@@ -125,3 +127,36 @@ class Settle:
                 messy.prune_edges()  # remove all saturated edges from the graph, and their residual edges
 
         """
+
+        # graph cache
+        debt_cache: flow.FlowGraph = copy.deepcopy(debt_network)
+
+        # create clean graph with the vertices from the current unsimplified graph
+        nodes = [v for v in debt_network.graph.keys()]
+        simplified_debt = flow.FlowGraph(vertices=nodes)
+
+        # draw initial graphs
+        debt_network.draw("intra-settle", subdir="test_settle")
+        simplified_debt.draw("simplified", subdir="test_settle", res=False)
+
+        # go through all nodes and their neighbours
+        for node in nodes:
+            for neighbour in debt_network.neighbours(node):
+                # if we request an edge that doesn't exist it has been settled out of the graph
+                # so move onto the next pair of nodes
+                try:
+                    edge = debt_network.get_edge(node, neighbour)
+                except flow.EdgeNotFoundError:
+                    continue
+
+                if new_flow := MaxFlow.edmunds_karp(debt_network, node, edge.target):
+                    simplified_debt.add_edge(
+                        edge=flow.Edge(edge.target, 0, new_flow), src=node
+                    )
+
+                debt_network.prune_edges()
+
+                debt_network.draw("intra-settle", subdir="test_settle")
+                simplified_debt.draw("simplified", subdir="test_settle")
+
+        return simplified_debt

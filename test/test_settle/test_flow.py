@@ -146,12 +146,17 @@ class TestFlowGraph(TestCase):
 
         # push flow and prune graph
         self.test_graph.augment_flow([a, c], 15)
-        self.test_graph.draw('a-15_15_c', dir_ext='test_prune_edges')
+        self.test_graph.draw("pre-prune", subdir="test_prune_edges")
         self.test_graph.prune_edges()
-        self.test_graph.draw('pruned', dir_ext='test_prune_edges')
+        self.test_graph.draw("pruned", subdir="test_prune_edges")
 
         # configure test table to run 4 tests above
-        tests = ["A->C removed", "C->A (residual) removed", "A->B exists", "B->C exists"]
+        tests = [
+            "A->C removed",
+            "C->A (residual) removed",
+            "A->B exists",
+            "B->C exists",
+        ]
         cases = [(a, c), (c, a, True), (a, b), (b, c)]
         expected = [-1, -1, 10, 5]
 
@@ -160,7 +165,6 @@ class TestFlowGraph(TestCase):
         for test, case, exp in zip(tests, cases, expected):
             with self.subTest(test):
                 self.assertEqual(self.test_graph.unused_capacity(*case), exp)
-
 
     def test_draw(self):
         self.test_graph.draw(filename="test")
