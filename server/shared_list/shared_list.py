@@ -76,7 +76,7 @@ class SharedList(Resource):
         name = args.get("name")
         list_id = args.get("id")
 
-        cursor.execute("SELECT * FROM list WHERE name = '%s';" % name)
+        cursor.execute("SELECT * FROM list WHERE name = '%s' AND household_id = %s;" % (name, household_id))
         list_back = cursor.fetchone()
 
         id_back = None
@@ -162,8 +162,13 @@ class ListDetails(Resource):
         cursor.execute(query1 % list_id)
         id_present = cursor.fetchone()
 
-        query2 = "SELECT * FROM list WHERE name = '%s' AND id != %s"
-        cursor.execute(query2 % (new_name, list_id))
+        query_house_id = "SELECT household_id FROM list WHERE id = %s"
+        cursor.execute(query_house_id % list_id)
+        house_id = cursor.fetchone()[0]
+        print(house_id)
+
+        query2 = "SELECT * FROM list WHERE name = '%s' AND id != %s AND household_id = %s"
+        cursor.execute(query2 % (new_name, list_id, house_id))
         name_present = cursor.fetchall()
 
         if not id_present:

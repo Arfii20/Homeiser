@@ -48,14 +48,14 @@ async function get_lists(household_id){
 			actionsDivElement.setAttribute('class', 'actions');
 
 			// Create a new button element and set its class and text content
-			const editButtonId = 'input-element-h1-' + obj.id;
+			const editButtonId = 'edit-button-list-' + obj.id;
 			const editButtonElement = document.createElement('button');
 			editButtonElement.setAttribute('class', 'edit');
 			editButtonElement.setAttribute('id', editButtonId);
 			editButtonElement.textContent = 'Edit';
+			editButtonElement.setAttribute('onclick', 'patch_list(event)');
 
 			// Create a new button element and set its class and text content
-			const editButtonId = 'input-element-h1-' + obj.id;
 			const deleteButtonElement = document.createElement('button');
 			deleteButtonElement.setAttribute('class', 'delete');
 			deleteButtonElement.textContent = 'Delete';
@@ -157,7 +157,7 @@ async function post_list(event){
 		const url = BASE + "shared_list/" + house_id;
 		const data = new URLSearchParams();
 
-		data.append('name', inputValue);
+		data.append('name', inputValue.replace(/'/g, "\\'"));
 
 		await fetch(url, {
 		  method: 'POST',
@@ -195,55 +195,50 @@ async function delete_list(event){
 	console.log(response_error);
 }
 
-async function patch_list(list_id){
+async function patch_list(event){
 	const closestHeader = event.target.closest('header');
 	const listID = closestHeader.id;
 
-	const editButtonElement = document.querySelector('#edit-' + listEventID);
-	const inputElement = document.querySelector('#input-' + listEventID);
+	const editButtonElement = document.querySelector('#edit-button-list-' + listID);
+	const inputElement = document.querySelector('#input-element-h1-' + listID);
+	const inputValue = inputElement.value;
 
 	if (editButtonElement.innerText.toLowerCase() == "edit") {
 		editButtonElement.innerText = "Save";
-		inputName.removeAttribute("readonly");
 		inputElement.removeAttribute("readonly");		
 		inputElement.focus();
 		inputElement.setSelectionRange(0, inputElement.value.length);
+		inputElement.setAttribute('data-previous-data', inputValue);
 		
 
 	}
 	else {
 		editButtonElement.innerText = "Edit";
-
 		inputElement.setAttribute("readonly", "readonly");
-		inputName.setAttribute("readonly", "readonly");
-		const inputValue = inputElement.value;
-		const inputDescriptionValue = inputName.value;
 
-		if (!inputValue && !inputDescriptionValue){
-			alert("NAME and DESCRIPTION cannot be empty!")
-		}
-		else if (!inputValue){
-			alert("NAME cannot be empty!")
-		}
-		else if (!inputDescriptionValue){
-			alert("DESCRIPTION cannot be empty!")
+		if (!inputValue){
+			alert("LIST NAME cannot be empty!");
 		}
 		else{
-		  	const url = BASE + "list_details/" + listEventID;
+		  	const url = BASE + "list_details/" + listID;
 			const data = new URLSearchParams();
 
-			data.append('new_task', inputValue);
-			data.append('new_description', inputDescriptionValue);
+			data.append('new_name', inputValue.replace(/'/g, "\\'"));
 
-			await fetch(url, {
-			  method: 'PATCH',
-			  body: data,
-			  headers: {
-			    'Content-Type': 'application/x-www-form-urlencoded'
-			  }
-			}).then(response => response.json())
-			  .then(data => console.log(data))
-			  .catch(error => console.error(error));
+			const response = await fetch(url, {method: 'PATCH',
+												body: data,
+												headers: {
+												'Content-Type': 'application/x-www-form-urlencoded'
+												}
+											});
+			if (!response.ok){
+				alert("List name already exists!");
+				inputElement.value = inputElement.getAttribute('data-previous-data');
+				console.log(await response.json());
+			}
+			else {
+				console.log(await response.json());
+			}
 		}
 	}
 }
@@ -371,8 +366,8 @@ async function post_list_event(event) {
 	  	const url = BASE + "list_events/" + headerId;
 		const data = new URLSearchParams();
 
-		data.append('task_name', inputValue);
-		data.append('description_of_task', inputDescriptionValue);
+		data.append('task_name', inputValue.replace(/'/g, "\\'"));
+		data.append('description_of_task', inputDescriptionValue.replace(/'/g, "\\'"));
 		data.append('added_user_id', parseInt(added_user));
 
 		await fetch(url, {
@@ -447,8 +442,8 @@ async function put_list_event(event){
 		  	const url = BASE + "list_event_details/" + listEventID;
 			const data = new URLSearchParams();
 
-			data.append('new_task', inputValue);
-			data.append('new_description', inputDescriptionValue);
+			data.append('new_task', inputValue.replace(/'/g, "\\'"));
+			data.append('new_description', inputDescriptionValue.replace(/'/g, "\\'"));
 
 			await fetch(url, {
 			  method: 'PUT',
