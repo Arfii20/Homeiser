@@ -16,8 +16,6 @@ class TransactionConstructionError(Exception):
 class Transaction:
     """Specifies a singular transaction"""
 
-    # TODO: house id
-
     t_id: int
     src_id: int
     dest_id: int

@@ -1,12 +1,14 @@
 import settle.flow as flow
-
 import copy
 
 
 class PathError(Exception):
     ...
 
-class NoSimplification(Exception): ...
+
+class NoSimplification(Exception):
+    ...
+
 
 class MaxFlow:
     @staticmethod
