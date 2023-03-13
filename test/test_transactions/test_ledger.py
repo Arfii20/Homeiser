@@ -45,8 +45,27 @@ class TestLedger(TestCase):
         with self.subTest("Build house 2"):
             l = Ledger.build_from_house_id(3, db)
 
-        expected = [Transaction.build_from_id(transaction_id=428, cur=db),
-                    Transaction.build_from_id(transaction_id=429, cur=db),
-                    Transaction.build_from_id(transaction_id=430, cur=db)]
+        expected = [
+            Transaction.build_from_id(transaction_id=428, cur=db),
+            Transaction.build_from_id(transaction_id=429, cur=db),
+            Transaction.build_from_id(transaction_id=430, cur=db),
+        ]
 
         self.assertEqual(l.transactions, expected)
+
+    def test_users(self):
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+        l = Ledger.build_from_house_id(3, db)
+
+        exp = [(5, 'Andrew Lees'), (6, 'Bandicoot Crash'), (7, 'Kez Carey')]
+
+        u = l.users
+        u.sort(key=lambda x: x[0])  # order ascending by id
+
+        self.assertEqual(u, exp)
+

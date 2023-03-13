@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass
+from settle import flow, flow_algorithms
+from transactions.transaction import Transaction
 
+from dataclasses import dataclass
+import json
 from mysql.connector import cursor
 
-from transactions.transaction import Transaction
 
 
 class LedgerConstructionError(Exception):
@@ -75,7 +76,8 @@ class Ledger:
             "INNER JOIN user u on p.src = u.id "
             "INNER JOIN household h on h.id = u.household_id "
             "WHERE h.id = %s "
-            "AND paid = 0;", [house_id]
+            "AND paid = 0;",
+            [house_id],
         )
 
         transaction_rows = cur.fetchall()
@@ -91,13 +93,23 @@ class Ledger:
             ]
         )
 
-
     @property
     def json(self):
         """Returns json; list of transactions"""
         return json.dumps([t.json for t in self.transactions])
 
-    def simplify(self) -> None:
+    @property
+    def users(self) -> list[tuple[int, str]]:
+        """Returns a list of users ids and names"""
+        u = set()
+        for transaction in self.transactions:
+            u.add((transaction.src_id, transaction.src_name))
+            u.add((transaction.dest_id, transaction.dest_name))
+
+        return [u_ for u_ in u]
+
+    @staticmethod
+    def simplify(household_id: int, cur: cursor.MySQLCursor) -> None:
         """Simplifies all unmarked transactions in a group.
 
         1. Pulls all open (i.e. unpaid) transactions of a house
@@ -109,3 +121,7 @@ class Ledger:
             * Add new transactions from the simplified model
             * Return that transactions have been updated
         """
+
+        # get ledger of all unmarked transactions in the house
+        ledger = Ledger.build_from_house_id(household_id, cur)
+
