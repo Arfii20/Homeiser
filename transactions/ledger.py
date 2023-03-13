@@ -49,7 +49,12 @@ class Ledger:
             v for v in {tid[0] for tid in [row for row in transaction_rows]}
         ]
 
-        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])
+        return Ledger(
+            [
+                Transaction.build_from_id(transaction_id=t_id, cur=cur)
+                for t_id in transaction_ids
+            ]
+        )
 
     @staticmethod
     def build_from_house_id(house_id: int, cur: cursor.MySQLCursor) -> Ledger:
@@ -70,8 +75,7 @@ class Ledger:
             "INNER JOIN user u on p.src = u.id "
             "INNER JOIN household h on h.id = u.household_id "
             "WHERE h.id = %s "
-            "AND paid = 0"
-            [house_id],
+            "AND paid = 0;", [house_id]
         )
 
         transaction_rows = cur.fetchall()
@@ -80,7 +84,13 @@ class Ledger:
             v for v in {tid[0] for tid in [row for row in transaction_rows]}
         ]
 
-        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])
+        return Ledger(
+            [
+                Transaction.build_from_id(transaction_id=t_id, cur=cur)
+                for t_id in transaction_ids
+            ]
+        )
+
 
     @property
     def json(self):

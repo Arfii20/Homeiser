@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import mysql.connector
 
+from transactions.transaction import Transaction
 from transactions.ledger import Ledger, LedgerConstructionError
 
 
@@ -40,3 +41,12 @@ class TestLedger(TestCase):
             LedgerConstructionError
         ):
             Ledger.build_from_house_id(-1, db)
+
+        with self.subTest("Build house 2"):
+            l = Ledger.build_from_house_id(3, db)
+
+        expected = [Transaction.build_from_id(transaction_id=428, cur=db),
+                    Transaction.build_from_id(transaction_id=429, cur=db),
+                    Transaction.build_from_id(transaction_id=430, cur=db)]
+
+        self.assertEqual(l.transactions, expected)
