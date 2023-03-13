@@ -1,4 +1,6 @@
 """Defines the flow graph structure"""
+from __future__ import annotations
+
 import copy
 from dataclasses import dataclass
 import graphviz  # type: ignore
@@ -76,6 +78,9 @@ class FlowGraph:
 
         # If we have been provided with a graph use the graph. If not, generate an empty dict from our list of vertices
         self.graph = graph if graph is not None else {v: [] for v in vertices}
+
+    def __eq__(self, other: FlowGraph) -> bool:
+        return self.graph == other.graph
 
     def add_vertex(self, v: Vertex):
         """Adds a vertex with no edges to the graph"""

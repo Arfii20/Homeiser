@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+import settle.flow_algorithms
 from settle.flow_algorithms import *
 
 
@@ -140,3 +142,13 @@ class TestSettle(TestCase):
         }
 
         self.assertEqual(exp, settled.graph)
+
+    def test_simplify_debt_no_simplifications(self):
+        """Raise an error when no simplifications take place"""
+
+        vertices = [flow.Vertex(0, 'Alice'), flow.Vertex(1, 'Bob')]
+        debt = flow.FlowGraph(vertices=vertices)
+        debt.add_edge(edge=flow.Edge(vertices[1], 0, 5), src=vertices[0])
+
+        with self.assertRaises(NoSimplification):
+            Settle.simplify_debt(debt)

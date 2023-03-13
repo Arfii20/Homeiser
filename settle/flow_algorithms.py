@@ -6,6 +6,7 @@ import copy
 class PathError(Exception):
     ...
 
+class NoSimplification(Exception): ...
 
 class MaxFlow:
     @staticmethod
@@ -149,6 +150,7 @@ class Settle:
                 except flow.EdgeNotFoundError:
                     continue
 
+                # if the max flow between two nodes > 0, add an edge with that max flow to the graph
                 if new_flow := MaxFlow.edmunds_karp(debt_network, node, edge.target):
                     simplified_debt.add_edge(
                         edge=flow.Edge(edge.target, 0, new_flow), src=node
@@ -156,7 +158,7 @@ class Settle:
 
                 debt_network.prune_edges()
 
-                # debt_network.draw("intra-settle", subdir="test_settle")
-                # simplified_debt.draw("simplified", subdir="test_settle")
+        if simplified_debt == debt_cache:
+            raise NoSimplification("No simplifications were made")
 
         return simplified_debt
