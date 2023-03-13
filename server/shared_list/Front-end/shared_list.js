@@ -1,11 +1,10 @@
 const BASE = "http://127.0.0.1:5000/";
 
-// Shared List
+// Shared List methods start from here
 async function get_lists(household_id){
 	const response = await fetch(BASE + "shared_list/" + household_id);
 	if (response.ok){
 		const response_array = JSON.parse(await response.json());
-		console.log(response_array);
 
 		for (let i = 0; i < response_array.length; i++) {
 			const obj = JSON.parse(response_array[i]);
@@ -136,6 +135,7 @@ async function get_lists(household_id){
 			get_list_event(obj.id);
 
 			parentElement.appendChild(hrElement);
+			console.log({message: 'list added'});
 		}
 	}else{
 		const response_error = await response.json();
@@ -248,7 +248,6 @@ async function get_list_event(list_id){
 	const response = await fetch(BASE + "list_events/" + list_id);
 	if (response.ok){
 		const response_array = JSON.parse(await response.json());
-		console.log(response_array);
 
 		for (let i = 0; i < response_array.length; i++) {
 			const obj = JSON.parse(response_array[i]);
@@ -318,6 +317,10 @@ async function get_list_event(list_id){
 			const checkboxInput = document.createElement('input');
 			checkboxInput.type = 'checkbox';
 			checkboxInput.className = 'checkbox';
+			checkboxInput.setAttribute('onclick', 'patch_list_event(event)');
+			if (obj.checked_off_by_user){
+				checkboxInput.checked = true;
+			}
 
 			// Append the button elements to the actions div element
 			actionsDivElement.appendChild(editButtonElement);
@@ -333,7 +336,7 @@ async function get_list_event(list_id){
 
 			// Append the h2 and tasks div elements to the section element
 			parentElement.appendChild(divElement);
-
+			console.log({message: 'list event added'});
 		}
 	}else{
 		const response_error = await response.json();
@@ -401,8 +404,29 @@ async function delete_list_event(event){
 	console.log(response_error);
 }
 
-// async function patch_list_event(event){
-// }
+async function patch_list_event(event){
+	const closestDiv = event.target.closest('div');
+  	const listEventID = closestDiv.parentNode.id;
+
+  	const checkboxElement = event.target;
+
+	const userID = 630;
+
+  	const url = BASE + "list_event_details/" + listEventID;
+	const data = new URLSearchParams();
+
+	data.append('user_id', parseInt(userID));
+
+	await fetch(url, {
+		method: 'PATCH',
+		body: data,
+		headers: {
+		'Content-Type': 'application/x-www-form-urlencoded'
+		}
+	}).then(response => response.json())
+	  .then(data => console.log(data))
+	  .catch(error => console.error(error));
+}
 
 async function put_list_event(event){
 	const closestDiv = event.target.closest('div');
@@ -418,8 +442,6 @@ async function put_list_event(event){
 		inputElement.removeAttribute("readonly");		
 		inputElement.focus();
 		inputElement.setSelectionRange(0, inputElement.value.length);
-		
-
 	}
 	else {
 		editButtonElement.innerText = "Edit";
