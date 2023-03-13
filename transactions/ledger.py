@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+
 from settle import flow, flow_algorithms
 from transactions.transaction import Transaction
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 import json
+import logging
 from mysql.connector import cursor
 
+# initialise logger
+logging.basicConfig(filename=f"{datetime.now()}.log", level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class LedgerConstructionError(Exception):
@@ -125,3 +131,64 @@ class Ledger:
         # get ledger of all unmarked transactions in the house
         ledger = Ledger.build_from_house_id(household_id, cur)
 
+        # build a map of user ids to vertices for all users in graph
+        users_vertices = {usr[0]: flow.Vertex(*usr) for usr in ledger.users}
+
+        # build a graph including everyone in the household
+        debt = flow.FlowGraph(vertices=[v for v in users_vertices.values()])
+
+        # add an edge for every transaction in the graph
+        for transaction in ledger.transactions:
+            debt.add_edge(
+                edge=flow.Edge(
+                    users_vertices[transaction.dest_id], 0, transaction.amount
+                ),
+                src=users_vertices[transaction.src_id],
+            )
+
+        # debt.draw("pre_simplify", subdir='ledger', res=False)
+
+        try:
+            simplified = flow_algorithms.Settle.simplify_debt(debt)
+        except flow_algorithms.NoSimplification as e:
+            # log and propagate upwards
+            logger.warning("No Simplifications found")
+            raise e
+
+        # otherwise
+        #   1. build new ledger from flow graph
+        #   2. delete old transactions
+        #   3. add new transactions to db
+
+        simplified.draw('simplified', subdir='ledger', res=False)
+
+        simplified_ledger = Ledger([])
+
+        # set new due date to today week
+        new_due_date = datetime.today() + timedelta(days=7)
+
+        for node, edges in simplified.graph.items():
+            for edge in edges:
+                # skip residual edges and edges
+                if edge.residual:
+                    continue
+                # TODO: make an actual decision on due dates, default to a week today for now
+                simplified_ledger.transactions.append(
+                    Transaction(
+                        0,
+                        node.v_id,
+                        edge.target.v_id,
+                        node.label,
+                        edge.target.label,
+                        edge.capacity,
+                        "Simplified Transaction",
+                        new_due_date.date(),
+                        False,
+                        household_id
+                    )
+                )
+
+        print(simplified_ledger.transactions)
+        print(len(simplified_ledger.transactions))
+
+        

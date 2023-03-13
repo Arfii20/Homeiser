@@ -62,10 +62,18 @@ class TestLedger(TestCase):
         db = conn.cursor()
         l = Ledger.build_from_house_id(3, db)
 
-        exp = [(5, 'Andrew Lees'), (6, 'Bandicoot Crash'), (7, 'Kez Carey')]
+        exp = [(5, "Andrew Lees"), (6, "Bandicoot Crash"), (7, "Kez Carey")]
 
         u = l.users
         u.sort(key=lambda x: x[0])  # order ascending by id
 
         self.assertEqual(u, exp)
 
+    def test_simplify(self):
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+        Ledger.simplify(3, db)
