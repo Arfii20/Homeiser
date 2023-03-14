@@ -181,8 +181,10 @@ class Ledger:
                 if edge.residual:
                     continue
                 # TODO: make an actual decision on due dates, default to a week today for now
-                logger.info(f"Adding a transaction to the database: "
-                            f"{node.label}--[{edge.capacity}]--> {edge.target.label}")
+                logger.info(
+                    f"Adding a transaction to the database: "
+                    f"{node.label}--[{edge.capacity}]--> {edge.target.label}"
+                )
                 simplified_ledger.transactions.append(
                     Transaction(
                         0,
