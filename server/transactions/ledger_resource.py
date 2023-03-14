@@ -12,7 +12,7 @@ class LedgerResource(Resource):
     def get(self, user_id: int):
         """Given a user id, will return a 'ledger' of all user's transactions whether they are src or dest"""
         try:
-            ledger = Ledger.build_from_id(user_id, db.get_db())
+            ledger = Ledger.build_from_user_id(user_id, db.get_db())
             return ledger.json, 200
 
         except LedgerConstructionError:
