@@ -1,15 +1,27 @@
 from __future__ import annotations
 
-import json
+import sys
+
+from settle import flow, flow_algorithms
+from transactions.transaction import Transaction, TransactionInsertionFailed
+
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+import json
+import logging
+from mysql.connector import cursor, MySQLConnection
 
-from mysql.connector import cursor
-
-from transactions.transaction import Transaction
+# initialise logger
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class LedgerConstructionError(Exception):
     """Failed to create Ledger"""
+
+
+class SimplificationError(Exception):
+    ...
 
 
 @dataclass
@@ -21,7 +33,7 @@ class Ledger:
     transactions: list[Transaction]
 
     @staticmethod
-    def build_from_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
+    def build_from_user_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
         """Builds a ledger of transactions given a user id and a cursor to the db.
         Returns an empty ledger where user has no transactions
         """
@@ -49,9 +61,161 @@ class Ledger:
             v for v in {tid[0] for tid in [row for row in transaction_rows]}
         ]
 
-        return Ledger([Transaction.build_from_id(transaction_id=t_id, cur=cur) for t_id in transaction_ids])  # type: ignore
+        return Ledger(
+            [
+                Transaction.build_from_id(transaction_id=t_id, cur=cur)
+                for t_id in transaction_ids
+            ]
+        )
+
+    @staticmethod
+    def build_from_house_id(house_id: int, cur: cursor.MySQLCursor) -> Ledger:
+        """Builds a ledger of all unsettled transactions in a house"""
+
+        # validate that house id exists
+        cur.execute(
+            "SELECT household.id FROM household WHERE household.id = %s", [house_id]
+        )
+
+        if not cur.fetchall():
+            raise LedgerConstructionError("Household not found")
+
+        # get all unpaid transaction ids for the given household
+        cur.execute(
+            "SELECT transaction.id FROM transaction "
+            "INNER JOIN pairs p on transaction.pair_id = p.id "
+            "INNER JOIN user u on p.src = u.id "
+            "INNER JOIN household h on h.id = u.household_id "
+            "WHERE h.id = %s "
+            "AND paid = 0;",
+            [house_id],
+        )
+
+        transaction_rows = cur.fetchall()
+
+        transaction_ids = [
+            v for v in {tid[0] for tid in [row for row in transaction_rows]}
+        ]
+
+        return Ledger(
+            [
+                Transaction.build_from_id(transaction_id=t_id, cur=cur)
+                for t_id in transaction_ids
+            ]
+        )
 
     @property
     def json(self):
         """Returns json; list of transactions"""
         return json.dumps([t.json for t in self.transactions])
+
+    @property
+    def users(self) -> list[tuple[int, str]]:
+        """Returns a list of users ids and names"""
+        u = set()
+        for transaction in self.transactions:
+            u.add((transaction.src_id, transaction.src_name))
+            u.add((transaction.dest_id, transaction.dest_name))
+
+        return [u_ for u_ in u]
+
+    @staticmethod
+    def simplify(
+        household_id: int, cur: cursor.MySQLCursor, conn: MySQLConnection
+    ) -> None:
+        """Simplifies all unmarked transactions in a group.
+
+        1. Pulls all open (i.e. unpaid) transactions of a house
+        2. Converts transactions into flow graph vertices
+        3. Runs simplification on the flow graph
+        4a. If no simplifications were found, report no simplifications made
+        4b. If there are simplifications to be made:
+            * Check off simplifications with a 'bookmaker' user id (some reserved u_id; arbitrary)
+            * Add new transactions from the simplified model
+            * Return that transactions have been updated
+        """
+
+        # get ledger of all unmarked transactions in the house
+        ledger = Ledger.build_from_house_id(household_id, cur)
+
+        # build a map of user ids to vertices for all users in graph
+        users_vertices = {usr[0]: flow.Vertex(*usr) for usr in ledger.users}
+
+        # build a graph including everyone in the household
+        debt = flow.FlowGraph(vertices=[v for v in users_vertices.values()])
+
+        # add an edge for every transaction in the graph
+        for transaction in ledger.transactions:
+            debt.add_edge(
+                edge=flow.Edge(
+                    users_vertices[transaction.dest_id], 0, transaction.amount
+                ),
+                src=users_vertices[transaction.src_id],
+            )
+
+        # debt.draw("pre_simplify", subdir='ledger', res=False)
+
+        try:
+            simplified = flow_algorithms.Settle.simplify_debt(debt)
+        except flow_algorithms.NoSimplification as e:
+            # log and propagate upwards
+            logger.warning("No Simplifications found")
+            raise e
+
+        # otherwise
+        #   1. build new ledger from flow graph
+        #   2. delete old transactions
+        #   3. add new transactions to db
+
+        simplified.draw("simplified", subdir="ledger", res=False)
+
+        # build new ledger
+        simplified_ledger = Ledger([])
+
+        # set new due date to today week
+        new_due_date = datetime.today() + timedelta(days=7)
+
+        for node, edges in simplified.graph.items():
+            for edge in edges:
+                # skip residual edges and edges
+                if edge.residual:
+                    continue
+                # TODO: make an actual decision on due dates, default to a week today for now
+                logger.info(
+                    f"Adding a transaction to the database: "
+                    f"{node.label}--[{edge.capacity}]--> {edge.target.label}"
+                )
+                simplified_ledger.transactions.append(
+                    Transaction(
+                        0,
+                        node.v_id,
+                        edge.target.v_id,
+                        node.label,
+                        edge.target.label,
+                        edge.capacity,
+                        "Simplified Transaction",
+                        new_due_date.date(),
+                        False,
+                        household_id,
+                    )
+                )
+
+        # try to insert new transactions
+        try:
+            for transaction in simplified_ledger.transactions:
+                transaction.insert_transaction(cur, conn)
+        except TransactionInsertionFailed:
+            # means something failed so remove anything that may have been added and add back old transactions
+            for t_id in [t.t_id for t in simplified_ledger.transactions]:
+                cur.execute("""DELETE FROM transaction WHERE id = %s""", [t_id])
+
+            raise SimplificationError(
+                "Found a way to simplify debts; failed to execute. Try again later"
+            )
+
+        # delete old transactions only if we have successfully added new ones
+        for t_id in [t.t_id for t in ledger.transactions]:
+            cur.execute("""DELETE FROM transaction WHERE id = %s""", [t_id])
+
+        # commit
+        conn.commit()
