@@ -96,6 +96,12 @@ async function get_lists(household_id){
 			inputElement.setAttribute('id', new_task_input_id);
 			inputElement.setAttribute('placeholder', 'Enter new task name');
 			inputElement.setAttribute('maxlength', '100');
+			inputElement.addEventListener('keydown', function(event) {
+			    const charCode = event.which || event.keyCode;
+			    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+			      event.preventDefault();
+			    }
+			  });
 
 			// Create a new input element and set its attributes
 			const new_task_description_id = 'new-task-description-' + obj.id;
@@ -106,6 +112,12 @@ async function get_lists(household_id){
 			inputElementDescription.setAttribute('id', new_task_description_id);
 			inputElementDescription.setAttribute('placeholder', 'Enter new task description');
 			inputElementDescription.setAttribute('maxlength', '100');
+			inputElementDescription.addEventListener('keydown', function(event) {
+			    const charCode = event.which || event.keyCode;
+			    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+			      event.preventDefault();
+			    }
+			  });
 
 			// Create a new input element and set its attributes
 			const new_task_submit_id = 'new-task-submit-' + obj.id;
@@ -141,6 +153,14 @@ async function get_lists(household_id){
 		const response_error = await response.json();
 		console.log(response_error.error);
 	}
+
+	const newListInput = document.getElementById('new-list');
+	newListInput.addEventListener('keydown', function(event) {
+	const charCode = event.which || event.keyCode;
+	if (charCode > 31 && charCode !== 32 && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+		event.preventDefault();
+		}
+	});
 }
 
 async function post_list(event){
@@ -383,14 +403,25 @@ async function post_list_event(event) {
 		  .then(data => console.log(data))
 		  .catch(error => console.error(error));
 
+		// get_list_event(headerId)
+
+		const response = await fetch(BASE + "list_events/" + headerId);
+		
 		const header = document.getElementById(headerId);
 		const children = header.querySelectorAll('.task-list');
 		children.forEach(function(child) {
 			child.remove();
 		})
 
-		get_list_event(headerId)
+		if (response.ok){
+			const response_array = JSON.parse(await response.json());
+
+			for (let i = 0; i < response_array.length; i++) {
+				make_events(response_array[i], headerId);
+			}
+
 		closestForm.reset();
+		}
 	}
 }
 
@@ -478,4 +509,94 @@ async function put_list_event(event){
 			  .catch(error => console.error(error));
 		}
 	}
+}
+
+function make_events(inputEvent, list_id){
+	const obj = JSON.parse(inputEvent);
+
+	const parentElement = document.querySelector('header[id=\"'+list_id+'\"]');
+
+	// Create a new div element and set its ID
+	const divElement = document.createElement('div');
+	divElement.setAttribute('id', 'tasks');
+	divElement.setAttribute('class', 'task-list');
+
+	// Create a new div element and set its class
+	const taskDivElement = document.createElement('div');
+	taskDivElement.setAttribute('class', 'task');
+	taskDivElement.setAttribute('id', obj.id);
+	taskDivElement.setAttribute('data-list_id', obj.list);
+	taskDivElement.setAttribute('data-added-user-id', obj.added_user_id);
+	taskDivElement.setAttribute('data-checked-off-by-user', obj.checked_off_by_user);
+
+	// Create a new div element and set its class
+	const contentDivElement = document.createElement('div');
+	contentDivElement.setAttribute('class', 'content');
+
+	// Create a new input element and set its attributes
+	const inputId = 'input-' + obj.id;
+	const inputElement = document.createElement('input');
+	inputElement.setAttribute('type', 'text');
+	inputElement.setAttribute('class', 'text');
+	inputElement.setAttribute('id', inputId)
+	inputElement.setAttribute('value', obj.task_name);
+	inputElement.setAttribute('readonly', '');
+	inputElement.setAttribute('maxlength', '100');
+
+	// Cheate a new input element for showing description
+	const inputNameId = 'input-name-' + obj.id;
+	const inputElementName = document.createElement('input');
+	inputElementName.setAttribute('type', 'text');
+	inputElementName.setAttribute('class', 'text');
+	inputElementName.setAttribute('id', inputNameId)
+	inputElementName.setAttribute('value', obj.description_of_task);
+	inputElementName.setAttribute('readonly', '');
+	inputElementName.setAttribute('maxlength', '100');
+
+	// Append the input element to the content div element
+	contentDivElement.appendChild(inputElement);
+	contentDivElement.appendChild(inputElementName);
+
+	// Create a new div element and set its class
+	const actionsDivElement = document.createElement('div');
+	actionsDivElement.setAttribute('class', 'actions');
+
+	// Create a new button element and set its class and text content
+	const editButtonId = 'edit-' + obj.id;
+	const editButtonElement = document.createElement('button');
+	editButtonElement.setAttribute('class', 'edit');
+	editButtonElement.textContent = 'Edit';
+	editButtonElement.setAttribute('id', editButtonId)
+	editButtonElement.setAttribute('onclick', 'put_list_event(event)')
+
+	// Create a new button element and set its class and text content
+	const deleteButtonElement = document.createElement('button');
+	deleteButtonElement.setAttribute('class', 'delete');
+	deleteButtonElement.textContent = 'Delete';
+	deleteButtonElement.setAttribute('onclick', 'delete_list_event(event)')
+
+	// Create a new checkbox element and set its class and text content
+	const checkboxInput = document.createElement('input');
+	checkboxInput.type = 'checkbox';
+	checkboxInput.className = 'checkbox';
+	checkboxInput.setAttribute('onclick', 'patch_list_event(event)');
+	if (obj.checked_off_by_user){
+		checkboxInput.checked = true;
+	}
+
+	// Append the button elements to the actions div element
+	actionsDivElement.appendChild(editButtonElement);
+	actionsDivElement.appendChild(deleteButtonElement);
+	actionsDivElement.appendChild(checkboxInput);
+
+	// Append the content and actions div elements to the task div element
+	taskDivElement.appendChild(contentDivElement);
+	taskDivElement.appendChild(actionsDivElement);
+
+	// Append the task div element to the tasks div element
+	divElement.appendChild(taskDivElement);
+
+	// Append the h2 and tasks div elements to the section element
+	parentElement.appendChild(divElement);
+	console.log({message: 'list event added'});
 }
