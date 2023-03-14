@@ -5,11 +5,12 @@ import json
 from dataclasses import dataclass
 
 import requests
-from mysql.connector import cursor
-
+from mysql.connector import cursor, MySQLConnection
 
 class TransactionConstructionError(Exception):
     """Triggered when a transaction failed to build from the database"""
+
+class TransactionInsertionFailed(Exception): ...
 
 
 @dataclass
@@ -131,12 +132,69 @@ class Transaction:
 
         return transaction
 
-    def equal(self, other: Transaction) -> bool:
+    def __eq__(self, other: Transaction) -> bool:
         """compares equality based on value of every field except t_id"""
         return [v for v in self.__dict__.values()][1:] == [
             v for v in other.__dict__.values()
         ][1:]
 
+    def insert_transaction(self, cur: cursor.MySQLCursor, conn: MySQLConnection):
+        """Inserts transaction into table"""
+
+        # get pair id
+        cur.execute(
+            "SELECT id FROM pairs WHERE src = %s AND dest = %s",
+            [self.src_id, self.dest_id],
+        )
+        p_id = cur.fetchone()
+
+        # add pair to pairs table if the pair doesn't already exist
+        if p_id is None:
+            cur.execute(
+                "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
+                [self.src_id, self.dest_id],
+            )
+
+            # get id from pair entry that was just generated
+            cur.execute(
+                "SELECT id FROM pairs WHERE src = %s AND dest = %s",
+                [self.src_id, self.dest_id],
+            )
+            p_id = cur.fetchone()
+
+            # commit changes
+            conn.commit()
+
+        # unpack p_id from tuple
+        pair_id = p_id[0]
+
+        # insert new Transaction object into the database
+        cur.execute(
+            "INSERT INTO transaction(pair_id, amount, description, due_date, paid) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            [
+                pair_id,
+                self.amount,
+                self.description,
+                self.due.isoformat(),
+                1 if self.paid else 0,
+            ],
+        )
+
+        # commit
+        conn.commit()
+
+        # update the id of the new transaction
+        cur.execute(
+            "SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
+            [pair_id, self.amount, self.due, 1 if self.paid == "true" else 0],
+        )
+
+        if (t_id := cur.fetchone()) is None:
+            raise TransactionInsertionFailed
+        else:
+            # update trn to have the correct ID
+            self.t_id = t_id
 
 @dataclass
 class CalendarEvent:

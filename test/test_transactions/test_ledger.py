@@ -8,7 +8,6 @@ from transactions.ledger import Ledger, LedgerConstructionError
 
 
 class TestLedger(TestCase):
-
     def setUp(self) -> None:
         """Make sure relevant rows are present in database"""
 
@@ -20,21 +19,27 @@ class TestLedger(TestCase):
         db = conn.cursor()
 
         # remove any transactions under 428, 429, 430 which exist
-        db.execute("DELETE FROM transaction WHERE id=428 OR id=429 OR id=430;")
+        db.execute("""DELETE FROM transaction WHERE description = "a->b" OR description = "a->c" OR description = "c->b";""")
 
         rows = [
-            (428, 8, 10, 'a->b', datetime.date(2023, 3, 13), 0),
-            (429, 9, 5, 'c->b', datetime.date(2023, 3, 13), 0),
-            (430, 10, 5, 'a->c', datetime.date(2023, 3, 13), 0)
+            (428, 8, 10, "a->b", datetime.date(2023, 3, 13), 0),
+            (429, 9, 5, "c->b", datetime.date(2023, 3, 13), 0),
+            (430, 10, 5, "a->c", datetime.date(2023, 3, 13), 0),
         ]
 
         # insert test rows
         for row in rows:
-            db.execute("""INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row)
+            db.execute(
+                """INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row
+            )
+
+        # also delete any simplified transactions that may have been added
+        db.execute("""DELETE FROM transaction WHERE description = "Simplified Transaction";""")
+
+
 
         # commit changes
         conn.commit()
-
 
     def test_build_from_user_id(self):
         # connect to db
@@ -99,4 +104,4 @@ class TestLedger(TestCase):
         )
 
         db = conn.cursor()
-        Ledger.simplify(3, db)
+        Ledger.simplify(3, db, conn)

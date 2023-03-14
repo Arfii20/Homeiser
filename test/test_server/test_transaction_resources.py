@@ -69,7 +69,7 @@ class TestTransactionResources(TestCase):
 
         with self.subTest("add to db"):
             got = trn.Transaction.build_from_req(request=json.loads(r.json()))
-            self.assertTrue(got.equal(exp))
+            self.assertEqual(got, exp)
 
         with self.subTest("attempt to add with incorrect json"):
             got = requests.post(
