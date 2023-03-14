@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 
 from settle import flow, flow_algorithms
 from transactions.transaction import Transaction, TransactionInsertionFailed
@@ -11,14 +12,17 @@ import logging
 from mysql.connector import cursor, MySQLConnection
 
 # initialise logger
-logging.basicConfig(filename=f"{datetime.now()}.log", level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class LedgerConstructionError(Exception):
     """Failed to create Ledger"""
 
-class SimplificationError(Exception): ...
+
+class SimplificationError(Exception):
+    ...
+
 
 @dataclass
 class Ledger:
@@ -116,7 +120,9 @@ class Ledger:
         return [u_ for u_ in u]
 
     @staticmethod
-    def simplify(household_id: int, cur: cursor.MySQLCursor, conn: MySQLConnection) -> None:
+    def simplify(
+        household_id: int, cur: cursor.MySQLCursor, conn: MySQLConnection
+    ) -> None:
         """Simplifies all unmarked transactions in a group.
 
         1. Pulls all open (i.e. unpaid) transactions of a house
@@ -175,6 +181,8 @@ class Ledger:
                 if edge.residual:
                     continue
                 # TODO: make an actual decision on due dates, default to a week today for now
+                logger.info(f"Adding a transaction to the database: "
+                            f"{node.label}--[{edge.capacity}]--> {edge.target.label}")
                 simplified_ledger.transactions.append(
                     Transaction(
                         0,
@@ -190,7 +198,6 @@ class Ledger:
                     )
                 )
 
-
         # try to insert new transactions
         try:
             for transaction in simplified_ledger.transactions:
@@ -200,7 +207,9 @@ class Ledger:
             for t_id in [t.t_id for t in simplified_ledger.transactions]:
                 cur.execute("""DELETE FROM transaction WHERE id = %s""", [t_id])
 
-            raise SimplificationError("Found a way to simplify debts; failed to execute. Try again later")
+            raise SimplificationError(
+                "Found a way to simplify debts; failed to execute. Try again later"
+            )
 
         # delete old transactions only if we have successfully added new ones
         for t_id in [t.t_id for t in ledger.transactions]:

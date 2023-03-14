@@ -7,7 +7,11 @@ from flask_restful import Resource, Api  # type: ignore
 from mysql.connector import cursor
 
 import server.db_handler as db
-from transactions.transaction import Transaction, TransactionConstructionError, TransactionInsertionFailed
+from transactions.transaction import (
+    Transaction,
+    TransactionConstructionError,
+    TransactionInsertionFailed,
+)
 
 
 class TransactionResource(Resource):

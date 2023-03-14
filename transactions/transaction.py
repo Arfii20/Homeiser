@@ -7,10 +7,13 @@ from dataclasses import dataclass
 import requests
 from mysql.connector import cursor, MySQLConnection
 
+
 class TransactionConstructionError(Exception):
     """Triggered when a transaction failed to build from the database"""
 
-class TransactionInsertionFailed(Exception): ...
+
+class TransactionInsertionFailed(Exception):
+    ...
 
 
 @dataclass
@@ -195,6 +198,7 @@ class Transaction:
         else:
             # update trn to have the correct ID
             self.t_id = t_id
+
 
 @dataclass
 class CalendarEvent:

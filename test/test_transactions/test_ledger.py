@@ -19,7 +19,9 @@ class TestLedger(TestCase):
         db = conn.cursor()
 
         # remove any transactions under 428, 429, 430 which exist
-        db.execute("""DELETE FROM transaction WHERE description = "a->b" OR description = "a->c" OR description = "c->b";""")
+        db.execute(
+            """DELETE FROM transaction WHERE description = "a->b" OR description = "a->c" OR description = "c->b";"""
+        )
 
         rows = [
             (428, 8, 10, "a->b", datetime.date(2023, 3, 13), 0),
@@ -34,9 +36,9 @@ class TestLedger(TestCase):
             )
 
         # also delete any simplified transactions that may have been added
-        db.execute("""DELETE FROM transaction WHERE description = "Simplified Transaction";""")
-
-
+        db.execute(
+            """DELETE FROM transaction WHERE description = "Simplified Transaction";"""
+        )
 
         # commit changes
         conn.commit()
