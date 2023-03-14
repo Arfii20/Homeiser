@@ -1,3 +1,4 @@
+import datetime
 from unittest import TestCase
 
 import mysql.connector
@@ -7,6 +8,34 @@ from transactions.ledger import Ledger, LedgerConstructionError
 
 
 class TestLedger(TestCase):
+
+    def setUp(self) -> None:
+        """Make sure relevant rows are present in database"""
+
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+
+        # remove any transactions under 428, 429, 430 which exist
+        db.execute("DELETE FROM transaction WHERE id=428 OR id=429 OR id=430;")
+
+        rows = [
+            (428, 8, 10, 'a->b', datetime.date(2023, 3, 13), 0),
+            (429, 9, 5, 'c->b', datetime.date(2023, 3, 13), 0),
+            (430, 10, 5, 'a->c', datetime.date(2023, 3, 13), 0)
+        ]
+
+        # insert test rows
+        for row in rows:
+            db.execute("""INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row)
+
+        # commit changes
+        conn.commit()
+
+
     def test_build_from_user_id(self):
         # connect to db
         conn = mysql.connector.connect(
@@ -21,12 +50,6 @@ class TestLedger(TestCase):
         with self.subTest("User doesn't exist"):
             with self.assertRaises(LedgerConstructionError):
                 Ledger.build_from_user_id(12312341231, db)
-
-    def test_json(self):
-        conn = mysql.connector.connect(
-            host="localhost", user="root", password="I_love_stew!12", database="x5db"
-        )
-        db = conn.cursor()
 
     def test_build_from_house_id(self):
         # connect to db

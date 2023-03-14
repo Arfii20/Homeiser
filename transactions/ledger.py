@@ -160,7 +160,7 @@ class Ledger:
         #   2. delete old transactions
         #   3. add new transactions to db
 
-        simplified.draw('simplified', subdir='ledger', res=False)
+        simplified.draw("simplified", subdir="ledger", res=False)
 
         simplified_ledger = Ledger([])
 
@@ -184,11 +184,9 @@ class Ledger:
                         "Simplified Transaction",
                         new_due_date.date(),
                         False,
-                        household_id
+                        household_id,
                     )
                 )
 
         print(simplified_ledger.transactions)
         print(len(simplified_ledger.transactions))
-
-        
