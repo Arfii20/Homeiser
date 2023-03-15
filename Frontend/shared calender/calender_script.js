@@ -1,4 +1,4 @@
-const calendar = document.querySelector(".calendar"),
+/*const calendar = document.querySelector(".calendar"),
   date = document.querySelector(".date"),
   daysContainer = document.querySelector(".days"),
   prev = document.querySelector(".prev"),
@@ -15,10 +15,11 @@ const calendar = document.querySelector(".calendar"),
   addEventTitle = document.querySelector(".event-name "),
   addEventFrom = document.querySelector(".event-time-from "),
   addEventTo = document.querySelector(".event-time-to "),
+  */
   addEventNotes = document.querySelector(".additional-notes "),
   addEventLocation= document.querySelector(".event-location "),
-  addEventTaggedUsers = document.querySelector(".tagged-users "),
-  addEventAddedBy = document.querySelector(".added-by "),
+  addEventTagged = document.querySelector(".event-tagged "),
+/*
   addEventSubmit = document.querySelector(".add-event-btn ");
 
 let today = new Date();
@@ -271,6 +272,17 @@ function updateEvents(date) {
             <div class="event-time">
               <span class="event-time">${event.time}</span>
             </div>
+            */
+            <div class="event-notes">
+              <span class="event-notes">Description : ${event.notes}</span>
+            </div>
+            <div class="event-location">
+              <span class="event-location">Location : ${event.location}</span>
+            </div>
+            <div class="event-tagged">
+              <span class="event-tagged">Users involved : ${event.tagged}</span>
+            </div>
+/*
         </div>`;
       });
     }
@@ -326,6 +338,7 @@ addEventTo.addEventListener("input", (e) => {
     addEventTo.value = addEventTo.value.slice(0, 5);
   }
 });
+*/
 
 //allow 50 chars in eventLocation
 addEventLocation.addEventListener("input", (e) => {
@@ -338,8 +351,8 @@ addEventNotes.addEventListener("input", (e) => {
 });
 
 //allow 100 chars in eventNotes
-addEventTaggedUsers.addEventListener("input", (e) => {
-  addEventTaggedUsers.value = addEventNotes.value.slice(0, 60);
+addEventTagged.addEventListener("input", (e) => {
+  addEventTagged.value = addEventTagged.value.slice(0, 60);
 });
 
 //function to add event to eventsArr
@@ -349,13 +362,12 @@ addEventSubmit.addEventListener("click", () => {
   const eventTimeTo = addEventTo.value;
   const eventNotes = addEventNotes.value;
   const eventLocation = addEventLocation.value;
-  const eventTaggedUsers = addEventTaggedUsers.value;
-  const eventAddedBy = addEventAddedBy.value;
+  const eventTagged = addEventTagged.value;
   if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === ""){
     alert("Please fill all the fields");
     return;
   }
-
+/*
   //check correct time format 24 hour
   const timeFromArr = eventTimeFrom.split(":");
   const timeToArr = eventTimeTo.split(":");
@@ -392,15 +404,16 @@ addEventSubmit.addEventListener("click", () => {
   if (eventExist) {
     alert("Event already added");
     return;
+*/
   }
   const newEvent = {
     title: eventTitle,
     time: timeFrom + " - " + timeTo,
     location : eventLocation,
     notes : eventNotes,
-    tagged : eventTaggedUsers, 
-    addedBy : null,
+    tagged : eventTagged, 
   };
+/*
   console.log(newEvent);
   console.log(activeDay);
   let eventAdded = false;
@@ -431,7 +444,7 @@ addEventSubmit.addEventListener("click", () => {
   }
 
   console.log(eventsArr);
-
+*/
   //remove active from add event form 
   addEventWrapper.classList.remove("active");
   //clear fields 
@@ -440,9 +453,8 @@ addEventSubmit.addEventListener("click", () => {
   addEventTo.value = "";
   addEventNotes.value = "";
   addEventLocation.value = "";
-  addEventTaggedUsers.value = "";
-  addEventAddedBy.value = "";
-
+  addEventTagged.value = "";
+/*
   //show added event 
   updateEvents(activeDay);
   //select active day and add event class if not added
@@ -511,4 +523,4 @@ function convertTime(time) {
   timeHour = timeHour % 12 || 12;
   time = timeHour + ":" + timeMin + " " + timeFormat;
   return time;
-}
+/*

@@ -1,4 +1,4 @@
-:root {
+/*:root {
 	--primary-clr: #D592F4;
 }
 
@@ -8,7 +8,7 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-/* nice scroll bar */
+/* nice scroll bar 
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -58,7 +58,7 @@ body {
   border-radius: 5px;
   background-color: #fff;
 }
-/* set after behind the main element */
+/* set after behind the main element 
 .calendar::before,
 .calendar::after {
   content: "";
@@ -295,7 +295,7 @@ body {
   background: linear-gradient(90deg, #3f4458, transparent);
   cursor: pointer;
 }
-/* even event */
+/* even event 
 .events .event:nth-child(even) {
   background: transparent;
 }
@@ -329,7 +329,41 @@ body {
 .events .event:hover .event-time {
   color: #fff;
 }
-/* add tick in event after */
+*/
+.events .event .event-notes {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #878895;
+  margin-left: 15px;
+  pointer-events: none;
+}
+.events .event:hover .event-notes {
+  color: #fff;
+}
+
+.events .event .event-location {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #878895;
+  margin-left: 15px;
+  pointer-events: none;
+}
+.events .event:hover .event-location {
+  color: #fff;
+}
+
+.events .event .event-tagged {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #878895;
+  margin-left: 15px;
+  pointer-events: none;
+}
+.events .event:hover .event-tagged {
+  color: #fff;
+}
+
+/* add tick in event after 
 .events .event::after {
   content: "✓";
   position: absolute;
@@ -476,7 +510,7 @@ body {
   color: var(--primary-clr);
 }
 
-/* media queries */
+/* media queries 
 
 @media screen and (max-width: 1000px) {
   body {
