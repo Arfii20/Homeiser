@@ -386,6 +386,8 @@ async function post_list_event(event) {
 		alert("DESCRIPTION cannot be empty!")
 	}
 	else{
+		closestForm.reset();
+
 	  	const url = BASE + "list_events/" + headerId;
 		const data = new URLSearchParams();
 
@@ -403,8 +405,6 @@ async function post_list_event(event) {
 		  .then(data => console.log(data))
 		  .catch(error => console.error(error));
 
-		// get_list_event(headerId)
-
 		const response = await fetch(BASE + "list_events/" + headerId);
 		
 		const header = document.getElementById(headerId);
@@ -419,8 +419,6 @@ async function post_list_event(event) {
 			for (let i = 0; i < response_array.length; i++) {
 				make_events(response_array[i], headerId);
 			}
-
-		closestForm.reset();
 		}
 	}
 }
