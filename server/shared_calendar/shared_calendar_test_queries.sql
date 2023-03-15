@@ -144,8 +144,8 @@ VALUES (630, 'a', 'b', 'a1234', 'abcdefghijk1@gmail.com', '2001-01-01', 620, 112
 
 INSERT INTO calendar_event (id, title, start_time, end_time, notes, location, household_id)
 VALUE (640, 'event a', '2023-02-01 11:00:00', '2023-02-01 12:00:00', 'description here', 'location of event', 620),
-        (641, 'event a', '2023-07-01 11:00:00', '2023-07-01 12:00:00', 'description here', 'location of event', 620),
-        (642, 'event a', '2023-09-01 11:00:00', '2023-09-01 12:00:00', 'description here', 'location of event', 620);
+        (641, 'event b', '2023-07-01 11:00:00', '2023-07-01 12:00:00', 'description here', 'location of event', 620),
+        (642, 'event c', '2023-09-01 11:00:00', '2023-09-01 12:00:00', 'description here', 'location of event', 620);
 
 INSERT INTO user_doing_calendar_event (user_id, calendar_event_id, added_by_user)
 VALUE (630, 640, 630), 

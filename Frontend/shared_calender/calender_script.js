@@ -514,33 +514,36 @@ function convertTime(time) {
   return time;
 }
 
-async function get_calendarEvent(household_id){
-  const url = BASE + "get_shared_calendar/" + household_id;
-  const data = new URLSearchParams();
+// async function get_calendarEvent(household_id){
+//   const url = BASE + "get_shared_calendar/" + household_id;
+//   const data = new URLSearchParams();
 
-  const startDate = '2022-02-19 00:00:00';
-  const endDate = '2024-02-19 00:00:00';
+//   const startDate = '2022-02-19 00:00:00';
+//   const endDate = '2024-02-19 00:00:00';
 
-  data.append('starting_time', startDate);
-  data.append('ending_time', endDate);
+//   data.append('starting_time', startDate);
+//   data.append('ending_time', endDate);
 
-  const response = await fetch(url, {
-                    method: 'POST',
-                    body: data,
-                    headers: {
-                      'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                  }).then(response => response.json())
-                    .then(data => console.log(data))
-                    .catch(error => console.error(error));
-  if (response.ok){
-    const response_array = JSON.parse(await response.json());
+//   const response = await fetch(url, {
+//                           method: 'POST',
+//                           body: data,
+//                           headers: {
+//                             'Content-Type': 'application/x-www-form-urlencoded'
+//                           }
+//                         })
+//   if (response.ok){
+//     const response_array = JSON.parse(await response.json());
 
-    for (let i = 0; i < response_array.length; i++) {
-      const obj = JSON.parse(response_array[i]);
-      console.log(obj.title);
-    }
-  }
+//     for (let i = 0; i < response_array.length; i++) {
+//       const obj = JSON.parse(response_array[i]);
+//       console.log(obj.title_of_event);
+//       console.log({'message': 'event added'});
+//     }
+//   }
+// }
+
+// get_calendarEvent(620);
+
+async function post_event(){
+  
 }
-
-get_calendarEvent(620);

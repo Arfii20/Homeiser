@@ -15,6 +15,7 @@ cors = [
         CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
         CORS(app, resources={r"/list_events/*": {"origins": "*"}}),
         CORS(app, resources={r"/list_event_details/*": {"origins": "*"}}),
+        CORS(app, resources={r"/get_shared_calendar/*": {"origins": "*"}}),
         CORS(app, resources={r"/shared_calendar/*": {"origins": "*"}}),
         CORS(app, resources={r"/calendar_event/*": {"origins": "*"}}),
         CORS(app, resources={r"/user_color/*": {"origins": "*"}})
