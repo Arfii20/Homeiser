@@ -1,4 +1,4 @@
-:root {
+/*:root {
 	--primary-clr: #D592F4;
 }
 
@@ -8,7 +8,7 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-/* nice scroll bar */
+/* nice scroll bar 
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -58,7 +58,7 @@ body {
   border-radius: 5px;
   background-color: #fff;
 }
-/* set after behind the main element */
+/* set after behind the main element 
 .calendar::before,
 .calendar::after {
   content: "";
@@ -284,7 +284,7 @@ body {
 .events .event {
   position: relative;
   width: 95%;
-  min-height: 120px;
+  min-height: 70px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -295,20 +295,9 @@ body {
   background: linear-gradient(90deg, #3f4458, transparent);
   cursor: pointer;
 }
-/* even event */
+/* even event 
 .events .event:nth-child(even) {
-  position: relative;
-  width: 95%;
-  min-height: 120px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  gap: 5px;
-  padding: 0 20px;
-  padding-left: 50px;
-  color: #fff;
-  background: linear-gradient(90deg, #4B4F66, transparent);
-  cursor: pointer;
+  background: transparent;
 }
 .events .event:hover {
   background: linear-gradient(90deg, var(--primary-clr), transparent);
@@ -333,18 +322,18 @@ body {
 .events .event .event-time {
   font-size: 0.8rem;
   font-weight: 400;
-  color: #E0E0E0;
+  color: #878895;
   margin-left: 15px;
   pointer-events: none;
 }
 .events .event:hover .event-time {
   color: #fff;
 }
-
+*/
 .events .event .event-notes {
   font-size: 0.8rem;
   font-weight: 400;
-  color: #E0E0E0;
+  color: #878895;
   margin-left: 15px;
   pointer-events: none;
 }
@@ -355,7 +344,7 @@ body {
 .events .event .event-location {
   font-size: 0.8rem;
   font-weight: 400;
-  color: #E0E0E0;
+  color: #878895;
   margin-left: 15px;
   pointer-events: none;
 }
@@ -366,7 +355,7 @@ body {
 .events .event .event-tagged {
   font-size: 0.8rem;
   font-weight: 400;
-  color: #E0E0E0;
+  color: #878895;
   margin-left: 15px;
   pointer-events: none;
 }
@@ -374,7 +363,7 @@ body {
   color: #fff;
 }
 
-/* add tick in event after */
+/* add tick in event after 
 .events .event::after {
   content: "✓";
   position: absolute;
@@ -396,20 +385,19 @@ body {
   position: absolute;
   bottom: 30px;
   right: 30px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
   color: #878895;
   border: 2px solid #878895;
-  opacity: 1;
+  opacity: 0.5;
   border-radius: 50%;
   background-color: var(--primary-clr);
   cursor: pointer;
 }
-
 .add-event:hover {
   opacity: 1;
 }
@@ -439,7 +427,7 @@ body {
   transition: max-height 0.5s ease;
 }
 .add-event-wrapper.active {
-  max-height: 450px;
+  max-height: 300px;
 }
 .add-event-header {
   width: 100%;
@@ -522,7 +510,7 @@ body {
   color: var(--primary-clr);
 }
 
-/* media queries */
+/* media queries 
 
 @media screen and (max-width: 1000px) {
   body {
