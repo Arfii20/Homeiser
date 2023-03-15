@@ -7,7 +7,11 @@ from flask_restful import Resource, Api  # type: ignore
 from mysql.connector import cursor
 
 import server.db_handler as db
-from transactions.transaction import Transaction, TransactionConstructionError
+from transactions.transaction import (
+    Transaction,
+    TransactionConstructionError,
+    TransactionInsertionFailed,
+)
 
 
 class TransactionResource(Resource):
@@ -43,10 +47,6 @@ class TransactionResource(Resource):
         """Post a new transaction. Require a transaction in the format specified above (transaction_id not necessary).
         Returns json of the object added (with correct ID)"""
 
-        # get cursor to db and accept request
-        conn: mysql.connector.MySQLConnection
-        cur: cursor.MySQLCursor
-
         conn, cur = db.get_conn()
         r = request.get_json()
 
@@ -59,60 +59,10 @@ class TransactionResource(Resource):
         except TransactionConstructionError:
             return "Incorrect JSON Format for Transaction object", 400
 
-        # get pair id
-        cur.execute(
-            "SELECT id FROM pairs WHERE src = %s AND dest = %s",
-            [r["src_id"], r["dest_id"]],
-        )
-        pair_id = cur.fetchone()
-
-        # add pair to pairs table if the pair doesn't already exist
-        if pair_id is None:
-            cur.execute(
-                "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
-                [r["src_id"], r["dest_id"]],
-            )
-
-            # get id from pair entry that was just generated
-            cur.execute(
-                "SELECT id FROM pairs WHERE src = %s AND dest = %s",
-                [r["src_id"], r["dest_id"]],
-            )
-            pair_id = cur.fetchone()
-
-            # commit changes
-            conn.commit()
-
-        # unpack pair_id from tuple
-        pair_id = pair_id[0]
-
-        # insert new Transaction object into the database
-        cur.execute(
-            "INSERT INTO transaction(pair_id, amount, description, due_date, paid) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            [
-                pair_id,
-                trn.amount,
-                trn.description,
-                trn.due.isoformat(),
-                1 if trn.paid else 0,
-            ],
-        )
-
-        # commit
-        conn.commit()
-
-        # update the id of the new transaction
-        cur.execute(
-            "SELECT id FROM transaction WHERE pair_id = %s AND amount = %s AND due_date = %s AND paid = %s",
-            [pair_id, r["amount"], r["due_date"], 1 if r["paid"] == "true" else 0],
-        )
-
-        if (t_id := cur.fetchone()) is None:
+        try:
+            trn.insert_transaction(cur, conn)
+        except TransactionInsertionFailed:
             return json.dumps("Adding transaction failed"), 500
-        else:
-            # update trn to have the correct ID
-            trn.t_id = t_id
 
         return trn.json, 201
 

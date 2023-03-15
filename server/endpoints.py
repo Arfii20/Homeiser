@@ -18,4 +18,7 @@ def attach(api: flask_restful.Api):
     api.add_resource(lists.ListDetails, "/list_details/<int:list_id>")
     api.add_resource(lists.ListEvents, "/list_events/<int:list_id>")
     api.add_resource(lists.ListEventDetails, "/list_event_details/<int:list_event_id>")
-
+    api.add_resource(tr.TransactionResource, "/transaction/<int:t_id>", "/transaction")
+    api.add_resource(
+        server.transactions.ledger_resource.LedgerResource, "/ledger/<int:user_id>"
+    )

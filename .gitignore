@@ -1,3 +1,7 @@
+# Graph renders
+test/test_settle/renders
+renders
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -45,7 +45,7 @@ class TestTransactionResources(TestCase):
     def test_post(self):
         # create a cursor
         conn = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
         )
         db = conn.cursor()
 
@@ -69,7 +69,7 @@ class TestTransactionResources(TestCase):
 
         with self.subTest("add to db"):
             got = trn.Transaction.build_from_req(request=json.loads(r.json()))
-            self.assertTrue(got.equal(exp))
+            self.assertEqual(got, exp)
 
         with self.subTest("attempt to add with incorrect json"):
             got = requests.post(
@@ -89,7 +89,7 @@ class TestTransactionResources(TestCase):
 
         # create a cursor
         conn = mysql.connector.connect(
-            host="localhost", user="root", password="HALR0b0t!12", database="x5db"
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
         )
 
         db = conn.cursor()
