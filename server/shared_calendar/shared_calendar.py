@@ -8,14 +8,13 @@ from server.shared_list.Calendar_and_List_Builds import CalendarEventBuild
 from json import dumps
 import re
 
-
-class SharedCalendar(Resource):
-    def get(self, household_id):
+class GetSharedCalendar(Resource):
+    def post(self, household_id):
         """
         Sends the event details in a specific time range to the website
 
         How get requests for calendar events should be:
-        requests.get(BASE + "shared_calendar/<int: household_id>", {"starting_time": "yyyy-mm-dd HH:MM:SS",
+        requests.post(BASE + "get_shared_calendar/<int: household_id>", {"starting_time": "yyyy-mm-dd HH:MM:SS",
                                                                     "ending_time": "yyyy-mm-dd HH:MM:SS"})
 
         :returns
@@ -91,6 +90,7 @@ class SharedCalendar(Resource):
         else:
             abort(404, error="No event found")
 
+class SharedCalendar(Resource):
     def post(self, household_id):
         """
         Creates an event in the database by adding a new row

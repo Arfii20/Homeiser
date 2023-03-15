@@ -4,14 +4,13 @@ from json import loads
 
 BASE = "http://127.0.0.1:5000/"
 
-
-class TestSharedCalendar(unittest.TestCase):
+class TestGetSharedCalendar(unittest.TestCase):
     def test_shared_calendar_get(self):
         """
         Tests if received something
         """
-        response = requests.get(
-            BASE + "shared_calendar/620",
+        response = requests.post(
+            BASE + "get_shared_calendar/620",
             {
                 "starting_time": "2027-02-19 00:00:00",
                 "ending_time": "2029-02-19 00:00:00",
@@ -23,8 +22,8 @@ class TestSharedCalendar(unittest.TestCase):
         """
         Tests if received object have the required keys
         """
-        response = requests.get(
-            BASE + "shared_calendar/620",
+        response = requests.post(
+            BASE + "get_shared_calendar/620",
             {
                 "starting_time": "2022-02-19 00:00:00",
                 "ending_time": "2024-02-19 00:00:00",
@@ -48,6 +47,8 @@ class TestSharedCalendar(unittest.TestCase):
                 valid = False
         self.assertTrue(valid)
 
+
+class TestSharedCalendar(unittest.TestCase):
     def test_shared_calendar_without_id_post(self):
         """
         Tests if event is added to the table
