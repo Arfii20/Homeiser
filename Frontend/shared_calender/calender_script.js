@@ -18,7 +18,6 @@ const calendar = document.querySelector(".calendar"),
   addEventNotes = document.querySelector(".additional-notes "),
   addEventLocation= document.querySelector(".event-location "),
   addEventTaggedUsers = document.querySelector(".tagged-users "),
-  addEventAddedBy = document.querySelector(".added-by "),
   addEventSubmit = document.querySelector(".add-event-btn ");
   BASE = "http://127.0.0.1:5000/";
 
@@ -340,19 +339,26 @@ addEventNotes.addEventListener("input", (e) => {
 
 //allow 100 chars in eventNotes
 addEventTaggedUsers.addEventListener("input", (e) => {
-  addEventTaggedUsers.value = addEventNotes.value.slice(0, 60);
+  addEventTaggedUsers.value = addEventTaggedUsers.value.slice(0, 60);
 });
 
 //function to add event to eventsArr
-addEventSubmit.addEventListener("click", () => {
+addEventSubmit.addEventListener("click", async () => {
+  // const eventTitle = addEventTitle.value;
+  // const eventTimeFrom = addEventFrom.value;
+  // const eventTimeTo = addEventTo.value;_
+  // const eventNotes = addEventNotes.value;
+  // const eventLocation = addEventLocation.value;
+  // const eventTaggedUsers = addEventTaggedUsers.value;
+
   const eventTitle = addEventTitle.value;
   const eventTimeFrom = addEventFrom.value;
   const eventTimeTo = addEventTo.value;
   const eventNotes = addEventNotes.value;
   const eventLocation = addEventLocation.value;
   const eventTaggedUsers = addEventTaggedUsers.value;
-  const eventAddedBy = addEventAddedBy.value;
-  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === ""){
+
+  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === "" || eventTaggedUsers === ""){
     alert("Please fill all the fields");
     return;
   }
@@ -433,25 +439,34 @@ addEventSubmit.addEventListener("click", () => {
 
   console.log(eventsArr);
 
-  //remove active from add event form 
-  addEventWrapper.classList.remove("active");
-  //clear fields 
-  addEventTitle.value = "";
-  addEventFrom.value = "";
-  addEventTo.value = "";
-  addEventNotes.value = "";
-  addEventLocation.value = "";
-  addEventTaggedUsers.value = "";
-  addEventAddedBy.value = "";
-
-  //show added event 
-  updateEvents(activeDay);
   //select active day and add event class if not added
 
   //also add event class to newly added day if not already 
   const activeDayEl = document.querySelector(".day.active");
   if (!activeDayEl.classList.contains("event")) {
     activeDayEl.classList.add("event");
+  }
+
+  const eventTimeFromConverted = `${year}-${month + 1}-${activeDay} ${eventTimeFrom}:00`;
+  const eventTimeToConverted = `${year}-${month + 1}-${activeDay} ${eventTimeTo}:00`;
+  
+  const response = await post_event(eventTitle, eventTimeFromConverted, eventTimeToConverted, eventNotes, eventLocation, eventTaggedUsers);
+  if (response.ok){
+    //remove active from add event form 
+    addEventWrapper.classList.remove("active");
+    //clear fields 
+    addEventTitle.value = "";
+    addEventFrom.value = "";
+    addEventTo.value = "";
+    addEventNotes.value = "";
+    addEventLocation.value = "";
+    addEventTaggedUsers.value = "";
+
+    //show added event 
+    updateEvents(activeDay);
+  }else{
+    const response_error = await response.json();
+    console.log(response_error.error);
   }
 });
 
@@ -544,6 +559,33 @@ function convertTime(time) {
 
 // get_calendarEvent(620);
 
-async function post_event(){
-  
+async function post_event(eventTitleIn, eventTimeFromIn, eventTimeToIn, eventNotesIn, eventLocationIn, eventTaggedUsersIn){
+  const house_id = 620;
+  const user_id = 630;
+  const eventTitle = eventTitleIn;
+  const eventTimeFrom = eventTimeFromIn;
+  const eventTimeTo = eventTimeToIn;
+  const eventNotes = eventNotesIn;
+  const eventLocation = eventLocationIn;
+  const eventTaggedUsers = eventTaggedUsersIn;
+
+  const url = BASE + "shared_calendar/" + house_id;
+  const data = new URLSearchParams();
+
+  data.append('title_of_event', eventTitle.replace(/'/g, "\\'"));
+  data.append('starting_time', eventTimeFrom);
+  data.append('ending_time', eventTimeTo);
+  data.append('additional_notes', eventNotes.replace(/'/g, "\\'"));
+  data.append('location_of_event', eventLocation.replace(/'/g, "\\'"));
+  data.append('tagged_users', eventTaggedUsers.replace(/'/g, "\\'"));
+  data.append('added_by', parseInt(user_id));
+
+  const response = await fetch(url, {
+                  method: 'POST',
+                  body: data,
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+                });
+  return response;
 }
