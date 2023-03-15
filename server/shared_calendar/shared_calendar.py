@@ -48,14 +48,14 @@ class GetSharedCalendar(Resource):
             "starting_time",
             type=str,
             required=True,
-            location="args",
+            location="form",
             help="Starting time is required",
         )
         parser.add_argument(
             "ending_time",
             type=str,
             required=True,
-            location="args",
+            location="form",
             help="End time is required",
         )
         args = parser.parse_args()
