@@ -29,15 +29,6 @@
       </div>
     </div>
 
-
-<!-- 图片Logo -->
-<!--     <div id="header-links"> -->
-<!--       <img src="/Users/mac/Desktop/X5/HOMEISER/x5/log in.jpg" alt="Header Logo"> -->      
-<!--       <a href="create.html">Register</a>
-      <a href="groups.html">Group</a>
-      <a href="#">About</a>
-      <a href="login.html" class="loginbtn">Log in</a>
-    </div> -->
     
     <ul>
       <li><a href="about.html">About</a></li>
@@ -56,7 +47,7 @@
 
   <style>
     body {
-      background-image: url("/Users/mac/Desktop/X5/HOMEISER/x5/IMG_0674.jpg");
+      background-image: url("Images/IMG_0674.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -65,60 +56,37 @@
   
   
   <div style="text-align: center;font-size: 40px;font-weight: bold;">
-  	<a>Log in</a>
+  	<a>User Login</a>
   </div>
 
   <div style="text-align: center;font-size: 10px;font-weight: bold;">
-  <a>Log in using your email address and the password  <br> you created, then start to use our application !!! <br> </a>
-  
-
-
-  <div id="container2">
-
-  	<a style="font-size: 20px;">Log in</a>
-
-    <div class="text">Email</div>
-    <input type="text-left" class="textbox">
-
-    <div class="spacer"></div>
-    
-    <div class="text">Password</div>
-    <input type="text-right" class="textbox">
-
-    <script type="text/javascript">
-		const Email = document.querySelector('.username')
-		const Password = document.querySelector('.password')
-		const button = document.querySelector('button')
-		
-		button.onclick = function () {
-			const username = Email.value
-			const pwd = Password.value
-
-			if (!name || ! pwd) return
-
-			const data = `username=${ name }'&password=${ password }`
-
-			const xhr = new XMLHttpRequest()
-
-			xhr.open('')
-
-			xhr.onload = function () {
-				const res = JSON.parse(xhr.responseText)
-				console.log(res)
-				alert(res.message)
-			}
-
-			xhr.setRequestHeader('content-type', '')
-			xhr.send(data)
-		}
-
-	</script>
-    
-
-    <button style="font-size: 20px;background-color: black;color: white;padding: 10px 100px;border: none;margin: 30px 10px">Log in</button>
-
-
+    <a>Log in using your email address and the password  <br> you created, then start to use our application !!! <br> </a>
   </div>
+
+  <br><br>
+
+  <div class="container">
+    <form class="form" id="login">
+        <h1 class="form__title">Login</h1>
+        <div class="form__message form__message--error"></div>
+        <div class="form__input-group">
+            <input type="text" class="form__input" autofocus placeholder="Email address">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" class="form__input" autofocus placeholder="Password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <button class="form__button" type="submit">Continue</button>
+        <p class="form__text">
+            <a href="#" class="form__link">Forgot your password?</a>
+        </p>
+        <p class="form__text">
+            <a class="form__link" href="./register.html" id="linkCreateAccount">Don't have an account? Create account.</a>
+        </p>    
+    </form>
+  </div>
+  <script src="./main.js"></script>
 
   
 </body>

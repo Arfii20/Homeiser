@@ -7,16 +7,9 @@
 </head>
 
 
-<!-- header1 最上面紫色的线 -->
-<!-- header2 粉色框 -->
-<!-- header-text 文字 -->
-<!-- header-link 登陆（Login） -->
-<!-- header-link img 人像图片 -->
-
-
 <body>
-  <header id="header1">
-  </header>
+ 
+  <header id="header1"></header>
   <header id="header2">
     <div class="dropdown2">
       <button class="dropbtn2"><a href="welcome.html">HOMEISER<a></button>
@@ -26,9 +19,6 @@
       <a href="money tracker.html">Money Tracker</a>
       </div>
     </div>
-    
-
-
     <ul>
       <li><a href="about.html">About</a></li>
       <li><a href="group.html">Group</a></li>
@@ -40,14 +30,12 @@
         </div>
       </li>
     </ul>
-    </div>
   </header>
-
 
 
   <style>
     body {
-      background-image: url("/Users/mac/Desktop/X5/HOMEISER/x5/IMG_0674.jpg");
+      background-image: url("Images/IMG_0674.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -56,42 +44,46 @@
   
   
   <div style="text-align: center;font-size: 40px;font-weight: bold;">
-  	<a>Create an account</a>
+  	<a>Register</a>
   </div>
 
   <div style="text-align: center;font-size: 10px;font-weight: bold;">
-  <a>In this page you can create an account of HOMEISER, <br> in the future use, you can just use username and password to log in.</a>
-  
-
-
-  <div id="container">
-
-  	<a style="font-size: 20px;">Registration</a>
-
-    <div class="text">First Name *</div>
-    <input type="text" class="textbox">
-    
-    <div class="spacer"></div>
-    
-    <div class="text">Last Name *</div>
-    <input type="text" class="textbox">
-    
-    <div class="text">Email *</div>
-    <input type="text" class="textbox">
-
-    <div class="text">Username *</div>
-    <input type="text" class="textbox">
-
-    <div class="text">Password *</div>
-    <input type="text" class="textbox">
-
-    <div class="text">Confirm Password *</div>
-    <input type="text" class="textbox">
-
-    <button style="font-size: 20px;background-color: black;color: white;padding: 10px 100px;border: none;margin: 30px 10px">Register</button>
-
-
+    <a>Log in using your email address and the password  <br> you created, then start to use our application !!! <br> </a>
   </div>
+
+  <br><br>
+
+  <div class="container">
+    <form class="form" id="createAccount">
+        <h1 class="form__title">Create Account</h1>
+        <div class="form__message form__message--error"></div>
+        <div class="form__input-group">
+            <input type="text" id="signupUsername" class="form__input" autofocus placeholder="First name">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="text" id="signupUsername" class="form__input" autofocus placeholder="Last name">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="text" class="form__input" autofocus placeholder="Email address">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" class="form__input" autofocus placeholder="Password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" class="form__input" autofocus placeholder="Confirm password">
+            <div class="form__input-error-message"></div>
+        </div>
+        <button class="form__button" type="submit">Continue</button>
+        <p class="form__text">
+            <a class="form__link" href="./login.html" id="linkLogin">Already have an account? Log in</a>
+        </p>    
+    </form>
+  </div>
+  <script src="./main.js"></script>
 
   
 </body>
