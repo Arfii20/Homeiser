@@ -604,6 +604,7 @@ async function get_calendarEvent(household_id){
     }
     initCalendar();
     updateEvents(activeDay);
+    deleteOutdatedEvents();
     console.log({message: "Calendar events added"});
   }
   else{
@@ -731,4 +732,46 @@ async function editEvent(event){
     }
     console.log(await response.json())
   }
+}
+
+// Function to delete outdated events
+async function deleteOutdatedEvents(){
+  const currentDate = new Date();
+  for (let i = 0; i < eventsArr.length; i++)  {
+    if ((eventsArr[i].year < currentDate.getFullYear()) || 
+      ((eventsArr[i].month < (currentDate.getMonth() + 1)) && (eventsArr[i].year === currentDate.getFullYear())) || 
+      ((eventsArr[i].day < currentDate.getDate()) && (eventsArr[i].month === (currentDate.getMonth() + 1)) && (eventsArr[i].year === currentDate.getFullYear()))) {
+      const response = await fetch(`${BASE}calendar_event/${eventsArr[i].events[0].id}`, {method: 'DELETE'});
+
+      if (response.ok){
+        eventsArr.forEach((event) => {
+          if (
+            event.day === activeDay &&
+            event.month === month + 1 &&
+            event.year === year
+          ) {
+            event.events.forEach((item, index) => {
+              if (item.id == eventsArr[i].events[0].id) {
+                event.events.splice(index, 1);
+              }
+            });
+            //if no events left in a day then remove that day from eventsArr
+            if (event.events.length === 0) {
+              eventsArr.splice(eventsArr.indexOf(event), 1);
+              //remove event class from day
+              const activeDayEl = document.querySelector(".day.active");
+              if (activeDayEl.classList.contains("event")) {
+                activeDayEl.classList.remove("event");
+              }
+            }
+          }
+        });
+      }
+      const response_error = await response.json();
+      console.log(response_error);
+    }
+  }
+  //after removing from array , update event
+  initCalendar();
+  updateEvents(activeDay);
 }
