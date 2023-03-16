@@ -1,13 +1,13 @@
-"""Endpoints for transactions"""
+"""Endpoints for transaction_resources"""
 import flask_restful  # type: ignore
 
-import server.transactions.ledger_resource
-import server.transactions.transaction_resources as tr
+import server.transaction_resources.ledger_resource as lr
+import server.transaction_resources.transaction_resources as tr
 
 
 def attach(api: flask_restful.Api):
     """Attaches all endpoints to the flask app"""
     api.add_resource(tr.TransactionResource, "/transaction/<int:t_id>", "/transaction")
     api.add_resource(
-        server.transactions.ledger_resource.LedgerResource, "/ledger/<int:user_id>"
+        lr.LedgerResource, "/ledger/<int:user_id>"
     )

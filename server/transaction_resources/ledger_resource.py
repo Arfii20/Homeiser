@@ -5,15 +5,15 @@ from transactions.ledger import Ledger, LedgerConstructionError
 
 
 class LedgerResource(Resource):
-    """Ledger is a list of transactions.
+    """Ledger is a list of transaction_resources.
     In JSON represented as '[t_1, t_2, ..., t_n]' where t_1..t_n are JSON(TransactionResource)
     """
 
     def get(self, user_id: int):
-        """Given a user id, will return a 'ledger' of all user's transactions whether they are src or dest"""
+        """Given a user id, will return a 'ledger' of all user's transaction_resources whether they are src or dest"""
         try:
             ledger = Ledger.build_from_user_id(user_id, db.get_db())
             return ledger.json, 200
 
         except LedgerConstructionError:
-            return "Could not return given user's transactions", 404
+            return "Could not return given user's transaction_resources", 404

@@ -19,7 +19,7 @@ class TestLedger(TestCase):
 
         db = conn.cursor()
 
-        # remove any transactions under 428, 429, 430 which exist
+        # remove any transaction_resources under 428, 429, 430 which exist
         db.execute(
             """DELETE FROM transaction WHERE description = "a->b" OR description = "a->c" OR description = "c->b";"""
         )
@@ -36,7 +36,7 @@ class TestLedger(TestCase):
                 """INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row
             )
 
-        # also delete any simplified transactions that may have been added
+        # also delete any simplified transaction_resources that may have been added
         db.execute(
             """DELETE FROM transaction WHERE description = "Simplified Transaction";"""
         )

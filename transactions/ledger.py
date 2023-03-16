@@ -26,7 +26,7 @@ class SimplificationError(Exception):
 
 @dataclass
 class Ledger:
-    """List of transactions. In JSON:
+    """List of transaction_resources. In JSON:
     '[{Transaction}, {Transaction}...{Transaction}]'
     """
 
@@ -34,8 +34,8 @@ class Ledger:
 
     @staticmethod
     def build_from_user_id(user_id: int, cur: cursor.MySQLCursor) -> Ledger:
-        """Builds a ledger of transactions given a user id and a cursor to the db.
-        Returns an empty ledger where user has no transactions
+        """Builds a ledger of transaction_resources given a user id and a cursor to the db.
+        Returns an empty ledger where user has no transaction_resources
         """
         # validate user id; return a 404 if not found
 
@@ -70,7 +70,7 @@ class Ledger:
 
     @staticmethod
     def build_from_house_id(house_id: int, cur: cursor.MySQLCursor) -> Ledger:
-        """Builds a ledger of all unsettled transactions in a house"""
+        """Builds a ledger of all unsettled transaction_resources in a house"""
 
         # validate that house id exists
         cur.execute(
@@ -106,7 +106,7 @@ class Ledger:
 
     @property
     def json(self):
-        """Returns json; list of transactions"""
+        """Returns json; list of transaction_resources"""
         return json.dumps([t.json for t in self.transactions])
 
     @property
@@ -123,19 +123,19 @@ class Ledger:
     def simplify(
         household_id: int, cur: cursor.MySQLCursor, conn: MySQLConnection
     ) -> None:
-        """Simplifies all unmarked transactions in a group.
+        """Simplifies all unmarked transaction_resources in a group.
 
-        1. Pulls all open (i.e. unpaid) transactions of a house
-        2. Converts transactions into flow graph vertices
+        1. Pulls all open (i.e. unpaid) transaction_resources of a house
+        2. Converts transaction_resources into flow graph vertices
         3. Runs simplification on the flow graph
         4a. If no simplifications were found, report no simplifications made
         4b. If there are simplifications to be made:
             * Check off simplifications with a 'bookmaker' user id (some reserved u_id; arbitrary)
-            * Add new transactions from the simplified model
-            * Return that transactions have been updated
+            * Add new transaction_resources from the simplified model
+            * Return that transaction_resources have been updated
         """
 
-        # get ledger of all unmarked transactions in the house
+        # get ledger of all unmarked transaction_resources in the house
         ledger = Ledger.build_from_house_id(household_id, cur)
 
         # build a map of user ids to vertices for all users in graph
@@ -164,8 +164,8 @@ class Ledger:
 
         # otherwise
         #   1. build new ledger from flow graph
-        #   2. delete old transactions
-        #   3. add new transactions to db
+        #   2. delete old transaction_resources
+        #   3. add new transaction_resources to db
 
         simplified.draw("simplified", subdir="ledger", res=False)
 
@@ -200,12 +200,12 @@ class Ledger:
                     )
                 )
 
-        # try to insert new transactions
+        # try to insert new transaction_resources
         try:
             for transaction in simplified_ledger.transactions:
                 transaction.insert_transaction(cur, conn)
         except TransactionInsertionFailed:
-            # means something failed so remove anything that may have been added and add back old transactions
+            # means something failed so remove anything that may have been added and add back old transaction_resources
             for t_id in [t.t_id for t in simplified_ledger.transactions]:
                 cur.execute("""DELETE FROM transaction WHERE id = %s""", [t_id])
 
@@ -213,7 +213,7 @@ class Ledger:
                 "Found a way to simplify debts; failed to execute. Try again later"
             )
 
-        # delete old transactions only if we have successfully added new ones
+        # delete old transaction_resources only if we have successfully added new ones
         for t_id in [t.t_id for t in ledger.transactions]:
             cur.execute("""DELETE FROM transaction WHERE id = %s""", [t_id])
 

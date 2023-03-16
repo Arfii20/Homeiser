@@ -1,4 +1,4 @@
-"""List of all resources pertaining to transactions"""
+"""List of all resources pertaining to transaction_resources"""
 import json
 
 import mysql.connector
@@ -108,4 +108,4 @@ class TransactionResource(Resource):
 
 
 class CalendarTransactions(Resource):
-    """Builds a calendar event out of transactions"""
+    """Builds a calendar event out of transaction_resources"""

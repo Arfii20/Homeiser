@@ -81,7 +81,7 @@ class TestTransactionResources(TestCase):
     def test_patch(self):
         """Checks that we toggle paid and unpaid properly. Done by reading off a transaction and storing it,
         then sending the patch request, then reading off the same transaction. The 'before' and 'after'
-        transactions are compared. Test passes if paid is different and every other field is the same
+        transaction_resources are compared. Test passes if paid is different and every other field is the same
         """
 
         # FIXME: Database updates with the patch command, but after request still provides the un-updated value for

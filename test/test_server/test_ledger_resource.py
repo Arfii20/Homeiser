@@ -6,7 +6,7 @@ import requests
 
 class TestLedgerResource(TestCase):
     def test_get(self):
-        """Checks we get a response of transactions from user called Test Ledger"""
+        """Checks we get a response of transaction_resources from user called Test Ledger"""
 
         r = requests.get("http://127.0.0.1:5000/ledger/3")
 
@@ -16,7 +16,7 @@ class TestLedgerResource(TestCase):
             '"due_date": "2023-02-17", "paid": "false", "household_id": 2}'
         ]
 
-        with self.subTest("Get user transactions where user exists"):
+        with self.subTest("Get user transaction_resources where user exists"):
             self.assertEqual(r.status_code, 200)
             self.assertEqual(json.dumps(exp_json), r.json())
 
