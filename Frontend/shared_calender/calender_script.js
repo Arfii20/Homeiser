@@ -21,6 +21,7 @@ const calendar = document.querySelector(".calendar"),
   // addEventAddedBy = document.querySelector(".added-by "),
   addEventSubmit = document.querySelector(".add-event-btn "),
   addEventTagged = document.querySelector(".event-tagged ");
+
   BASE = "http://127.0.0.1:5000/";
 
 let today = new Date();
@@ -265,22 +266,28 @@ function updateEvents(date) {
     ) {
       //show event on document 
       event.events.forEach((event) => {
-        events += `<div class="event" id="${event.id}">
-            <div class="title">
-              <i class="fas fa-circle"></i>
-              <h3 class="event-title">${event.title}</h3>
+        events += `<div class="events-buttons">
+            <div class="event" id="${event.id}">
+                <div class="title">
+                  <i class="fas fa-circle"></i>
+                  <h3 class="event-title">${event.title}</h3>
+                </div>
+                <div class="event-time">
+                  <span class="event-time">${event.time}</span>
+                </div>
+                <div class="event-notes">
+                  <span class="event-notes">Description : ${event.notes}</span>
+                </div>
+                <div class="event-location">
+                  <span class="event-location">Location : ${event.location}</span>
+                </div>
+                <div class="event-tagged">
+                  <span class="event-tagged">Users involved : ${event.tagged}</span>
+                </div>
             </div>
-            <div class="event-time">
-              <span class="event-time">${event.time}</span>
-            </div>
-            <div class="event-notes">
-              <span class="event-notes">Description : ${event.notes}</span>
-            </div>
-            <div class="event-location">
-              <span class="event-location">Location : ${event.location}</span>
-            </div>
-            <div class="event-tagged">
-              <span class="event-tagged">Users involved : ${event.tagged}</span>
+            <div class="event-buttons">
+                <button onclick=deleteEvent(event)>Button 1</button>
+                <button>Button 2</button>
             </div>
         </div>`;
       });
@@ -363,12 +370,15 @@ function convertTime(time) {
 }
 
 //function to DELETE event when clicked on event
-eventsContainer.addEventListener("click", async (e) => {
-  if (e.target.classList.contains("event")) {
+// eventsContainer.addEventListener("click", async (e) => {
+async function deleteEvent(event){
+  // if (e.target.classList.contains("event")) {
+  console.log(event);
+    const eventID = event.target.parentNode.previousElementSibling.id;
     if (confirm("Are you sure you want to delete this event?")) {
       //get event title of event, then search in array and delete 
       
-      const response = await fetch(`${BASE}calendar_event/${e.target.id}`, {method: 'DELETE'});
+      const response = await fetch(`${BASE}calendar_event/${eventID}`, {method: 'DELETE'});
 
       if (response.ok){
         eventsArr.forEach((event) => {
@@ -378,7 +388,7 @@ eventsContainer.addEventListener("click", async (e) => {
             event.year === year
           ) {
             event.events.forEach((item, index) => {
-              if (item.id == e.target.id) {
+              if (item.id == eventID) {
                 event.events.splice(index, 1);
               }
             });
@@ -401,7 +411,7 @@ eventsContainer.addEventListener("click", async (e) => {
       updateEvents(activeDay);
     }
   }
-});
+// });
 
 //function to POST events to the database
 addEventSubmit.addEventListener("click", async () => {

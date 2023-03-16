@@ -281,13 +281,40 @@ body {
   flex-direction: column;
   padding-left: 4px;
 }
+
+.events .events-buttons {
+  display: flex;
+/*  flex-wrap: wrap;*/
+}
+
+.event-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+}
+.events .events-buttons .event-buttons button {
+  background-color: #008CBA;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  margin-right: 10px;
+}
+
 .events .event {
   position: relative;
   width: 95%;
   min-height: 120px;
+  
   display: flex;
   justify-content: center;
   flex-direction: column;
+/*  flex-basis: calc(60% - 10px);*/
+/*  margin-right: 10px;*/
+
   gap: 5px;
   padding: 0 20px;
   padding-left: 50px;
