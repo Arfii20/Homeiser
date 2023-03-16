@@ -270,24 +270,24 @@ function updateEvents(date) {
             <div class="event" id="${event.id}">
                 <div class="title">
                   <i class="fas fa-circle"></i>
-                  <h3 class="event-title">${event.title}</h3>
+                  <input type="text" class="event-title" value="${event.title}">
                 </div>
                 <div class="event-time">
-                  <span class="event-time">${event.time}</span>
+                  <input type="text" span class="event-time" value="${event.time}">
                 </div>
                 <div class="event-notes">
-                  <span class="event-notes">Description : ${event.notes}</span>
+                  <input type="text" span class="event-notes" value="Description : ${event.notes}">
                 </div>
                 <div class="event-location">
-                  <span class="event-location">Location : ${event.location}</span>
+                  <input type="text" span class="event-location" value="Location : ${event.location}">
                 </div>
                 <div class="event-tagged">
-                  <span class="event-tagged">Users involved : ${event.tagged}</span>
+                  <input type="text" span class="event-tagged" value="Users involved : ${event.tagged}">
                 </div>
             </div>
             <div class="event-buttons">
-                <button class="edit-delete-button" onclick=deleteEvent(event)>Delete</button>
-                <button class="edit-delete-button">Edit</button>
+                <button class="delete-button" onclick=deleteEvent(event)>Delete</button>
+                <button class="edit-button">Edit</button>
             </div>
         </div>`;
       });
@@ -358,63 +358,6 @@ addEventTaggedUsers.addEventListener("input", (e) => {
   addEventTaggedUsers.value = addEventTaggedUsers.value.slice(0, 60);
 });
 
-//function to edit event
-editEventBtn.editEventListener("click", () => {
-  editEventWrapper.classList.toggle("active");
-});
-
-editEventCloseBtn.editEventListener("click", () => {
-  editEventWrapper.classList.remove("active");
-});
-
-document.editEventListener("click", (e) => {
-  if (e.target !== editEventBtn && !editEventWrapper.contains(e.target)) {
-    editEventWrapper.classList.remove("active");
-  }
-});
-
-//allow 50 chars in eventtitle
-editEventTitle.editEventListener("input", (e) => {
-  editEventTitle.value = editEventTitle.value.slice(0, 60);
-});
-
-//allow only time in eventtime from and to
-editEventFrom.editEventListener("input", (e) => {
-  editEventFrom.value = editEventFrom.value.replace(/[^0-9:]/g, "");
-  if (editEventFrom.value.length === 2) {
-    editEventFrom.value += ":";
-  }
-  if (editEventFrom.value.length > 5) {
-    editEventFrom.value = editEventFrom.value.slice(0, 5);
-  }
-});
-
-editEventTo.editEventListener("input", (e) => {
-  editEventTo.value = editEventTo.value.replace(/[^0-9:]/g, "");
-  if (editEventTo.value.length === 2) {
-    editEventTo.value += ":";
-  }
-  if (editEventTo.value.length > 5) {
-    editEventTo.value = editEventTo.value.slice(0, 5);
-  }
-});
-
-//allow 50 chars in eventLocation
-editEventLocation.editEventListener("input", (e) => {
-  editEventLocation.value = editEventLocation.value.slice(0, 60);
-});
-
-//allow 100 chars in eventNotes
-editEventNotes.editEventListener("input", (e) => {
-  editEventNotes.value = editEventNotes.value.slice(0, 60);
-});
-
-//allow 100 chars in eventNotes
-editEventTaggedUsers.editEventListener("input", (e) => {
-  editEventTaggedUsers.value = editEventTaggedUsers.value.slice(0, 60);
-});
-
-
 function convertTime(time) {
   //convert time to 24 hour format
   let timeArr = time.split(":");
@@ -427,12 +370,13 @@ function convertTime(time) {
 }
 
 //function to DELETE event when clicked on event
+// eventsContainer.addEventListener("click", async (e) => {
 async function deleteEvent(event){
   // if (e.target.classList.contains("event")) {
   console.log(event);
   const eventID = event.target.parentNode.previousElementSibling.id;
   // if (confirm("Are you sure you want to delete this event?")) {
-  //get event title of event, then search in array and delete 
+      //get event title of event, then search in array and delete 
       
   const response = await fetch(`${BASE}calendar_event/${eventID}`, {method: 'DELETE'});
 
