@@ -681,3 +681,12 @@ body {
     padding: 20px;
   }
 }
+
+label {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #E0E0E0;
+  margin-left: 15px;
+  margin-right: -15px;
+}

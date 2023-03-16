@@ -276,18 +276,21 @@ function updateEvents(date) {
                   <input type="text" span class="event-time" value="${event.time}">
                 </div>
                 <div class="event-notes">
-                  <input type="text" span class="event-notes" value="Description : ${event.notes}">
+                  <label for="event-notes">Description: </label>
+                  <input type="text" span class="event-notes" value="${event.notes}">
                 </div>
                 <div class="event-location">
-                  <input type="text" span class="event-location" value="Location : ${event.location}">
+                  <label for="event-location">Location: </label>
+                  <input type="text" span class="event-location" value="${event.location}">
                 </div>
                 <div class="event-tagged">
-                  <input type="text" span class="event-tagged" value="Users involved : ${event.tagged}">
+                  <label for="event-tagged">Users involved: </label>
+                  <input type="text" id="event-tagged" class="event-tagged" value="${event.tagged}">
                 </div>
             </div>
             <div class="event-buttons">
                 <button class="delete-button" onclick=deleteEvent(event)>Delete</button>
-                <button class="edit-button">Edit</button>
+                <button class="edit-button" onclick=editEvent(event)>Edit</button>
             </div>
         </div>`;
       });
@@ -583,4 +586,92 @@ async function get_calendarEvent(household_id){
     initCalendar();
     updateEvents(activeDay);
   }
+}
+
+
+async function editEvent(event){
+  const siblingDiv = event.target.parentNode.previousElementSibling;
+  const calendarEventID = siblingDiv.id;
+  
+  const evTitle = siblingDiv.querySelector('.title').querySelector('.event-title');
+  const evtime = siblingDiv.querySelector('.event-time').querySelector('.event-time');
+  const evDescription = siblingDiv.querySelector('.event-notes').querySelector('.event-notes');
+  const evLocation = siblingDiv.querySelector('.event-location').querySelector('.event-location');
+  const evUsersTagged = siblingDiv.querySelector('.event-tagged').querySelector('.event-tagged');
+
+  console.log(evTitle);
+  console.log(evtime);
+  console.log(evDescription);
+  console.log(evLocation);
+  console.log(evUsersTagged);
+  // eventsArr.forEach((event) => {
+  //     if (
+  //       event.day === activeDay &&
+  //       event.month === month + 1 &&
+  //       event.year === year
+  //     ) {
+  //       event.events.forEach((item, index) => {
+  //         if (item.id == calendarEventID) {
+  //           event.events.splice(index, 1);
+  //         }
+  //       });
+  //       //if no events left in a day then remove that day from eventsArr
+  //       if (event.events.length === 0) {
+  //         eventsArr.splice(eventsArr.indexOf(event), 1);
+  //         //remove event class from day
+  //         const activeDayEl = document.querySelector(".day.active");
+  //         if (activeDayEl.classList.contains("event")) {
+  //           activeDayEl.classList.remove("event");
+  //         }
+  //       }
+  //     }
+  // const childrenOfPrevSibling = event.target.parentNode.previousElementSibling.
+
+  // const editButtonElement = document.querySelector('#edit-' + listEventID);
+  // const inputElement = document.querySelector('#input-' + listEventID);
+  // const inputName = document.querySelector('#input-name-' + listEventID);
+
+  // if (editButtonElement.innerText.toLowerCase() == "edit") {
+  //   editButtonElement.innerText = "Save";
+  //   inputName.removeAttribute("readonly");
+  //   inputElement.removeAttribute("readonly");   
+  //   inputElement.focus();
+  //   inputElement.setSelectionRange(0, inputElement.value.length);
+  // }
+  // else {
+  //   editButtonElement.innerText = "Edit";
+
+  //   inputElement.setAttribute("readonly", "readonly");
+  //   inputName.setAttribute("readonly", "readonly");
+  //   const inputValue = inputElement.value;
+  //   const inputDescriptionValue = inputName.value;
+
+  //   if (!inputValue && !inputDescriptionValue){
+  //     alert("NAME and DESCRIPTION cannot be empty!")
+  //   }
+  //   else if (!inputValue){
+  //     alert("NAME cannot be empty!")
+  //   }
+  //   else if (!inputDescriptionValue){
+  //     alert("DESCRIPTION cannot be empty!")
+  //   }
+  //   else{
+  //       const url = BASE + "list_event_details/" + listEventID;
+  //     const data = new URLSearchParams();
+
+  //     data.append('new_task', inputValue.replace(/'/g, "\\'"));
+  //     data.append('new_description', inputDescriptionValue.replace(/'/g, "\\'"));
+
+  //     await fetch(url, {
+  //       method: 'PUT',
+  //       body: data,
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded'
+  //       }
+  //     }).then(response => response.json())
+  //       .then(data => console.log(data))
+  //       .catch(error => console.error(error));
+  //   }
+  // }
+
 }
