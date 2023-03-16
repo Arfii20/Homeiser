@@ -20,9 +20,10 @@ const calendar = document.querySelector(".calendar"),
   addEventTaggedUsers = document.querySelector(".tagged-users "),
   // addEventAddedBy = document.querySelector(".added-by "),
   addEventSubmit = document.querySelector(".add-event-btn "),
-  addEventTagged = document.querySelector(".event-tagged ");
-
+  addEventTagged = document.querySelector(".event-tagged "),
   BASE = "http://127.0.0.1:5000/";
+
+const pattern = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ?(am|pm) ?- ?(1[0-2]|0?[1-9]):([0-5][0-9]) ?(am|pm)$/i;
 
 let today = new Date();
 let activeDay;
@@ -600,12 +601,6 @@ async function editEvent(event){
   const evLocation = siblingDiv.querySelector('.event-location').querySelector('.event-location');
   const evUsersTagged = siblingDiv.querySelector('.event-tagged').querySelector('.event-tagged');
 
-  console.log(evTitle);
-  console.log(evtime);
-  console.log(evDescription);
-  console.log(evLocation);
-  console.log(evUsersTagged);
-
   if (event.target.innerText.toLowerCase() == "edit") {
     event.target.innerText = "Save";
 
@@ -615,15 +610,18 @@ async function editEvent(event){
     evLocation.removeAttribute("readonly");
     evUsersTagged.removeAttribute("readonly");
     evTitle.focus;
+    evTitle.setSelectionRange(0, evTitle.value.length);
   }
   else { 
-    console.log("Works")
     if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === "" || evUsersTagged.value === ""){
-        alert("Please fill all the fields");
-        return;
+      alert("Please fill all the fields");
+      return;
       }
+    else if (!((evtime.value).match(pattern))) {
+      alert("Time should be in (HH:MM AM|PM - HH:MM AM|PM) format");  
+      return;
+    }
     else{
-      console.log(evtime.value);
       const timeRange = evtime.value;
       const times = timeRange.split(" - ");
       const startTime = times[0];
