@@ -151,7 +151,15 @@ class TestTransactionResources(TestCase):
 
 
 class TestCalendarTransactions(TestCase):
-
     def test_get(self):
         response = requests.get(target + "transaction/as_events/5")
-        print(json.loads(response.json()))
+
+        if (code := response.status_code) != 200:
+            self.fail(f"Expected a 200, got a {code} ")
+
+        exp = [
+            '{"event_id": [428], "title_of_event": ["Andrew Lees -> Bandicoot Crash"], "starting_time": ["2023-03-13 0:0:0"], "ending_time": ["2023-03-13 23:59:59"], "additional_notes": ["a->b"], "location_of_event": [""], "household_id": [3], "tagged_users": [6], "added_by": [5]}',
+            '{"event_id": [430], "title_of_event": ["Andrew Lees -> Kez Carey"], "starting_time": ["2023-03-13 0:0:0"], "ending_time": ["2023-03-13 23:59:59"], "additional_notes": ["a->c"], "location_of_event": [""], "household_id": [3], "tagged_users": [7], "added_by": [5]}',
+        ]
+
+        self.assertEqual(json.loads(response.json()), exp)

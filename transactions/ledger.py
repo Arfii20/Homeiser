@@ -3,7 +3,11 @@ from __future__ import annotations
 import sys
 
 from settle import flow, flow_algorithms
-from transactions.transaction import Transaction, TransactionInsertionFailed, CalendarEvent
+from transactions.transaction import (
+    Transaction,
+    TransactionInsertionFailed,
+    CalendarEvent,
+)
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
