@@ -286,8 +286,8 @@ function updateEvents(date) {
                 </div>
             </div>
             <div class="event-buttons">
-                <button onclick=deleteEvent(event)>Button 1</button>
-                <button>Button 2</button>
+                <button class="edit-delete-button" onclick=deleteEvent(event)>Delete</button>
+                <button class="edit-delete-button">Edit</button>
             </div>
         </div>`;
       });
@@ -374,43 +374,43 @@ function convertTime(time) {
 async function deleteEvent(event){
   // if (e.target.classList.contains("event")) {
   console.log(event);
-    const eventID = event.target.parentNode.previousElementSibling.id;
-    if (confirm("Are you sure you want to delete this event?")) {
-      //get event title of event, then search in array and delete 
+  const eventID = event.target.parentNode.previousElementSibling.id;
+  // if (confirm("Are you sure you want to delete this event?")) {
+  //get event title of event, then search in array and delete 
       
-      const response = await fetch(`${BASE}calendar_event/${eventID}`, {method: 'DELETE'});
+  const response = await fetch(`${BASE}calendar_event/${eventID}`, {method: 'DELETE'});
 
-      if (response.ok){
-        eventsArr.forEach((event) => {
-          if (
-            event.day === activeDay &&
-            event.month === month + 1 &&
-            event.year === year
-          ) {
-            event.events.forEach((item, index) => {
-              if (item.id == eventID) {
-                event.events.splice(index, 1);
-              }
-            });
-            //if no events left in a day then remove that day from eventsArr
-            if (event.events.length === 0) {
-              eventsArr.splice(eventsArr.indexOf(event), 1);
-              //remove event class from day
-              const activeDayEl = document.querySelector(".day.active");
-              if (activeDayEl.classList.contains("event")) {
-                activeDayEl.classList.remove("event");
-              }
-            }
+  if (response.ok){
+    eventsArr.forEach((event) => {
+      if (
+        event.day === activeDay &&
+        event.month === month + 1 &&
+        event.year === year
+      ) {
+        event.events.forEach((item, index) => {
+          if (item.id == eventID) {
+            event.events.splice(index, 1);
           }
         });
+        //if no events left in a day then remove that day from eventsArr
+        if (event.events.length === 0) {
+          eventsArr.splice(eventsArr.indexOf(event), 1);
+          //remove event class from day
+          const activeDayEl = document.querySelector(".day.active");
+          if (activeDayEl.classList.contains("event")) {
+            activeDayEl.classList.remove("event");
+          }
+        }
       }
-      const response_error = await response.json();
-      console.log(response_error);
-      //after removing from array , update event
-      initCalendar();
-      updateEvents(activeDay);
-    }
+    });
   }
+  const response_error = await response.json();
+  console.log(response_error);
+  //after removing from array , update event
+  initCalendar();
+  updateEvents(activeDay);
+}
+  // }
 // });
 
 //function to POST events to the database

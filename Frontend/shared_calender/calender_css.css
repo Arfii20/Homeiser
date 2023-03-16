@@ -284,16 +284,16 @@ body {
 
 .events .events-buttons {
   display: flex;
-/*  flex-wrap: wrap;*/
+
 }
 
 .event-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: auto;
+  margin: auto;
 }
-.events .events-buttons .event-buttons button {
+.events .events-buttons button {
   background-color: #008CBA;
   border: none;
   color: white;
@@ -301,20 +301,25 @@ body {
   text-align: center;
   text-decoration: none;
   display: block;
-  margin-right: 10px;
 }
 
-.events .event {
+.events .events-buttons .edit-delete-button{
+  height: 40px;
+  width: 80px;
+  border: 1px;
+  border-radius: 20%;
+  padding: 5px;
+  margin: 5px;
+  background-color: #4B4F66;
+}
+
+.events .events-buttons .event {
   position: relative;
   width: 95%;
-  min-height: 120px;
-  
+  min-height: 120px;  
   display: flex;
   justify-content: center;
   flex-direction: column;
-/*  flex-basis: calc(60% - 10px);*/
-/*  margin-right: 10px;*/
-
   gap: 5px;
   padding: 0 20px;
   padding-left: 50px;
@@ -323,7 +328,7 @@ body {
   cursor: pointer;
 }
 /* even event */
-.events .event:nth-child(even) {
+.events .events-buttons:nth-child(even)  .event{
   position: relative;
   width: 95%;
   min-height: 120px;
@@ -337,34 +342,34 @@ body {
   background: linear-gradient(90deg, #4B4F66, transparent);
   cursor: pointer;
 }
-.events .event:hover {
+.events .events-buttons .event:hover {
   background: linear-gradient(90deg, var(--primary-clr), transparent);
 }
-.events .event .title {
+.events .events-buttons .event .title {
   display: flex;
   align-items: center;
   pointer-events: none;
 }
-.events .event .title .event-title {
+.events .events-buttons .event .title .event-title {
   font-size: 1rem;
   font-weight: 400;
   margin-left: 20px;
 }
-.events .event i {
+.events .events-buttons .event i {
   color: var(--primary-clr);
   font-size: 0.5rem;
 }
-.events .event:hover i {
+.events .events-buttons .event:hover i {
   color: #fff;
 }
-.events .event .event-time {
+.events .events-buttons .event .event-time {
   font-size: 0.8rem;
   font-weight: 400;
   color: #E0E0E0;
   margin-left: 15px;
   pointer-events: none;
 }
-.events .event:hover .event-time {
+.events .events-buttons .event:hover .event-time {
   color: #fff;
 }
 
@@ -375,34 +380,34 @@ body {
   margin-left: 15px;
   pointer-events: none;
 }
-.events .event:hover .event-notes {
+.events .events-buttons .event:hover .event-notes {
   color: #fff;
 }
 
-.events .event .event-location {
+.events .events-buttons .event .event-location {
   font-size: 0.8rem;
   font-weight: 400;
   color: #E0E0E0;
   margin-left: 15px;
   pointer-events: none;
 }
-.events .event:hover .event-location {
+.events .events-buttons .event:hover .event-location {
   color: #fff;
 }
 
-.events .event .event-tagged {
+.events .events-buttons .event .event-tagged {
   font-size: 0.8rem;
   font-weight: 400;
   color: #E0E0E0;
   margin-left: 15px;
   pointer-events: none;
 }
-.events .event:hover .event-tagged {
+.events .events-buttons .event:hover .event-tagged {
   color: #fff;
 }
 
 /* add tick in event after */
-.events .event::after {
+.events .events-buttons .event::after {
   content: "✓";
   position: absolute;
   top: 50%;
@@ -416,7 +421,7 @@ body {
   color: var(--primary-clr);
   transform: translateY(-50%);
 }
-.events .event:hover::after {
+.events .events-buttons .event:hover::after {
   display: flex;
 }
 .add-event {
