@@ -419,6 +419,8 @@ async function deleteEvent(event){
 
 //function to POST events to the database
 addEventSubmit.addEventListener("click", async () => {
+  const house_id = 620;
+  const user_id = 630;
   const eventTitle = addEventTitle.value;
   const eventTimeFrom = addEventFrom.value;
   const eventTimeTo = addEventTo.value;
@@ -444,6 +446,37 @@ addEventSubmit.addEventListener("click", async () => {
     timeToArr[1] > 59
   ) {
     alert("Invalid Time Format");
+    return;
+  }
+  if (!((eventTaggedUsers).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+    alert("Please add first or last names with spaces in between");
+    return;
+  }
+
+  const url_userid = BASE + "user_attributes/" + house_id;
+  const data_userid = new URLSearchParams();
+
+  data_userid.append('names', eventTaggedUsers);
+  console.log(eventTaggedUsers)
+  const response_userid = await fetch(url_userid, {
+                          method: 'POST',
+                          body: data_userid,
+                          headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                          }
+                        })
+  var names = ""
+  if (response_userid.ok){
+    const response_userid_array = JSON.parse(await response_userid.json());
+
+    for (let i = 0; i < response_userid_array.length; i++) {
+      names += response_userid_array[i] + " ";
+    }
+    names = names.trim();
+    console.log(names);
+  }
+  else {
+    alert("Please enter correct names. This user does not exist");
     return;
   }
 
@@ -472,9 +505,6 @@ addEventSubmit.addEventListener("click", async () => {
     alert("Event already added");
     return;
   }
-  
-  const house_id = 620;
-  const user_id = 630;
   const eventTimeFromConverted = `${year}-${month + 1}-${activeDay} ${eventTimeFrom}:00`;
   const eventTimeToConverted = `${year}-${month + 1}-${activeDay} ${eventTimeTo}:00`;
 
@@ -486,7 +516,7 @@ addEventSubmit.addEventListener("click", async () => {
   data.append('ending_time', eventTimeToConverted);
   data.append('additional_notes', eventNotes.replace(/'/g, "\\'"));
   data.append('location_of_event', eventLocation.replace(/'/g, "\\'"));
-  data.append('tagged_users', eventTaggedUsers.replace(/'/g, "\\'"));
+  data.append('tagged_users', names.replace(/'/g, "\\'"));
   data.append('added_by', parseInt(user_id));
 
   const response = await fetch(url, {
@@ -682,7 +712,3 @@ async function editEvent(event){
     }
   }
 }
-
-// async function get_colour(){
-  
-// }

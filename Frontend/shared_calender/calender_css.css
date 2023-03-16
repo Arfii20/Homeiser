@@ -318,7 +318,7 @@ body {
   width: 80px;
   border: 1px;
   border-radius: 20%;
-  padding: 1px;
+  padding: 5px;
   margin: 5px;
   background-color: #4B4F66;
 }
@@ -332,7 +332,7 @@ body {
   width: 80px;
   border: 1px;
   border-radius: 20%;
-  padding: 1px;
+  padding: 5px;
   margin: 5px;
   background-color: #4B4F66;
 }
@@ -355,6 +355,7 @@ body {
   background: linear-gradient(90deg, #3f4458, transparent);
   cursor: pointer;
 }
+
 /* even event */
 .events .events-buttons:nth-child(even)  .event{
   position: relative;
@@ -365,14 +366,16 @@ body {
   flex-direction: column;
   gap: 5px;
   padding: 0 20px;
-  padding-left: 50px;
+  padding-left: 25px;
   color: #fff;
   background: linear-gradient(90deg, #4B4F66, transparent);
   cursor: pointer;
 }
+
 .events .events-buttons .event:hover {
   background: linear-gradient(90deg, var(--primary-clr), transparent);
 }
+
 .events .events-buttons .event .title {
   display: flex;
   align-items: center;
@@ -482,6 +485,21 @@ body {
   color: #fff;
 }
 
+/* add tick in event after */
+/*.events .events-buttons .event::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  font-size: 3rem;
+  line-height: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  color: var(--primary-clr);
+  transform: translateY(-50%);
+}*/
 .events .events-buttons .event:hover::after {
   display: flex;
 }

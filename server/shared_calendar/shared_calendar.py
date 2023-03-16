@@ -507,6 +507,7 @@ class UserAttributes(Resource):
         )
         args = parser.parse_args()
         names = args.get("names")
+        print(names)
         names = names.split(" ")
         user_ids = []
         query = "SELECT id FROM user WHERE household_id = %s AND (first_name = '%s' OR surname = '%s');"
