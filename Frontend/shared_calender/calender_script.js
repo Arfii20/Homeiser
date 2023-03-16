@@ -590,6 +590,7 @@ async function get_calendarEvent(household_id){
 
 // Function to edit calendar event
 async function editEvent(event){
+  const user_id = 630;
   const siblingDiv = event.target.parentNode.previousElementSibling;
   const calendarEventID = siblingDiv.id;
   
@@ -622,19 +623,46 @@ async function editEvent(event){
         return;
       }
     else{
-      const url = BASE + "shared_calendar/" + calendarEventID;
+      console.log(evtime.value);
+      const timeRange = evtime.value;
+      const times = timeRange.split(" - ");
+      const startTime = times[0];
+      const endTime = times[1];
+
+      var [startHour, startMinute] = startTime.split(":").map((x) => parseInt(x));
+      var [endHour, endMinute] = endTime.split(":").map((x) => parseInt(x));
+
+      if (startTime.includes("PM") && startHour !== 12) {
+        startHour += 12;
+      }
+      if (endTime.includes("PM") && endHour !== 12) {
+        endHour += 12;
+      }
+      if (startTime.includes("AM") && startHour === 12) {
+        startHour = 0;
+      }
+      if (endTime.includes("AM") && endHour === 12) {
+        endHour = 0;
+      }
+
+      const eventTimeFromConverted = `${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}`;
+      const eventTimeToConverted = `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`;
+
+      const url = BASE + "calendar_event/" + calendarEventID;
       const data = new URLSearchParams();
 
-      data.append('title_of_event', evTitle.replace(/'/g, "\\'"));
-      data.append('starting_time', eventTimeFromConverted);
-      data.append('ending_time', eventTimeToConverted);
-      data.append('additional_notes', evDescription.replace(/'/g, "\\'"));
-      data.append('location_of_event', evLocation.replace(/'/g, "\\'"));
-      data.append('tagged_users', evUsersTagged.replace(/'/g, "\\'"));
+      console.log(`${year}-${month + 1}-${activeDay} ${eventTimeToConverted}:00`);
+
+      data.append('title_of_event', evTitle.value.replace(/'/g, "\\'"));
+      data.append('starting_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeFromConverted}:00`);
+      data.append('ending_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
+      data.append('additional_notes', evDescription.value.replace(/'/g, "\\'"));
+      data.append('location_of_event', evLocation.value.replace(/'/g, "\\'"));
+      data.append('tagged_users', evUsersTagged.value.replace(/'/g, "\\'"));
       data.append('added_by', parseInt(user_id));
 
       const response = await fetch(url, {
-                      method: 'POST',
+                      method: 'PUT',
                       body: data,
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -651,8 +679,8 @@ async function editEvent(event){
         evUsersTagged.setAttribute("readonly", "readonly");
 
         get_calendarEvent(620);
-        console.log(respone.json())
       }
+      console.log(await response.json())
     }
   }
 }

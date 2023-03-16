@@ -385,12 +385,14 @@ body {
   outline: none;
   cursor: default;
 }
+
 .events .events-buttons .event i {
   color: var(--primary-clr);
   font-size: 0.5rem;
   background-color: transparent;
 }
-.events .events-buttons .event:hover i {
+
+/*.events .events-buttons .event:hover i {
   color: #fff;
   border: none;
   background-color: transparent;
@@ -398,6 +400,7 @@ body {
   outline: none;
   cursor: default;
 }
+*/
 .events .events-buttons .event .event-time {
   font-size: 0.8rem;
   font-weight: 400;
@@ -410,6 +413,7 @@ body {
   outline: none;
   cursor: default;
 }
+
 .events .events-buttons .event:hover .event-time {
   color: #fff;
   border: none;
@@ -469,6 +473,7 @@ body {
   outline: none;
   cursor: default;
 }
+
 .events .events-buttons .event:hover .event-tagged {
   color: #fff;
 }
