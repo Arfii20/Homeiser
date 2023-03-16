@@ -13,6 +13,8 @@ from transactions.transaction import (
     TransactionInsertionFailed,
 )
 
+import transactions.ledger as ledger
+
 
 class TransactionResource(Resource):
     """
@@ -108,4 +110,19 @@ class TransactionResource(Resource):
 
 
 class CalendarTransactions(Resource):
-    """Builds a calendar event out of transaction_resources"""
+    """Return user's transactions as calendar events"""
+
+    def get(self, user_id: int):
+
+        cur = db.get_db()
+
+        # build ledger of user's transactions
+        try:
+            user_ledger = ledger.Ledger.build_from_user_id(user_id, cur)
+        except ledger.LedgerConstructionError:
+            return f"Internal Server Error - Could not get transactions for user_id {user_id}", 500
+
+        # represent each transaction as a calendar event (using json). Have all transactions in a list and return
+        events_json = json.dumps([event.json for event in user_ledger.as_events()])
+
+        return events_json, 200

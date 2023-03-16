@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 
 from settle import flow, flow_algorithms
-from transactions.transaction import Transaction, TransactionInsertionFailed
+from transactions.transaction import Transaction, TransactionInsertionFailed, CalendarEvent
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -219,3 +219,7 @@ class Ledger:
 
         # commit
         conn.commit()
+
+    def as_events(self) -> list[CalendarEvent]:
+        """Converts transactions into calendar event objects"""
+        return [CalendarEvent.from_transaction(t) for t in self.transactions]

@@ -148,3 +148,10 @@ class TestTransactionResources(TestCase):
 
             r = requests.delete("http://127.0.0.1:5000/transaction/2000000")
             self.assertEqual(r.status_code, 402)
+
+
+class TestCalendarTransactions(TestCase):
+
+    def test_get(self):
+        response = requests.get(target + "transaction/as_events/5")
+        print(json.loads(response.json()))
