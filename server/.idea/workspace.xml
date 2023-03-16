@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../Frontend/shared_calender/calender_css.css" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/shared_calender/calender_css.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/shared_calender/calender_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/shared_calender/calender_script.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared_calendar/shared_calendar.py" beforeDir="false" afterPath="$PROJECT_DIR$/shared_calendar/shared_calendar.py" afterDir="false" />
     </list>
@@ -57,7 +56,7 @@
     ]
   }
 }</component>
-  <component name="RunManager" selected="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post">
+  <component name="RunManager" selected="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar">
     <configuration name="host" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -166,9 +165,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.UserColour" />
-        <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
         <item itemvalue="Python tests.Python tests in test_shared_calendar.py" />
         <item itemvalue="Python.host" />
       </list>
@@ -185,7 +184,7 @@
       <workItem from="1678480992755" duration="1808000" />
       <workItem from="1678883522393" duration="15068000" />
       <workItem from="1678957515002" duration="1306000" />
-      <workItem from="1678968182799" duration="14553000" />
+      <workItem from="1678968182799" duration="15482000" />
     </task>
     <servers />
   </component>

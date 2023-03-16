@@ -597,7 +597,7 @@ async function get_calendarEvent(household_id){
         time: timeFrom + " - " + timeTo,
         location : obj.location_of_event,
         notes : obj.additional_notes,
-        tagged : obj.tagged_users, 
+        tagged : obj.tagged_users.join(", "), 
         addedBy : obj.added_by,
       };
       console.log(newEvent);

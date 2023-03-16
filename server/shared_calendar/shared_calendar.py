@@ -69,6 +69,7 @@ class GetSharedCalendar(Resource):
         fetched_result = cursor.fetchall()
 
         all_events = []
+        query_name = "SELECT first_name FROM user WHERE id = %s;"
         if fetched_result:
             query1 = "SELECT * FROM user_doing_calendar_event"
             cursor.execute(query1)
@@ -78,7 +79,8 @@ class GetSharedCalendar(Resource):
                 added_by = -1
                 for i in result:
                     if i[1] == x[0]:
-                        tagged.append(i[0])
+                        cursor.execute(query_name % i[0])
+                        tagged.append(cursor.fetchall()[0])
                         if i[2] != added_by:
                             added_by = i[2]
                 event_objects = CalendarEventBuild(x, tagged, added_by)

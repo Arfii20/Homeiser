@@ -314,12 +314,12 @@ body {
 }
 
 .events .events-buttons .edit-button{
-  height: 40px;
-  width: 80px;
+  height: 30px;
+  width: 70px;
   border: 1px;
   border-radius: 20%;
   padding: 5px;
-  margin: 5px;
+  margin: 8px;
   background-color: #4B4F66;
 }
 
@@ -328,12 +328,12 @@ body {
 }
 
 .events .events-buttons .delete-button{
-  height: 40px;
-  width: 80px;
+  height: 30px;
+  width: 70px;
   border: 1px;
   border-radius: 20%;
   padding: 5px;
-  margin: 5px;
+  margin: 8px;
   background-color: #4B4F66;
 }
 
