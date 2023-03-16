@@ -358,6 +358,63 @@ addEventTaggedUsers.addEventListener("input", (e) => {
   addEventTaggedUsers.value = addEventTaggedUsers.value.slice(0, 60);
 });
 
+//function to edit event
+editEventBtn.editEventListener("click", () => {
+  editEventWrapper.classList.toggle("active");
+});
+
+editEventCloseBtn.editEventListener("click", () => {
+  editEventWrapper.classList.remove("active");
+});
+
+document.editEventListener("click", (e) => {
+  if (e.target !== editEventBtn && !editEventWrapper.contains(e.target)) {
+    editEventWrapper.classList.remove("active");
+  }
+});
+
+//allow 50 chars in eventtitle
+editEventTitle.editEventListener("input", (e) => {
+  editEventTitle.value = editEventTitle.value.slice(0, 60);
+});
+
+//allow only time in eventtime from and to
+editEventFrom.editEventListener("input", (e) => {
+  editEventFrom.value = editEventFrom.value.replace(/[^0-9:]/g, "");
+  if (editEventFrom.value.length === 2) {
+    editEventFrom.value += ":";
+  }
+  if (editEventFrom.value.length > 5) {
+    editEventFrom.value = editEventFrom.value.slice(0, 5);
+  }
+});
+
+editEventTo.editEventListener("input", (e) => {
+  editEventTo.value = editEventTo.value.replace(/[^0-9:]/g, "");
+  if (editEventTo.value.length === 2) {
+    editEventTo.value += ":";
+  }
+  if (editEventTo.value.length > 5) {
+    editEventTo.value = editEventTo.value.slice(0, 5);
+  }
+});
+
+//allow 50 chars in eventLocation
+editEventLocation.editEventListener("input", (e) => {
+  editEventLocation.value = editEventLocation.value.slice(0, 60);
+});
+
+//allow 100 chars in eventNotes
+editEventNotes.editEventListener("input", (e) => {
+  editEventNotes.value = editEventNotes.value.slice(0, 60);
+});
+
+//allow 100 chars in eventNotes
+editEventTaggedUsers.editEventListener("input", (e) => {
+  editEventTaggedUsers.value = editEventTaggedUsers.value.slice(0, 60);
+});
+
+
 function convertTime(time) {
   //convert time to 24 hour format
   let timeArr = time.split(":");
@@ -370,7 +427,6 @@ function convertTime(time) {
 }
 
 //function to DELETE event when clicked on event
-// eventsContainer.addEventListener("click", async (e) => {
 async function deleteEvent(event){
   // if (e.target.classList.contains("event")) {
   console.log(event);
