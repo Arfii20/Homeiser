@@ -1,6 +1,6 @@
 import requests
 import unittest
-from json import loads
+from json import loads, dumps
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -268,9 +268,9 @@ class TestCalendarEvent(unittest.TestCase):
         self.assertEqual(response.json(), {"message": "Calendar Event Doesnt Exist"})
 
 
-class UserColour(unittest.TestCase):
+class UserAttributes(unittest.TestCase):
     def test_user_color_get(self):
-        response = requests.get(BASE + "user_color/620")
+        response = requests.get(BASE + "user_attributes/620")
 
         valid = True
         for i in response.json().keys():
@@ -280,9 +280,14 @@ class UserColour(unittest.TestCase):
         self.assertTrue(valid)
 
     def test_user_color_get_bad(self):
-        response = requests.get(BASE + "user_color/1620")
+        response = requests.get(BASE + "user_attributes/1620")
 
         self.assertEqual(response.json(), {"error": "Users or household id not found"})
+
+    def test_user_id_post(self):
+        response = requests.post(BASE + "user_attributes/620", {"names": "a b c"})
+
+        self.assertListEqual(loads(response.json()), [630, 631, 632])
 
 
 if __name__ == "__main__":

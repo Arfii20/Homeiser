@@ -15,7 +15,7 @@ def attach(api: flask_restful.Api):
     api.add_resource(calendar.GetSharedCalendar, "/get_shared_calendar/<int:household_id>")
     api.add_resource(calendar.SharedCalendar, "/shared_calendar/<int:household_id>")
     api.add_resource(calendar.CalendarEvent, "/calendar_event/<int:calendar_event_id>")
-    api.add_resource(calendar.UserColour, "/user_color/<int:household_id>")
+    api.add_resource(calendar.UserAttributes, "/user_attributes/<int:household_id>")
 
     api.add_resource(lists.SharedList, "/shared_list/<int:household_id>")
     api.add_resource(lists.ListDetails, "/list_details/<int:list_id>")

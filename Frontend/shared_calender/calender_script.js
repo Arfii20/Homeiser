@@ -682,3 +682,7 @@ async function editEvent(event){
     }
   }
 }
+
+// async function get_colour(){
+  
+// }

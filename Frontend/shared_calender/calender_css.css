@@ -482,21 +482,6 @@ body {
   color: #fff;
 }
 
-/* add tick in event after */
-/*.events .events-buttons .event::after {
-  content: "✓";
-  position: absolute;
-  top: 50%;
-  right: 0;
-  font-size: 3rem;
-  line-height: 1;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.3;
-  color: var(--primary-clr);
-  transform: translateY(-50%);
-}*/
 .events .events-buttons .event:hover::after {
   display: flex;
 }

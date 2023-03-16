@@ -455,16 +455,12 @@ class CalendarEvent(Resource):
             abort(404, message="Calendar Event Doesnt Exist")
 
 
-class UserColour(Resource):
+class UserAttributes(Resource):
     def get(self, household_id):
         """
         Sends the colours assigned to individual users to the website
-
-
-
-
         How get requests for user_colours should be like:
-        requests.get(BASE + "user_color/<int:household_id>")
+        requests.get(BASE + "user_attributes/<int:household_id>")
 
         :returns:
         The server will return following json object:
@@ -486,3 +482,46 @@ class UserColour(Resource):
             return objects, 200
         else:
             abort(404, error="Users or household id not found")
+
+    def post(self, household_id):
+        """
+        Inserts the event details into the database using the calendar_event_id
+        How post requests for calendar events should be like:
+        requests.put(BASE + "user_attributes/<int:household_id>", {"names": "arefin tom sajni"})
+        *** Everything should be string apart from 'added_by' which is int
+
+        :returns:
+        if successful,
+        returns list of ids
+
+        Error otherwise
+        """
+        connection, cursor = get_conn()
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "names",
+            type=str,
+            required=True,
+            location="form",
+            help="Names are required",
+        )
+        args = parser.parse_args()
+        names = args.get("names")
+        names = names.split(" ")
+        user_ids = []
+        query = "SELECT id FROM user WHERE household_id = %s AND (first_name = '%s' OR surname = '%s');"
+        for i in names:
+            cursor.execute(query % (household_id, i, i))
+            exists = cursor.fetchall()
+            print(exists)
+            if exists:
+                list_tuples = exists
+                list_ints = [int(t[0]) for t in list_tuples]
+                for j in list_ints:
+                    if j not in user_ids:
+                        user_ids.append(j)
+            else:
+                abort(404, error="User not found")
+
+        print(user_ids)
+        return dumps(user_ids), 200
