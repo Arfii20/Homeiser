@@ -18,7 +18,6 @@ const calendar = document.querySelector(".calendar"),
   addEventNotes = document.querySelector(".additional-notes "),
   addEventLocation= document.querySelector(".event-location "),
   addEventTaggedUsers = document.querySelector(".tagged-users "),
-  // addEventAddedBy = document.querySelector(".added-by "),
   addEventSubmit = document.querySelector(".add-event-btn "),
   addEventTagged = document.querySelector(".event-tagged "),
   BASE = "http://127.0.0.1:5000/";
@@ -48,7 +47,6 @@ const months = [
 const eventsArr = [];
 // getEvents();
 get_calendarEvent(620);
-console.log(eventsArr);
 
 //function to add days in days with class day and prev-date next-date on previous month and next month days and active on today
 function initCalendar() {
@@ -232,7 +230,6 @@ gotoBtn.addEventListener("click", gotoDate);
 
 //fucntion to go to date entered 
 function gotoDate() {
-  console.log("here");
   const dateArr = dateInput.value.split("/");
   //date validation
   if (dateArr.length === 2) {
@@ -362,6 +359,7 @@ addEventTaggedUsers.addEventListener("input", (e) => {
   addEventTaggedUsers.value = addEventTaggedUsers.value.slice(0, 60);
 });
 
+// Function to convert time to 24 hours format
 function convertTime(time) {
   //convert time to 24 hour format
   let timeArr = time.split(":");
@@ -374,10 +372,8 @@ function convertTime(time) {
 }
 
 //function to DELETE event when clicked on event
-// eventsContainer.addEventListener("click", async (e) => {
 async function deleteEvent(event){
   // if (e.target.classList.contains("event")) {
-  console.log(event);
   const eventID = event.target.parentNode.previousElementSibling.id;
   // if (confirm("Are you sure you want to delete this event?")) {
       //get event title of event, then search in array and delete 
@@ -414,8 +410,6 @@ async function deleteEvent(event){
   initCalendar();
   updateEvents(activeDay);
 }
-  // }
-// });
 
 //function to POST events to the database
 addEventSubmit.addEventListener("click", async () => {
@@ -457,7 +451,6 @@ addEventSubmit.addEventListener("click", async () => {
   const data_userid = new URLSearchParams();
 
   data_userid.append('names', eventTaggedUsers);
-  console.log(eventTaggedUsers)
   const response_userid = await fetch(url_userid, {
                           method: 'POST',
                           body: data_userid,
@@ -473,7 +466,6 @@ addEventSubmit.addEventListener("click", async () => {
       names += response_userid_array[i] + " ";
     }
     names = names.trim();
-    console.log(names);
   }
   else {
     alert("Please enter correct names. This user does not exist");
@@ -482,9 +474,6 @@ addEventSubmit.addEventListener("click", async () => {
 
   const timeFrom = convertTime(eventTimeFrom);
   const timeTo = convertTime(eventTimeTo);
-
-  console.log(timeFrom);
-  console.log(timeTo);
 
   //check if event is already added
   let eventExist = false;
@@ -542,12 +531,14 @@ addEventSubmit.addEventListener("click", async () => {
 
     //show added event 
     updateEvents(activeDay);
+    console.log({message: "Event added"})
   }else{
     const response_error = await response.json();
     console.log(response_error.error);
   }
 });
 
+// Function to get calendar events
 async function get_calendarEvent(household_id){
   const url = BASE + "get_shared_calendar/" + household_id;
   const data = new URLSearchParams();
@@ -597,10 +588,9 @@ async function get_calendarEvent(household_id){
         time: timeFrom + " - " + timeTo,
         location : obj.location_of_event,
         notes : obj.additional_notes,
-        tagged : obj.tagged_users.join(", "), 
+        tagged : obj.tagged_users.join(" "), 
         addedBy : obj.added_by,
       };
-      console.log(newEvent);
 
       // if event array empty or current day has no event, create new 
       eventsArr.push({
@@ -609,19 +599,22 @@ async function get_calendarEvent(household_id){
         year: yearFrom,
         events: [newEvent],
       });
-      
-      console.log(eventsArr);
 
       //select active day and add event class if not added
     }
     initCalendar();
     updateEvents(activeDay);
+    console.log({message: "Calendar events added"});
+  }
+  else{
+    console.log({error: "Error adding events"})
   }
 }
 
 // Function to edit calendar event
 async function editEvent(event){
   const user_id = 630;
+  const house_id = 620;
   const siblingDiv = event.target.parentNode.previousElementSibling;
   const calendarEventID = siblingDiv.id;
   
@@ -651,64 +644,91 @@ async function editEvent(event){
       alert("Time should be in (HH:MM AM|PM - HH:MM AM|PM) format");  
       return;
     }
-    else{
-      const timeRange = evtime.value;
-      const times = timeRange.split(" - ");
-      const startTime = times[0];
-      const endTime = times[1];
 
-      var [startHour, startMinute] = startTime.split(":").map((x) => parseInt(x));
-      var [endHour, endMinute] = endTime.split(":").map((x) => parseInt(x));
-
-      if (startTime.includes("PM") && startHour !== 12) {
-        startHour += 12;
-      }
-      if (endTime.includes("PM") && endHour !== 12) {
-        endHour += 12;
-      }
-      if (startTime.includes("AM") && startHour === 12) {
-        startHour = 0;
-      }
-      if (endTime.includes("AM") && endHour === 12) {
-        endHour = 0;
-      }
-
-      const eventTimeFromConverted = `${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}`;
-      const eventTimeToConverted = `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`;
-
-      const url = BASE + "calendar_event/" + calendarEventID;
-      const data = new URLSearchParams();
-
-      console.log(`${year}-${month + 1}-${activeDay} ${eventTimeToConverted}:00`);
-
-      data.append('title_of_event', evTitle.value.replace(/'/g, "\\'"));
-      data.append('starting_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeFromConverted}:00`);
-      data.append('ending_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
-      data.append('additional_notes', evDescription.value.replace(/'/g, "\\'"));
-      data.append('location_of_event', evLocation.value.replace(/'/g, "\\'"));
-      data.append('tagged_users', evUsersTagged.value.replace(/'/g, "\\'"));
-      data.append('added_by', parseInt(user_id));
-
-      const response = await fetch(url, {
-                      method: 'PUT',
-                      body: data,
-                      headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                      }
-                    });
-
-      if (response.ok){
-        event.target.innerText = "Edit";
-
-        evTitle.setAttribute("readonly", "readonly");
-        evtime.setAttribute("readonly", "readonly");
-        evDescription.setAttribute("readonly", "readonly");
-        evLocation.setAttribute("readonly", "readonly");
-        evUsersTagged.setAttribute("readonly", "readonly");
-
-        get_calendarEvent(620);
-      }
-      console.log(await response.json())
+    if (!((evUsersTagged.value).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+      alert("Please add first or last names with spaces in between");
+      return;
     }
+
+    const url_userid = BASE + "user_attributes/" + house_id;
+    const data_userid = new URLSearchParams();
+
+    data_userid.append('names', evUsersTagged.value);
+    const response_userid = await fetch(url_userid, {
+                            method: 'POST',
+                            body: data_userid,
+                            headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                          })
+    var names = ""
+    if (response_userid.ok){
+      const response_userid_array = JSON.parse(await response_userid.json());
+
+      for (let i = 0; i < response_userid_array.length; i++) {
+        names += response_userid_array[i] + " ";
+      }
+      names = names.trim();
+    }
+    else {
+      alert("Please enter correct names. This user does not exist");
+      return;
+    }
+
+    const timeRange = evtime.value;
+    const times = timeRange.split(" - ");
+    const startTime = times[0];
+    const endTime = times[1];
+
+    var [startHour, startMinute] = startTime.split(":").map((x) => parseInt(x));
+    var [endHour, endMinute] = endTime.split(":").map((x) => parseInt(x));
+
+    if (startTime.includes("PM") && startHour !== 12) {
+      startHour += 12;
+    }
+    if (endTime.includes("PM") && endHour !== 12) {
+      endHour += 12;
+    }
+    if (startTime.includes("AM") && startHour === 12) {
+      startHour = 0;
+    }
+    if (endTime.includes("AM") && endHour === 12) {
+      endHour = 0;
+    }
+
+    const eventTimeFromConverted = `${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}`;
+    const eventTimeToConverted = `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`;
+
+    const url = BASE + "calendar_event/" + calendarEventID;
+    const data = new URLSearchParams();
+
+    data.append('title_of_event', evTitle.value.replace(/'/g, "\\'"));
+    data.append('starting_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeFromConverted}:00`);
+    data.append('ending_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
+    data.append('additional_notes', evDescription.value.replace(/'/g, "\\'"));
+    data.append('location_of_event', evLocation.value.replace(/'/g, "\\'"));
+    data.append('tagged_users', names.replace(/'/g, "\\'"));
+    data.append('added_by', parseInt(user_id));
+
+    const response = await fetch(url, {
+                    method: 'PUT',
+                    body: data,
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                  });
+
+    if (response.ok){
+      event.target.innerText = "Edit";
+
+      evTitle.setAttribute("readonly", "readonly");
+      evtime.setAttribute("readonly", "readonly");
+      evDescription.setAttribute("readonly", "readonly");
+      evLocation.setAttribute("readonly", "readonly");
+      evUsersTagged.setAttribute("readonly", "readonly");
+
+      get_calendarEvent(620);
+    }
+    console.log(await response.json())
   }
 }
