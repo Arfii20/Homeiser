@@ -270,22 +270,22 @@ function updateEvents(date) {
             <div class="event" id="${event.id}">
                 <div class="title">
                   <i class="fas fa-circle"></i>
-                  <input type="text" class="event-title" value="${event.title}">
+                  <input type="text" class="event-title" value="${event.title}" readonly>
                 </div>
                 <div class="event-time">
-                  <input type="text" span class="event-time" value="${event.time}">
+                  <input type="text" class="event-time" value="${event.time}" readonly>
                 </div>
                 <div class="event-notes">
                   <label for="event-notes">Description: </label>
-                  <input type="text" span class="event-notes" value="${event.notes}">
+                  <input type="text" class="event-notes" value="${event.notes}" readonly>
                 </div>
                 <div class="event-location">
                   <label for="event-location">Location: </label>
-                  <input type="text" span class="event-location" value="${event.location}">
+                  <input type="text" class="event-location" value="${event.location}" readonly>
                 </div>
                 <div class="event-tagged">
                   <label for="event-tagged">Users involved: </label>
-                  <input type="text" id="event-tagged" class="event-tagged" value="${event.tagged}">
+                  <input type="text" id="event-tagged" class="event-tagged" value="${event.tagged}" readonly>
                 </div>
             </div>
             <div class="event-buttons">
@@ -588,7 +588,7 @@ async function get_calendarEvent(household_id){
   }
 }
 
-
+// Function to edit calendar event
 async function editEvent(event){
   const siblingDiv = event.target.parentNode.previousElementSibling;
   const calendarEventID = siblingDiv.id;
@@ -604,74 +604,55 @@ async function editEvent(event){
   console.log(evDescription);
   console.log(evLocation);
   console.log(evUsersTagged);
-  // eventsArr.forEach((event) => {
-  //     if (
-  //       event.day === activeDay &&
-  //       event.month === month + 1 &&
-  //       event.year === year
-  //     ) {
-  //       event.events.forEach((item, index) => {
-  //         if (item.id == calendarEventID) {
-  //           event.events.splice(index, 1);
-  //         }
-  //       });
-  //       //if no events left in a day then remove that day from eventsArr
-  //       if (event.events.length === 0) {
-  //         eventsArr.splice(eventsArr.indexOf(event), 1);
-  //         //remove event class from day
-  //         const activeDayEl = document.querySelector(".day.active");
-  //         if (activeDayEl.classList.contains("event")) {
-  //           activeDayEl.classList.remove("event");
-  //         }
-  //       }
-  //     }
-  // const childrenOfPrevSibling = event.target.parentNode.previousElementSibling.
 
-  // const editButtonElement = document.querySelector('#edit-' + listEventID);
-  // const inputElement = document.querySelector('#input-' + listEventID);
-  // const inputName = document.querySelector('#input-name-' + listEventID);
+  if (event.target.innerText.toLowerCase() == "edit") {
+    event.target.innerText = "Save";
 
-  // if (editButtonElement.innerText.toLowerCase() == "edit") {
-  //   editButtonElement.innerText = "Save";
-  //   inputName.removeAttribute("readonly");
-  //   inputElement.removeAttribute("readonly");   
-  //   inputElement.focus();
-  //   inputElement.setSelectionRange(0, inputElement.value.length);
-  // }
-  // else {
-  //   editButtonElement.innerText = "Edit";
+    evTitle.removeAttribute("readonly");
+    evtime.removeAttribute("readonly");
+    evDescription.removeAttribute("readonly");
+    evLocation.removeAttribute("readonly");
+    evUsersTagged.removeAttribute("readonly");
+    evTitle.focus;
+  }
+  else { 
+    console.log("Works")
+    if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === "" || evUsersTagged.value === ""){
+        alert("Please fill all the fields");
+        return;
+      }
+    else{
+      const url = BASE + "shared_calendar/" + calendarEventID;
+      const data = new URLSearchParams();
 
-  //   inputElement.setAttribute("readonly", "readonly");
-  //   inputName.setAttribute("readonly", "readonly");
-  //   const inputValue = inputElement.value;
-  //   const inputDescriptionValue = inputName.value;
+      data.append('title_of_event', evTitle.replace(/'/g, "\\'"));
+      data.append('starting_time', eventTimeFromConverted);
+      data.append('ending_time', eventTimeToConverted);
+      data.append('additional_notes', evDescription.replace(/'/g, "\\'"));
+      data.append('location_of_event', evLocation.replace(/'/g, "\\'"));
+      data.append('tagged_users', evUsersTagged.replace(/'/g, "\\'"));
+      data.append('added_by', parseInt(user_id));
 
-  //   if (!inputValue && !inputDescriptionValue){
-  //     alert("NAME and DESCRIPTION cannot be empty!")
-  //   }
-  //   else if (!inputValue){
-  //     alert("NAME cannot be empty!")
-  //   }
-  //   else if (!inputDescriptionValue){
-  //     alert("DESCRIPTION cannot be empty!")
-  //   }
-  //   else{
-  //       const url = BASE + "list_event_details/" + listEventID;
-  //     const data = new URLSearchParams();
+      const response = await fetch(url, {
+                      method: 'POST',
+                      body: data,
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      }
+                    });
 
-  //     data.append('new_task', inputValue.replace(/'/g, "\\'"));
-  //     data.append('new_description', inputDescriptionValue.replace(/'/g, "\\'"));
+      if (response.ok){
+        event.target.innerText = "Edit";
 
-  //     await fetch(url, {
-  //       method: 'PUT',
-  //       body: data,
-  //       headers: {
-  //         'Content-Type': 'application/x-www-form-urlencoded'
-  //       }
-  //     }).then(response => response.json())
-  //       .then(data => console.log(data))
-  //       .catch(error => console.error(error));
-  //   }
-  // }
+        evTitle.setAttribute("readonly", "readonly");
+        evtime.setAttribute("readonly", "readonly");
+        evDescription.setAttribute("readonly", "readonly");
+        evLocation.setAttribute("readonly", "readonly");
+        evUsersTagged.setAttribute("readonly", "readonly");
 
+        get_calendarEvent(620);
+        console.log(respone.json())
+      }
+    }
+  }
 }
