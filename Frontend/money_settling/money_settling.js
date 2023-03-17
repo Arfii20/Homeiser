@@ -68,3 +68,92 @@ async function getTransaction (event) {
 
 }
 
+
+async function postTransaction(event){
+
+	const transaction_ID,
+		transaction_SrcID,
+		transaction_DestID,
+		transaction_Src,
+		transaction_Dest,
+		transaction_Amount,
+		transaction_Description,
+		transaction_DueDate,
+		transaction_Paid;
+
+
+
+
+	fetch(BASE + "transaction", {
+	  	method: 'POST',
+	  	headers: {
+	    	'Content-Type': 'application/json'
+	  	},
+	  	body: JSON.stringify({
+	    	transaction_id: transaction_ID,
+	    	src_id: transaction_SrcID,
+	    	dest_id: transaction_DestID,
+	    	src: transaction_Src,
+	    	dest: transaction_Dest,
+	    	amount: transaction_Amount,
+	    	description: transaction_Description,
+	    	due_date: transaction_DueDate,
+	    	paid: transaction_Paid
+	  	})
+	})
+	.then(response => {
+	  	if (response.ok) {
+	    	const returnedData = response.json();
+	  	} else {
+	    	throw new Error('Request failed.');
+	  	}
+	})
+	.then(data => {
+	  	console.log(data);
+	})
+	.catch(error => {
+	  	console.log(error);
+	});
+
+
+
+
+	console.log(returnedData);
+
+
+}
+
+
+
+async function patchTransaction(event){
+
+}
+
+
+async function deleteTransaction(event){
+
+}
+
+
+// async function 
+
+// 	fetch('https://example.com/api/endpoint', {
+// 		method: 'PATCH',
+// 		headers: {
+// 			'Content-Type': 'application/json'
+// 		},
+// 		body: JSON.stringify({
+// 			key1: value1,
+// 			key2: value2
+// 		})
+// 	})
+// 	.then(response => {
+// 		if (response.ok) {
+// 			return response.json();
+// 		} else {
+// 			throw new Error('Request failed.');
+// 		}
+// 	})
+// 		.catch(error => {
+// 			console.log(error);
+// 		});
