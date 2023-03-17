@@ -116,16 +116,49 @@ async function postTransaction(event){
 	});
 
 
-
-
 	console.log(returnedData);
 
+		// {   "transaction_id": <int:transaction id>
+        //     "src_id": <int: src id>
+        //     "dest_id": <int: dest id>
+        //     "src": <str:src full name>,
+        //     "dest": <str:dest full name>,
+        //     "amount": <int:amount>,
+        //     "description": <str:description>
+        //     "due_date": <str:date string in format yyyy-mm-dd>
+        //     "paid": <str:boolean>
+        // }
 
 }
 
 
 
 async function patchTransaction(event){
+	const transaction_Paid;
+
+
+	fetch(BASE + "transaction/" + transactionID, {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			paid: transaction_Paid,
+		})
+	})
+	.then(response => {
+		if (response.ok) {
+			const returnedData = response;
+		} else {
+			throw new Error('Request failed.');
+		}
+	})
+	.catch(error => {
+		console.log(error);
+	});
+
+	console.log(returnedData);
+	
 
 }
 
@@ -135,25 +168,3 @@ async function deleteTransaction(event){
 }
 
 
-// async function 
-
-// 	fetch('https://example.com/api/endpoint', {
-// 		method: 'PATCH',
-// 		headers: {
-// 			'Content-Type': 'application/json'
-// 		},
-// 		body: JSON.stringify({
-// 			key1: value1,
-// 			key2: value2
-// 		})
-// 	})
-// 	.then(response => {
-// 		if (response.ok) {
-// 			return response.json();
-// 		} else {
-// 			throw new Error('Request failed.');
-// 		}
-// 	})
-// 		.catch(error => {
-// 			console.log(error);
-// 		});
