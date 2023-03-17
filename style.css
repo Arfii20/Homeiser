@@ -316,12 +316,13 @@ li.dropdown {
 .container1 {
   width: 400px;
   max-width: 400px;
-  margin: 1rem;
+  margin: 2rem;
   padding: 2rem;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
   border-radius: var(--border-radius);
   background: #ffffff;
   display: inline-block;
+  vertical-align: middle;
 } 
 
 

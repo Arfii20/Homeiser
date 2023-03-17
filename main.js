@@ -16,26 +16,14 @@ function clearInputError(inputElement) {
     inputElement.parentElement.querySelector(".form__input-error-message").textContent = "";
 }
 
-// function setMaxuserError(inputElement, message) {
-// 	inputElement.classList.add("form__input--error");
-// 	inputElement.parentElement.querySelector(".form__input-error-message").textContent = "";
-// }
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#login");
     const createAccountForm = document.querySelector("#createAccount");
-
-    // document.querySelector("#linkCreateAccount").addEventListener("click", e => {
-    //     e.preventDefault();
-    //     loginForm.classList.add("form--hidden");
-    //     createAccountForm.classList.remove("form--hidden");
-    // });
-
-    // document.querySelector("#linkLogin").addEventListener("click", e => {
-    //     e.preventDefault();
-    //     loginForm.classList.remove("form--hidden");
-    //     createAccountForm.classList.add("form--hidden");
-    // });
 
     loginForm.addEventListener("submit", e => {
         e.preventDefault();
@@ -52,14 +40,34 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-		// inputElement.addEventListener("blur", e => {
-        //     if (e.target.id === "Maxuser" && e.target.value.length > 1) {
-        //         setInputError(inputElement, "Users number must be at least 2");
-        //     }
-        // });
-
         inputElement.addEventListener("input", e => {
             clearInputError(inputElement);
         });
     });
 });
+
+
+document.querySelectorAll(".form__input").forEach(inputElement => {
+    inputElement.addEventListener("blur", e => {
+        if (e.target.id === "signupEmail" && !isValidEmail(e.target.value)) {
+            setInputError(inputElement, "Wrong email address");
+        }
+    });
+
+    inputElement.addEventListener("input", e => {
+        clearInputError(inputElement);
+    });
+});
+
+document.querySelectorAll(".form__input").forEach(inputElement => {
+    inputElement.addEventListener("blur", e => {
+        if (e.target.id === "signupPassword2" && e.target.value !== document.querySelector("#signupPassword1").value) {
+            setInputError(inputElement, "Incorrect password");
+        }
+    });
+
+    inputElement.addEventListener("input", e => {
+        clearInputError(inputElement);
+    });
+});
+

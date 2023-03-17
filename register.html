@@ -6,9 +6,7 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-
 <body>
- 
   <header id="header1"></header>
   <header id="header2">
     <div class="dropdown2">
@@ -32,7 +30,6 @@
     </ul>
   </header>
 
-
   <style>
     body {
       background-image: url("Images/IMG_0674.jpg");
@@ -41,7 +38,6 @@
       background-repeat: no-repeat;
     }
   </style>
-  
   
   <div style="text-align: center;font-size: 40px;font-weight: bold;">
   	<a>Register</a>
@@ -66,15 +62,15 @@
             <div class="form__input-error-message"></div>
         </div>
         <div class="form__input-group">
-            <input type="text" class="form__input" autofocus placeholder="Email address">
+            <input type="text" id="signupEmail" class="form__input" autofocus placeholder="Email address">
             <div class="form__input-error-message"></div>
         </div>
         <div class="form__input-group">
-            <input type="password" class="form__input" autofocus placeholder="Password">
+            <input type="password" id="signupPassword1" class="form__input" autofocus placeholder="Password">
             <div class="form__input-error-message"></div>
         </div>
         <div class="form__input-group">
-            <input type="password" class="form__input" autofocus placeholder="Confirm password">
+            <input type="password" id="signupPassword2" class="form__input" autofocus placeholder="Confirm password">
             <div class="form__input-error-message"></div>
         </div>
         <button class="form__button" type="submit">Continue</button>
@@ -83,8 +79,8 @@
         </p>    
     </form>
   </div>
+
   <script src="./main.js"></script>
 
-  
 </body>
 </html>
