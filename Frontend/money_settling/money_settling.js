@@ -157,14 +157,35 @@ async function patchTransaction(event){
 		console.log(error);
 	});
 
-	console.log(returnedData);
-	
+	console.log({message: returnedData});
+
 
 }
 
 
 async function deleteTransaction(event){
+	fetch(BASE + "transaction/" + transactionID, {
+	method: 'DELETE',
+	headers: {
+		'Content-Type': 'application/json'
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			const returnedData = response;
+		} else {
+			throw new Error('Request failed.');
+		}
+	})
+	.then(data => {
+		console.log(data);
+	})
+	.catch(error => {
+		console.log(error);
+	});
 
+	console.log({message: returnedData});
+	
 }
 
 
