@@ -7,21 +7,34 @@ from transactions.ledger import Ledger, LedgerConstructionError
 from transactions.transaction import Transaction
 
 
-class TestLedger(TestCase):
-    def setUp(self) -> None:
-        """Make sure relevant rows are present in database"""
-
-        # connect to db
-        conn = mysql.connector.connect(
-            host="localhost", user="root", password="I_love_stew!12", database="x5db"
-        )
-
-        db = conn.cursor()
-
-        # remove any transaction_resources under 428, 429, 430 which exist
+def setup_db_test_rows(rows: list):
+    # connect to db
+    conn = mysql.connector.connect(
+        host="localhost", user="root", password="I_love_stew!12", database="x5db"
+    )
+    db = conn.cursor()
+    # remove any transaction_resources under 428, 429, 430 which exist
+    for row in rows:
         db.execute(
-            """DELETE FROM transaction WHERE description = "a->b" OR description = "a->c" OR description = "c->b";"""
+            """DELETE FROM transaction WHERE id = %s""", [row[0]]
         )
+
+    # insert test rows
+    for row in rows:
+        db.execute(
+            """INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row
+        )
+    # also delete any simplified transaction_resources that may have been added
+    db.execute(
+        """DELETE FROM transaction WHERE description = "Simplified Transaction";"""
+    )
+    # commit changes
+    conn.commit()
+
+
+class TestLedger(TestCase):
+    def setUp(self) -> None:    
+        """Make sure relevant rows are present in database"""
 
         rows = [
             (428, 8, 10, "a->b", datetime.date(2023, 3, 13), 0),
@@ -29,19 +42,7 @@ class TestLedger(TestCase):
             (430, 10, 5, "a->c", datetime.date(2023, 3, 13), 0),
         ]
 
-        # insert test rows
-        for row in rows:
-            db.execute(
-                """INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row
-            )
-
-        # also delete any simplified transaction_resources that may have been added
-        db.execute(
-            """DELETE FROM transaction WHERE description = "Simplified Transaction";"""
-        )
-
-        # commit changes
-        conn.commit()
+        setup_db_test_rows(rows)
 
     def test_build_from_user_id(self):
         # connect to db

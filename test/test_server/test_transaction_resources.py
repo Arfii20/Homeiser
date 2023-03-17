@@ -6,11 +6,26 @@ import mysql.connector
 import requests
 
 import transactions.transaction as trn
+from test.test_transactions.test_ledger import TestLedger, setup_db_test_rows
 
 target = "http://127.0.0.1:5000/"
 
 
 class TestTransactionResources(TestCase):
+
+    def setUp(self) -> None:
+        """Make sure appropriate rows exist in db"""
+
+        rows = [
+            (1, 1, 10, "test", datetime.date(2023, 2, 17), 0),
+            (2, 6, 20, "test", datetime.date(2023, 2, 17), 1),
+            (3, 6, 20, "test", datetime.date(2023, 2, 17), 0),
+            (4, 7, 20, "test", datetime.date(2023, 2, 17), 0),
+        ]
+
+        setup_db_test_rows(rows)
+
+
     def test_get(self):
         """Ensures get request returns transaction object in the correct format"""
 
@@ -84,9 +99,6 @@ class TestTransactionResources(TestCase):
         transaction_resources are compared. Test passes if paid is different and every other field is the same
         """
 
-        # FIXME: Database updates with the patch command, but after request still provides the un-updated value for
-        #  paid. Very confusing
-
         # create a cursor
         conn = mysql.connector.connect(
             host="localhost", user="root", password="I_love_stew!12", database="x5db"
@@ -151,6 +163,11 @@ class TestTransactionResources(TestCase):
 
 
 class TestCalendarTransactions(TestCase):
+
+    def setUp(self) -> None:
+        # make sure all necessary rows exist in db
+        TestLedger.setUp(self)  # type: ignore
+
     def test_get(self):
         response = requests.get(target + "transaction/as_events/5")
 
