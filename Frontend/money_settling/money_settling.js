@@ -20,28 +20,51 @@ async function getLedgerResources(event){
 
 	console.log(returnedData);
 
+		// List of
+	    // {   "transaction_id": <int:transaction id>
+        //     "src_id": <int: src id>
+        //     "src_id": <int: dest id>
+        //     "src": <str:src full name>,
+        //     "dest": <str:dest full name>,
+        //     "amount": <int:amount>,
+        //     "description": <str:description>
+        //     "due_date": <str:date string in format yyyy-mm-dd>
+        //     "paid": <str:boolean>
+        // }
 
 }
 
 
+async function getTransaction (event) {
+	transactionID = 234824;
 
-	fetch('https://example.com/api/endpoint', {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			key1: value1,
-			key2: value2
-		})
-	})
+	fetch(BASE + "transaction/" + transactionID)
 	.then(response => {
-		if (response.ok) {
-			return response.json();
-		} else {
-			throw new Error('Request failed.');
-		}
+	  	if (response.ok) {
+	    	const returnedData = response.json();
+	  	} else {
+	    	throw new Error('Error retrieving transaction.');
+	  	}
 	})
-		.catch(error => {
-			console.log(error);
-		});
+	.then(data => {
+	  	console.log(data);
+	})
+	.catch(error => {
+	  	console.log(error);
+	});
+
+	console.log(returnedData);
+
+		// {   "transaction_id": <int:transaction id>
+        //     "src_id": <int: src id>
+        //     "dest_id": <int: dest id>
+        //     "src": <str:src full name>,
+        //     "dest": <str:dest full name>,
+        //     "amount": <int:amount>,
+        //     "description": <str:description>
+        //     "due_date": <str:date string in format yyyy-mm-dd>
+        //     "paid": <str:boolean>
+        // }
+
+}
+
