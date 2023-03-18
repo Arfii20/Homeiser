@@ -6,7 +6,7 @@ async function getLedgerResources(userID){
 	fetch(BASE + "ledger/" + userID)
 	.then(response => {
 	  	if (response.ok) {
-	    	returnedData = await response.json();
+	    	returnedData = response.json();
 	  	} else {
 	    	throw new Error('Error retrieving ledger.');
 	  	}
@@ -16,6 +16,7 @@ async function getLedgerResources(userID){
 	})
 	.catch(error => {
 	  	console.log(error);
+	  	return;
 	});
 
 	console.log(returnedData);
@@ -31,20 +32,29 @@ async function getLedgerResources(userID){
 			                <th class="header">
 			                  Amount
 			                </th>
+			                <th class="header">
+			                  Paid
+			                </th>
 			              </thead>`
 
 	const response_array = await JSON.parse(returnedData);
 	for (let i = 0; i < response_array.length; i++) {
 		const obj = await JSON.parse(response_array[i]);
 
+		var paid;
+		if (obj.paid){
+			paid = "Yes"
+		}
+		else{
+			paid = "No"
+		}
+
 		mainTable.innerHTML += `
 				              <tbody id="data-output">
-				                <!-- dat populated from js file -->
-				                <!-- example data to be removed after -->
-				                <td class="table-data"> ${obj.src} - ${obj.dest}
+				                <td class="table-data"> ${obj.src} --> ${obj.dest}
 				                </td>
 				                <td class="table-data">
-				                  29/03/2023
+				                  ${obj.due_date}
 				                </td>
 				                <td class="table-data">
 				                  £20.00
