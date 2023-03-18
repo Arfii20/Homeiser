@@ -102,23 +102,23 @@ async function getTransaction (event) {
 								    <h1 class="form__title">Transaction: </h1>
 								    <div class="form__message form__message--error"></div>
 								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Full Name of Source User: ${obj.src} " readonly>
+								      <input type="text" class="form__input" autofocus placeholder="Full Name of Source User: ${obj.src} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
 								    <div class="form__input-group">
-								      <input type="password" class="form__input" autofocus placeholder=" Full Name of Destination User: ${obj.dest} " readonly>
+								      <input type="password" class="form__input" autofocus placeholder="Full Name of Destination User: ${obj.dest} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
 								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Amount: ${obj.amount} " readonly>
+								      <input type="text" class="form__input" autofocus placeholder="Amount in GBP: ${obj.amount} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
 								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Description: ${obj.description} " readonly>
+								      <input type="text" class="form__input" autofocus placeholder="Description: ${obj.description} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
 								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Due Date: ${obj.due_date} " readonly>
+								      <input type="text" class="form__input" autofocus placeholder="Due Date (yyyy-mm-dd): ${obj.due_date} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
 								    <button id="${obj.id}" class="form__button" type="submit" onlick=patchTransaction(event)> ${paidButton} </button>
@@ -135,23 +135,23 @@ async function createcloseRightContainer(event){
 						    <h1 class="form__title">Transaction: </h1>
 						    <div class="form__message form__message--error"></div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder=" Full Name of Source User: ">
+						      <input type="text" class="form__input" autofocus placeholder="Full Name of Source User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="password" class="form__input" autofocus placeholder=" Full Name of Destination User: ">
+						      <input type="password" class="form__input" autofocus placeholder="Full Name of Destination User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder=" Amount: ">
+						      <input type="text" class="form__input" autofocus placeholder="Amount in GBP: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder=" Description: ">
+						      <input type="text" class="form__input" autofocus placeholder="Description: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder=" Due Date: ">
+						      <input type="text" class="form__input" autofocus placeholder="Due Date (yyyy-mm-dd): ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <button class="form__button" type="submit" onlick=postTransaction(event)> Create Transaction </button>
@@ -224,6 +224,33 @@ async function deleteTransaction(event){
 }
 
 
+async function postTransaction(event){
+	const button = event.target;
+
+	const form = button.closest('form');
+
+	const transaction_ID = event.target.id;
+	const transaction_SrcID = 0;
+	const transaction_DestID = 0;
+	const transaction_Src = form.querySelector('input[placeholder*="Full Name of Source User"]').value;
+	const transaction_Dest = form.querySelector('input[placeholder*="Full Name of Destination User"]').value;
+	const transaction_Amount = form.querySelector('input[placeholder*="Amount"]').value;
+	const transaction_Description = form.querySelector('input[placeholder*="Description"]').value;
+	const transaction_DueDate = form.querySelector('input[placeholder*="Due Date"]').value;
+	const transaction_Paid = true;
+
+	if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
+		alert("Please add all fields");
+		return;
+	}
+
+	const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+	if (transaction_DueDate.match(dateRegex)){
+		alert("Date must be in yyyy-mm-dd format");
+		return;
+	}
+
+}
 
 
 getLedgerResources(630);
