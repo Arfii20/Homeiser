@@ -2,6 +2,7 @@ const BASE = "http://127.0.0.1:5000/";
 const rightContainer = document.querySelector(".container-right");
 const mainTable = document.querySelector(".main-table");
 const detailsTable = document.querySelector(".detailsTable");
+const leftCreateButton = document.querySelector("#Create-window-button");
 
 async function getLedgerResources(userID){
 	var returnedData;
@@ -192,7 +193,7 @@ async function patchTransaction(event){
 	.catch(error => {
 		console.log(error);
 	});
-	getLedgerResources(mainTable.getAttribute('id'));
+	getLedgerResources(mainTable.id;
 	console.log({message: returnedData});
 }
 
@@ -238,6 +239,7 @@ async function postTransaction(event){
 	const transaction_Description = form.querySelector('input[placeholder*="Description"]').value;
 	const transaction_DueDate = form.querySelector('input[placeholder*="Due Date"]').value;
 	const transaction_Paid = "false";
+	const transaction_HouseId = 620;
 
 	if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
 		alert("Please add all fields");
@@ -271,12 +273,16 @@ async function postTransaction(event){
 	    	amount: parseInt(transaction_Amount),
 	    	description: transaction_Description,
 	    	due_date: transaction_DueDate,
-	    	paid: transaction_Paid
+	    	paid: transaction_Paid,
+	    	house_id: transaction_HouseId
 	  	})
 	})
 	.then(response => {
 	  	if (response.ok) {
 	    	const returnedData = response.json();
+			rightContainer.innerHTML = "";
+			leftCreateButton.innerText = "Create Transaction";
+			getLedgerResources(mainTable.id);
 	  	} else {
 	    	throw new Error('Request failed.');
 	  	}
