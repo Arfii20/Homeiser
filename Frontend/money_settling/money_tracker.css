@@ -361,6 +361,9 @@ td.table-data, th.header{
   gap: 2rem;
 }
 
+form input strong {
+  font-weight: bold;
+}
 
 /*--- Welcome ---*/
 div.gallery {

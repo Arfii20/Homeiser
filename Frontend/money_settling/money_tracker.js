@@ -8,7 +8,7 @@ async function getLedgerResources(userID){
 	var returnedData;
 	mainTable.setAttribute('id', userID);
 
-	const response = fetch(BASE + "ledger/" + userID);
+	const response = await fetch(BASE + "ledger/" + userID);
 
 	if (response.ok) {
 		mainTable.innerHTML = `<thead>
@@ -21,20 +21,18 @@ async function getLedgerResources(userID){
 				                <th class="header">
 				                  Amount
 				                </th>
-				                <th class="header">
-				                  Paid
-				                </th>
 				              </thead>`
 
-		const response_array = await JSON.parse(response.json());
-		for (let i = 0; i < response_array.length; i++) {
-			const obj = await JSON.parse(response_array[i]);
+		const response_array = await JSON.parse(await response.json());
 
-			console.log(obj.paid);
+		for (let i = 0; i < response_array.length; i++) {
+		    const obj = await JSON.parse(response_array[i]);
+
+			console.log(obj);
 			var paid;
-			if (obj.paid){
+			if (obj.paid === "true"){
 				mainTable.innerHTML += `<tbody id="data-output">
-							              	<tr id="${transaction_id}" onlick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+							              	<tr id="${obj.transaction_id}" onlick=getTransaction(event) style="text-decoration: line-through; color: gray;">
 								                <td class="table-data"> ${obj.src} --> ${obj.dest}
 								                </td>
 								                <td class="table-data">
@@ -48,7 +46,7 @@ async function getLedgerResources(userID){
 			}
 			else{
 				mainTable.innerHTML +=  `<tbody id="data-output">
-							              	<tr id="${transaction_id}" onlick=getTransaction(event)>
+							              	<tr id="${obj.transaction_id}" onclick=getTransaction(event)>
 								                <td class="table-data"> ${obj.src} --> ${obj.dest}
 								                </td>
 								                <td class="table-data">
@@ -70,27 +68,18 @@ async function getLedgerResources(userID){
 }
 
 
-async function getTransaction (event) {
-	transactionID = event.target.id;
+async function getTransaction(event) {
+	transactionID = event.target.parentNode.getAttribute("id");
+	let returnedData;
+	console.log(transactionID);
+	console.log(event.target);
 
-	fetch(BASE + "transaction/" + transactionID)
-	.then(response => {
-	  	if (response.ok) {
-	    	const returnedData = response.json();
-	  	} else {
-	    	throw new Error('Error retrieving transaction.');
-	  	}
-	})
-	.then(data => {
-	  	console.log(data);
-	})
-	.catch(error => {
-	  	console.log(error);
-	});
+	const response = await fetch(BASE + "transaction/" + transactionID)
 
-	console.log(returnedData);
+  	if (response.ok) {
+  		// console.log(response.json())
+    	const obj = await JSON.parse(await response.json());
 
-	const obj = await JSON.parse(response_array[i]);
 		var paidButton;
 		if (obj.paid){
 			paidButton = "Mark as Unpaid";
@@ -98,34 +87,37 @@ async function getTransaction (event) {
 		else{
 			paidButton = "Mark as Paid";
 		}
-	rightContainer.innerHTML =  `<div class="container1">
-								  <form class="text" id="transactions">
-								    <h1 class="form__title">Transaction: </h1>
-								    <div class="form__message form__message--error"></div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder="Full Name of Source User: ${obj.src} " readonly>
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="password" class="form__input" autofocus placeholder="Full Name of Destination User: ${obj.dest} " readonly>
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder="Amount in GBP: ${obj.amount} " readonly>
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder="Description: ${obj.description} " readonly>
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder="Due Date (yyyy-mm-dd): ${obj.due_date} " readonly>
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <button id="${obj.id}" class="form__button" type="submit" onlick=patchTransaction(event)> ${paidButton} </button>
-								    <button id="${obj.id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
-								  </form>
-								</div>`;
+		rightContainer.innerHTML =  `<div class="container1">
+									  <form class="text" id="transactions">
+									    <h1 class="form__title">Transaction: </h1>
+									    <div class="form__message form__message--error"></div>
+									    <div class="form__input-group">
+									      <input type="text" class="form__input" placeholder="Full Name of Source User - ${obj.src} " readonly>
+									      <div class="form__input-error-message"></div>
+									    </div>
+									    <div class="form__input-group">
+									      <input type="password" class="form__input" placeholder="Full Name of Destination User - ${obj.dest} " readonly>
+									      <div class="form__input-error-message"></div>
+									    </div>
+									    <div class="form__input-group">
+									      <input type="text" class="form__input" placeholder="Amount in GBP - ${obj.amount} " readonly>
+									      <div class="form__input-error-message"></div>
+									    </div>
+									    <div class="form__input-group">
+									      <input type="text" class="form__input" placeholder="Description - ${obj.description} " readonly>
+									      <div class="form__input-error-message"></div>
+									    </div>
+									    <div class="form__input-group">
+									      <input type="text" class="form__input" placeholder="Due Date (yyyy-mm-dd) - ${obj.due_date} " readonly>
+									      <div class="form__input-error-message"></div>
+									    </div>
+									    <button id="${obj.id}" class="form__button" type="submit" onlick=patchTransaction(event)> ${paidButton} </button>
+									    <button id="${obj.id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
+									  </form>
+									</div>`;
+  	} else {
+    	throw new Error('Error retrieving transaction.');
+	}
 }
 
 
@@ -193,7 +185,7 @@ async function patchTransaction(event){
 	.catch(error => {
 		console.log(error);
 	});
-	getLedgerResources(mainTable.id;
+	getLedgerResources(mainTable.id);
 	console.log({message: returnedData});
 }
 
