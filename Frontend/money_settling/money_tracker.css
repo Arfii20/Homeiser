@@ -6,7 +6,8 @@ body {
   --color-success: #4bb544;
   --border-radius: 4px;
   font-family: 'Merriweather Sans', sans-serif;
-
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 
@@ -110,7 +111,17 @@ li a, .dropbtn {
   background-color: #BB56D7;
 }
 
+.header {
+  outline: none;
+  background: #eeeeee;
+  transition: background 0.2s, border-color 0.2s;
+  box-shadow: none;
+  cursor: default;
+}
 
+.table-data{
+  cursor: default;
+}
 
 
 /*--- Dropdown ---*/
@@ -177,6 +188,14 @@ li.dropdown {
     background: #ffffff;
     margin: 0 auto;
 } 
+
+/* Container styles */
+.container-left{
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
 
 .container,
 .form__input,
@@ -249,16 +268,19 @@ li.dropdown {
 }
 
 .form__button {
-    width: 100%;
+    margin-top: 5rem;
     padding: 1rem 2rem;
+    width: fit-content;
+    align-self: center;
     font-weight: bold;
     font-size: 1.1rem;
-    color: #ffffff;
+    color: var(--color-primary-dark);
     border: none;
     border-radius: var(--border-radius);
     outline: none;
     cursor: pointer;
-    background: var(--color-primary-dark);
+    background: transparent;
+    border: solid black 2px;
 }
 
 .form__button:hover {
@@ -319,12 +341,25 @@ li.dropdown {
   width: 400px;
   max-width: 400px;
   margin: 1rem;
-  padding: 2rem;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
   border-radius: var(--border-radius);
   background: #ffffff;
   display: inline-block;
+  border: solid black 2px;
 } 
+
+/* Table styles */
+td.table-data, th.header{
+  border: none;
+}
+
+/* Side by Side view */
+.side_by_side{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
 
 
 /*--- Welcome ---*/
@@ -377,7 +412,6 @@ th, td {
   text-align: left;
   border-bottom: 1px solid #DDD;
   border: 1px solid black;
-  border-radius: 10px;
 }
 
 tr:hover {background-color: #D592F4;}
