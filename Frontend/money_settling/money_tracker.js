@@ -128,36 +128,48 @@ async function getTransaction (event) {
 }
 
 async function createTransactionRightContainer(event){
+
+}
+
+
+async function createcloseRightContainer(event){
+	let innerText = event.target.innerText;
+	if (innerText === "Create Transaction"){
 		rightContainer.innerHTML =  `<div class="container1">
-								  <form class="text" id="transactions">
-								    <h1 class="form__title">Transaction: </h1>
-								    <div class="form__message form__message--error"></div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Full Name of Source User: ">
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="password" class="form__input" autofocus placeholder=" Full Name of Destination User: ">
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Amount: ">
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Description: ">
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <div class="form__input-group">
-								      <input type="text" class="form__input" autofocus placeholder=" Due Date: ">
-								      <div class="form__input-error-message"></div>
-								    </div>
-								    <button class="form__button" type="submit" onlick=paidUnpaidCreateButton(event)> Create Transaction </button>
-								  </form>
-								</div>`;
+						  <form class="text" id="transactions">
+						    <h1 class="form__title">Transaction: </h1>
+						    <div class="form__message form__message--error"></div>
+						    <div class="form__input-group">
+						      <input type="text" class="form__input" autofocus placeholder=" Full Name of Source User: ">
+						      <div class="form__input-error-message"></div>
+						    </div>
+						    <div class="form__input-group">
+						      <input type="password" class="form__input" autofocus placeholder=" Full Name of Destination User: ">
+						      <div class="form__input-error-message"></div>
+						    </div>
+						    <div class="form__input-group">
+						      <input type="text" class="form__input" autofocus placeholder=" Amount: ">
+						      <div class="form__input-error-message"></div>
+						    </div>
+						    <div class="form__input-group">
+						      <input type="text" class="form__input" autofocus placeholder=" Description: ">
+						      <div class="form__input-error-message"></div>
+						    </div>
+						    <div class="form__input-group">
+						      <input type="text" class="form__input" autofocus placeholder=" Due Date: ">
+						      <div class="form__input-error-message"></div>
+						    </div>
+						    <button class="form__button" type="submit" onlick=paidUnpaidCreateButton(event)> Create Transaction </button>
+						  </form>
+						</div>`;
+		event.target.innerText = "Close Transaction Window";
+	}
+	else{
+		rightContainer.innerHTML = "";
+		event.target.innerText = "Create Transaction";
+	}
 }
 
 
-async function createcloseRightContainer(){
-	rightContainer.innerHTML = "";
-}
+
+getLedgerResources(630);
