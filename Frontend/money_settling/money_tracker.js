@@ -115,6 +115,7 @@ async function getTransaction(event) {
 									    <button id="${obj.id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
 									  </form>
 									</div>`;
+		leftCreateButton.innerText = "Close Transaction Window";
   	} else {
     	throw new Error('Error retrieving transaction.');
 	}
