@@ -32,7 +32,7 @@ async function getLedgerResources(userID){
 			var paid;
 			if (obj.paid === "true"){
 				mainTable.innerHTML += `<tbody id="data-output">
-							              	<tr id="${obj.transaction_id}" onlick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+							              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
 								                <td class="table-data"> ${obj.src} --> ${obj.dest}
 								                </td>
 								                <td class="table-data">
@@ -81,7 +81,7 @@ async function getTransaction(event) {
     	const obj = await JSON.parse(await response.json());
 
 		var paidButton;
-		if (obj.paid){
+		if (obj.paid === "true"){
 			paidButton = "Mark as Unpaid";
 		}
 		else{
@@ -111,8 +111,8 @@ async function getTransaction(event) {
 									      <input type="text" class="form__input" placeholder="Due Date (yyyy-mm-dd) - ${obj.due_date} " readonly>
 									      <div class="form__input-error-message"></div>
 									    </div>
-									    <button id="${obj.id}" class="form__button" type="submit" onlick=patchTransaction(event)> ${paidButton} </button>
-									    <button id="${obj.id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
+									    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=patchTransaction(event)> ${paidButton} </button>
+									    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
 									  </form>
 									</div>`;
 		leftCreateButton.innerText = "Close Transaction Window";
@@ -123,6 +123,7 @@ async function getTransaction(event) {
 
 
 async function createcloseRightContainer(event){
+	event.preventDefault();
 	if (event.target.innerText === "Create Transaction"){
 		rightContainer.innerHTML =  `<div class="container1">
 						  <form class="text" id="transactions">
@@ -161,8 +162,8 @@ async function createcloseRightContainer(event){
 
 
 async function patchTransaction(event){
-	const transaction_Paid = event.target.id;
-	const textInside = event.target.innerHTML;
+	event.preventDefault();
+	const transactionID = event.target.id;
 
 	fetch(BASE + "transaction/" + transactionID, {
 		method: 'PATCH',
@@ -172,12 +173,13 @@ async function patchTransaction(event){
 	})
 	.then(response => {
 		if (response.ok) {
-			const returnedData = response;
-			if (textInside === "Mark as Paid"){
-				textInside = "Mark as Unpaid";
+			console.log(response.json());
+			if (event.target.innerText === "Mark as Paid"){
+				event.target.innerText = "Mark as Unpaid";
 			}
 			else{
-				textInside = "Mark as Paid";
+				event.target.innerText = "Mark as Paid";
+			getLedgerResources(mainTable.id);
 			}
 		} else {
 			throw new Error('Request failed.');
@@ -186,11 +188,10 @@ async function patchTransaction(event){
 	.catch(error => {
 		console.log(error);
 	});
-	getLedgerResources(mainTable.id);
-	console.log({message: returnedData});
 }
 
 async function deleteTransaction(event){
+	event.preventDefault();
 	const transactionID = event.target.id;
 
 	fetch(BASE + "transaction/" + transactionID, {
@@ -201,7 +202,9 @@ async function deleteTransaction(event){
 	})
 	.then(response => {
 		if (response.ok) {
-			const returnedData = response;
+			console.log(response.json());
+			rightContainer.innerHTML = "";
+			getLedgerResources(mainTable.getAttribute('id'));
 		} else {
 			throw new Error('Request failed.');
 		}
@@ -212,9 +215,6 @@ async function deleteTransaction(event){
 	.catch(error => {
 		console.log(error);
 	});
-	console.log({message: returnedData});
-	rightContainer = "";
-	getLedgerResources(mainTable.getAttribute('id'));
 }
 
 
@@ -287,6 +287,5 @@ async function postTransaction(event){
 	  	console.log(error);
 	});
 }
-
 
 getLedgerResources(630);
