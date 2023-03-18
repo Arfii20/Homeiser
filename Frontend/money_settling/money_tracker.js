@@ -121,20 +121,15 @@ async function getTransaction (event) {
 								      <input type="text" class="form__input" autofocus placeholder=" Due Date: ${obj.due_date} " readonly>
 								      <div class="form__input-error-message"></div>
 								    </div>
-								    <button id="${obj.id}" class="form__button" type="submit" onlick=paidUnpaidCreateButton(event)> ${paidButton} </button>
+								    <button id="${obj.id}" class="form__button" type="submit" onlick=patchTransaction(event)> ${paidButton} </button>
 								    <button id="${obj.id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
 								  </form>
 								</div>`;
 }
 
-async function createTransactionRightContainer(event){
-
-}
-
 
 async function createcloseRightContainer(event){
-	let innerText = event.target.innerText;
-	if (innerText === "Create Transaction"){
+	if (event.target.innerText === "Create Transaction"){
 		rightContainer.innerHTML =  `<div class="container1">
 						  <form class="text" id="transactions">
 						    <h1 class="form__title">Transaction: </h1>
@@ -159,7 +154,7 @@ async function createcloseRightContainer(event){
 						      <input type="text" class="form__input" autofocus placeholder=" Due Date: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
-						    <button class="form__button" type="submit" onlick=paidUnpaidCreateButton(event)> Create Transaction </button>
+						    <button class="form__button" type="submit" onlick=postTransaction(event)> Create Transaction </button>
 						  </form>
 						</div>`;
 		event.target.innerText = "Close Transaction Window";
@@ -169,6 +164,65 @@ async function createcloseRightContainer(event){
 		event.target.innerText = "Create Transaction";
 	}
 }
+
+
+async function patchTransaction(event){
+	const transaction_Paid = event.target.id;
+	const textInside = event.target.innerHTML;
+
+	fetch(BASE + "transaction/" + transactionID, {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			const returnedData = response;
+			if (textInside === "Mark as Paid"){
+				textInside = "Mark as Unpaid";
+			}
+			else{
+				textInside = "Mark as Paid";
+			}
+		} else {
+			throw new Error('Request failed.');
+		}
+	})
+	.catch(error => {
+		console.log(error);
+	});
+	getLedgerResources(mainTable.getAttribute('id'));
+	console.log({message: returnedData});
+}
+
+async function deleteTransaction(event){
+	const transactionID = event.target.id;
+
+	fetch(BASE + "transaction/" + transactionID, {
+	method: 'DELETE',
+	headers: {
+		'Content-Type': 'application/json'
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			const returnedData = response;
+		} else {
+			throw new Error('Request failed.');
+		}
+	})
+	.then(data => {
+		console.log(data);
+	})
+	.catch(error => {
+		console.log(error);
+	});
+	console.log({message: returnedData});
+	rightContainer = "";
+	getLedgerResources(mainTable.getAttribute('id'));
+}
+
 
 
 
