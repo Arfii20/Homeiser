@@ -11,6 +11,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 cors = [
+        CORS(app, resources={r"/transaction/*": {"origins": "*"}}),
+        CORS(app, resources={r"/ledger/*": {"origins": "*"}}),
         CORS(app, resources={r"/shared_list/*": {"origins": "*"}}),
         CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
         CORS(app, resources={r"/list_events/*": {"origins": "*"}}),

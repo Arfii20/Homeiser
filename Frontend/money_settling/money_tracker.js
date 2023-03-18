@@ -135,26 +135,26 @@ async function createcloseRightContainer(event){
 						    <h1 class="form__title">Transaction: </h1>
 						    <div class="form__message form__message--error"></div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder="Full Name of Source User: ">
+						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="password" class="form__input" autofocus placeholder="Full Name of Destination User: ">
+						      <input type="text" class="form__input" placeholder="Full Name of Destination User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder="Amount in GBP: ">
+						      <input type="text" class="form__input" placeholder="Amount in GBP: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder="Description: ">
+						      <input type="text" class="form__input" placeholder="Description: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" autofocus placeholder="Due Date (yyyy-mm-dd): ">
+						      <input type="text" class="form__input" placeholder="Due Date (yyyy-mm-dd): ">
 						      <div class="form__input-error-message"></div>
 						    </div>
-						    <button class="form__button" type="submit" onlick=postTransaction(event)> Create Transaction </button>
+						    <button class="form__button" type="submit" onclick=postTransaction(event)> Create Transaction </button>
 						  </form>
 						</div>`;
 		event.target.innerText = "Close Transaction Window";
@@ -225,11 +225,11 @@ async function deleteTransaction(event){
 
 
 async function postTransaction(event){
+	event.preventDefault();
 	const button = event.target;
 
 	const form = button.closest('form');
 
-	const transaction_ID = event.target.id;
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
 	const transaction_Src = form.querySelector('input[placeholder*="Full Name of Source User"]').value;
@@ -237,19 +237,56 @@ async function postTransaction(event){
 	const transaction_Amount = form.querySelector('input[placeholder*="Amount"]').value;
 	const transaction_Description = form.querySelector('input[placeholder*="Description"]').value;
 	const transaction_DueDate = form.querySelector('input[placeholder*="Due Date"]').value;
-	const transaction_Paid = true;
+	const transaction_Paid = "false";
 
 	if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
 		alert("Please add all fields");
 		return;
 	}
 
+	try {
+		parseInt(transaction_Amount);
+	}
+	catch(error){
+		alert("The amount is invalid");
+		return;
+	}
+
 	const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-	if (transaction_DueDate.match(dateRegex)){
+	if (!transaction_DueDate.match(dateRegex)){
 		alert("Date must be in yyyy-mm-dd format");
 		return;
 	}
 
+	fetch(BASE + "transaction", {
+	  	method: 'POST',
+	  	headers: {
+	    	'Content-Type': 'application/json'
+	  	},
+	  	body: JSON.stringify({
+	    	src_id: transaction_SrcID,
+	    	dest_id: transaction_DestID,
+	    	src: transaction_Src,
+	    	dest: transaction_Dest,
+	    	amount: parseInt(transaction_Amount),
+	    	description: transaction_Description,
+	    	due_date: transaction_DueDate,
+	    	paid: transaction_Paid
+	  	})
+	})
+	.then(response => {
+	  	if (response.ok) {
+	    	const returnedData = response.json();
+	  	} else {
+	    	throw new Error('Request failed.');
+	  	}
+	})
+	.then(data => {
+	  	console.log(data);
+	})
+	.catch(error => {
+	  	console.log(error);
+	});
 }
 
 
