@@ -14,7 +14,7 @@ async function getLedgerResources(userID){
 	if (response.ok) {
 		mainTable.innerHTML = `<thead>
 				                <th class="header">
-				                  Source User--> Destination User
+				                  Source User --> Destination User
 				                </th>
 				                <th class="header">
 				                  Due Date
@@ -39,7 +39,7 @@ async function getLedgerResources(userID){
 								                <td class="table-data">
 								                  ${obj.due_date}
 								                </td>
-								                <td class="table-data">
+								                <td class="table-data" style="align:center">
 								                  £${obj.amount}
 								                </td>
 								            <tr>
@@ -87,20 +87,20 @@ async function getTransaction(event) {
 		else{
 			paidButton = "Mark as Paid";
 		}
-		rightContainer.innerHTML =  `<div class="container1">
+		rightContainer.innerHTML =  `<div class="container2">
 									  <form class="text" id="transactions">
-									    <h1 class="form__title">Transaction: </h1>
+									    <h1 class="form__title" style="Color:purple">Transaction</h1>
 									    <div class="form__input-error-message"></div>
 									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Full Name of Source User - ${obj.src} " readonly>
+									      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
 									      <div class="form__input-error-message"></div>
 									    </div>
 									    <div class="form__input-group">
-									      <input type="password" class="form__input" placeholder="Full Name of Destination User - ${obj.dest} " readonly>
+									      <input type="password" class="form__input" placeholder="Destination User - ${obj.dest} " readonly>
 									      <div class="form__input-error-message"></div>
 									    </div>
 									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Amount in GBP - ${obj.amount} " readonly>
+									      <input type="text" class="form__input" placeholder="Amount - £${obj.amount} " readonly>
 									      <div class="form__input-error-message"></div>
 									    </div>
 									    <div class="form__input-group">
@@ -108,7 +108,7 @@ async function getTransaction(event) {
 									      <div class="form__input-error-message"></div>
 									    </div>
 									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Due Date (yyyy-mm-dd) - ${obj.due_date} " readonly>
+									      <input type="text" class="form__input" placeholder="Due Date - ${obj.due_date} " readonly>
 									      <div class="form__input-error-message"></div>
 									    </div>
 									    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=patchTransaction(event)> ${paidButton} </button>
@@ -125,9 +125,9 @@ async function getTransaction(event) {
 async function createcloseRightContainer(event){
 	event.preventDefault();
 	if (event.target.innerText === "Create Transaction"){
-		rightContainer.innerHTML =  `<div class="container1">
+		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
-						    <h1 class="form__title">Transaction: </h1>
+							<h1 class="form__title" style="Color:purple">New Transaction</h1>
 						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
 						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
@@ -280,7 +280,7 @@ async function postTransaction(event){
 		return;
 	}
 	else if (!isValidDate(transaction_DueDate)){
-		setInputError(transaction_DueDateElement, "Date must be in yyyy-mm-dd format");
+		setInputError(transaction_DueDateElement, "Date must be valid and in yyyy-mm-dd format");
 		return;
 	}
 	else{
