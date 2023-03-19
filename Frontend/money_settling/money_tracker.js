@@ -3,11 +3,6 @@ const rightContainer = document.querySelector(".container-right");
 const mainTable = document.querySelector(".main-table");
 const detailsTable = document.querySelector(".detailsTable");
 const leftCreateButton = document.querySelector("#Create-window-button");
-const transaction_SrcElement = form.querySelector('input[placeholder*="Full Name of Source User"]');
-const transaction_DestElement = form.querySelector('input[placeholder*="Full Name of Destination User"]');
-const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
-const transaction_DescriptionElement = form.querySelector('input[placeholder*="Amount"]');
-const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 
 async function getLedgerResources(userID){
 	var returnedData;
@@ -95,6 +90,7 @@ async function getTransaction(event) {
 		rightContainer.innerHTML =  `<div class="container1">
 									  <form class="text" id="transactions">
 									    <h1 class="form__title">Transaction: </h1>
+									    <div class="form__input-error-message"></div>
 									    <div class="form__input-group">
 									      <input type="text" class="form__input" placeholder="Full Name of Source User - ${obj.src} " readonly>
 									      <div class="form__input-error-message"></div>
@@ -132,6 +128,7 @@ async function createcloseRightContainer(event){
 		rightContainer.innerHTML =  `<div class="container1">
 						  <form class="text" id="transactions">
 						    <h1 class="form__title">Transaction: </h1>
+						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
 						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
 						      <div class="form__input-error-message"></div>
@@ -226,6 +223,11 @@ async function postTransaction(event){
 	const button = event.target;
 
 	const form = button.closest('form');
+	const transaction_SrcElement = form.querySelector('input[placeholder*="Full Name of Source User"]');
+	const transaction_DestElement = form.querySelector('input[placeholder*="Full Name of Destination User"]');
+	const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
+	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
+	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
@@ -237,49 +239,52 @@ async function postTransaction(event){
 	const transaction_Paid = "false";
 	const transaction_HouseId = 620;
 
-	// if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
-	// 	alert("Please add all fields");
-	// 	return;
-	// }
-
 	if (transaction_Src === "") {
-	  setInputError(transaction_SrcElement, 'Please enter source user');
-	  return;
+		setInputError(transaction_SrcElement, 'Please enter source user');
+		return;
+	}
+	else{
+		clearInputError(transaction_SrcElement);
 	}
 
 	if (transaction_Dest === "") {
-	  setInputError(transaction_DestElement, 'Please enter destination user');
-	  return;
+		setInputError(transaction_DestElement, 'Please enter destination user');
+		return;
+	}
+	else{
+		clearInputError(transaction_DestElement);
 	}
 
 	if (transaction_Amount === "") {
-	  setInputError(transaction_AmountElement, 'Please enter amount');
-	  return;
+		setInputError(transaction_AmountElement, 'Please enter amount');
+		return;
+	}
+	else if (isNaN(parseInt(transaction_Amount))) {
+		setInputError(transaction_AmountElement, 'The amount is invalid');
+		return;
+	}
+	else{
+		clearInputError(transaction_AmountElement);
 	}
 
 	if (transaction_Description === "") {
-	  setInputError(transaction_DescriptionElement, 'Please enter description');
-	  return;
+		setInputError(transaction_DescriptionElement, 'Please enter description');
+		return;
+	}
+	else{
+		clearInputError(transaction_DescriptionElement);
 	}
 
 	if (transaction_DueDate === "") {
-	  setInputError(transaction_DueDateElement, 'Please enter due date');
-	  return;
-	}
-
-
-	try {
-		parseInt(transaction_Amount);
-	}
-	catch(error){
-		alert("The amount is invalid");
+		setInputError(transaction_DueDateElement, 'Please enter due date');
 		return;
 	}
-
-	const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-	if (!transaction_DueDate.match(dateRegex)){
-		alert("Date must be in yyyy-mm-dd format");
+	else if (!isValidDate(transaction_DueDate)){
+		setInputError(transaction_DueDateElement, "Date must be in yyyy-mm-dd format");
 		return;
+	}
+	else{
+		clearInputError(transaction_DueDateElement);
 	}
 
 	fetch(BASE + "transaction", {
@@ -317,12 +322,30 @@ async function postTransaction(event){
 	});
 }
 
-function setInputError(inputElement, errorMessage) {
-	const inputGroupElement = inputElement.parentElement;
-	const errorElement = inputGroupElement.querySelector('.form__input');
+function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
+	const inputGroupElement = inputElement.closest(inputGroupSelector);
+	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
 	inputGroupElement.classList.add('form__input-group--error');
 	errorElement.innerText = errorMessage;
 }
 
+function clearInputError(inputElement, inputGroupSelector = '.form__input-group') {
+	const inputGroupElement = inputElement.closest(inputGroupSelector);
+	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
+	inputGroupElement.classList.remove('form__input-group--error');
+	errorElement.innerText = '';
+}
+
+function isValidDate(dateString) {
+	const regex = /^\d{4}-\d{2}-\d{2}$/;
+	if (!regex.test(dateString)) {
+	return false;
+	}
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) {
+	return false;
+	}
+	return true;
+}
 
 getLedgerResources(630);

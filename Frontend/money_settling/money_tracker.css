@@ -233,8 +233,24 @@ li.dropdown {
     color: var(--color-error);
 }
 
-.form__input-group {
+/*.form__input-group {
     margin-bottom: 1rem;
+}*/
+
+.form__input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+  position: relative;
+}
+
+.form__input-error-message {
+  color: red;
+  font-size: 12px !important;
+  position: absolute;
+  bottom: -13px;
+  left: 0;
 }
 
 .form__input {
