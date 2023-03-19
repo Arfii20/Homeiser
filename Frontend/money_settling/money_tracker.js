@@ -3,13 +3,19 @@ const rightContainer = document.querySelector(".container-right");
 const mainTable = document.querySelector(".main-table");
 const detailsTable = document.querySelector(".detailsTable");
 const leftCreateButton = document.querySelector("#Create-window-button");
+const transaction_SrcElement = form.querySelector('input[placeholder*="Full Name of Source User"]');
+const transaction_DestElement = form.querySelector('input[placeholder*="Full Name of Destination User"]');
+const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
+const transaction_DescriptionElement = form.querySelector('input[placeholder*="Amount"]');
+const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 
 async function getLedgerResources(userID){
 	var returnedData;
 	mainTable.setAttribute('id', userID);
+	mainTable.innerHTML = "<tbody><tr><td style='border: none;'><h2 style='text-align: center; color: purple;'>No Transaction Pending</h2></td></td></tbody>";
 
 	const response = await fetch(BASE + "ledger/" + userID);
-
+	
 	if (response.ok) {
 		mainTable.innerHTML = `<thead>
 				                <th class="header">
@@ -61,7 +67,6 @@ async function getLedgerResources(userID){
 		}
 	}
 	else {
-  		mainTable.innerHTML = "<tbody><tr style='text-decoration: none;'><td style='border: none;'><h2 style='text-align: center; color: purple;' >No Transaction Pending</h2></td></td></tbody>";
     	throw new Error('Error retrieving ledger.');
     	return;
 	}
@@ -90,7 +95,6 @@ async function getTransaction(event) {
 		rightContainer.innerHTML =  `<div class="container1">
 									  <form class="text" id="transactions">
 									    <h1 class="form__title">Transaction: </h1>
-									    <div class="form__message form__message--error"></div>
 									    <div class="form__input-group">
 									      <input type="text" class="form__input" placeholder="Full Name of Source User - ${obj.src} " readonly>
 									      <div class="form__input-error-message"></div>
@@ -128,7 +132,6 @@ async function createcloseRightContainer(event){
 		rightContainer.innerHTML =  `<div class="container1">
 						  <form class="text" id="transactions">
 						    <h1 class="form__title">Transaction: </h1>
-						    <div class="form__message form__message--error"></div>
 						    <div class="form__input-group">
 						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
 						      <div class="form__input-error-message"></div>
@@ -226,18 +229,44 @@ async function postTransaction(event){
 
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
-	const transaction_Src = form.querySelector('input[placeholder*="Full Name of Source User"]').value;
-	const transaction_Dest = form.querySelector('input[placeholder*="Full Name of Destination User"]').value;
-	const transaction_Amount = form.querySelector('input[placeholder*="Amount"]').value;
-	const transaction_Description = form.querySelector('input[placeholder*="Description"]').value;
-	const transaction_DueDate = form.querySelector('input[placeholder*="Due Date"]').value;
+	const transaction_Src = transaction_SrcElement.value;
+	const transaction_Dest = transaction_DestElement.value;
+	const transaction_Amount = transaction_AmountElement.value;
+	const transaction_Description = transaction_DescriptionElement.value;
+	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
 	const transaction_HouseId = 620;
 
-	if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
-		alert("Please add all fields");
-		return;
+	// if (transaction_Src === "" || transaction_Dest === "" || transaction_Amount === "" || transaction_Description === "" || transaction_DueDate === ""){
+	// 	alert("Please add all fields");
+	// 	return;
+	// }
+
+	if (transaction_Src === "") {
+	  setInputError(transaction_SrcElement, 'Please enter source user');
+	  return;
 	}
+
+	if (transaction_Dest === "") {
+	  setInputError(transaction_DestElement, 'Please enter destination user');
+	  return;
+	}
+
+	if (transaction_Amount === "") {
+	  setInputError(transaction_AmountElement, 'Please enter amount');
+	  return;
+	}
+
+	if (transaction_Description === "") {
+	  setInputError(transaction_DescriptionElement, 'Please enter description');
+	  return;
+	}
+
+	if (transaction_DueDate === "") {
+	  setInputError(transaction_DueDateElement, 'Please enter due date');
+	  return;
+	}
+
 
 	try {
 		parseInt(transaction_Amount);
@@ -287,5 +316,13 @@ async function postTransaction(event){
 	  	console.log(error);
 	});
 }
+
+function setInputError(inputElement, errorMessage) {
+	const inputGroupElement = inputElement.parentElement;
+	const errorElement = inputGroupElement.querySelector('.form__input');
+	inputGroupElement.classList.add('form__input-group--error');
+	errorElement.innerText = errorMessage;
+}
+
 
 getLedgerResources(630);
