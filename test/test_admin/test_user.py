@@ -1,10 +1,9 @@
 import datetime
-import time
 from unittest import TestCase
 import mysql.connector
 
 from admin.user import User, UserError
-
+from transactions.transaction import Transaction
 
 def setUpModule():
     """Check that first 7 rows of user db are as expected"""
@@ -47,6 +46,28 @@ def setUpModule():
                 "WHERE id=%s",
                 [*exp[1:], exp[0]],
             )
+
+    # add user a and user b for testing delete user, and transactions from a->b and b->a
+
+    usrs = [
+        User(200, 'a', '', 'a@testdel.com', b'a', None, 1, None),
+        User(201, 'b', '', 'b@testdel.com', b'b', None, 1, None),
+    ]
+
+    for usr in usrs:
+        usr.insert_to_database(db, conn)
+
+    conn.commit()
+
+    # transaction a -> b
+    t1 = Transaction(0, 200, 201, 'a', 'b', 5, '', datetime.date(3000, 1, 1), False, 1)
+
+    # transaction b -> a
+    t2 = Transaction(0, 201, 200, 'b', 'a', 10, '', datetime.date(3000, 1, 1), False, 1)
+
+    t1.insert_transaction(db, conn)
+    t2.insert_transaction(db, conn)
+
 
     # commit any changes
     conn.commit()
@@ -197,7 +218,29 @@ class TestUser(TestCase):
 
 
     def test_delete(self):
-        ...
+        """In setup, two users, a and b created.
+        There exists a transaction a->b, and b-> a. delete a. delete b."""
+
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+
+        usrs = [
+            User(200, 'a', '', 'a@testdel.com', b'a', None, 1, None),
+            User(201, 'b', '', 'b@testdel.com', b'b', None, 1, None),
+        ]
+
+        for usr in usrs:
+            usr.delete(db, conn)
+
+        # make sure users no longer exist
+        cur = conn.cursor()
+        cur.execute("""SELECT id FROM transaction WHERE id = %s OR id = %s""", [200, 201])
+        results = cur.fetchall()
+        self.assertFalse(results)
 
     def test_build_from_email(self):
         ...

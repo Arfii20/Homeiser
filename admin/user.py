@@ -29,12 +29,18 @@ class User:
     ):
         """Insert self to database"""
 
+        no_uid_query = """ INSERT INTO user (first_name, surname, email, password, date_of_birth, household_id, color)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+
+        uid_query = """INSERT INTO user VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+
         try:
-            cur.execute(
-                """ INSERT INTO user (first_name, surname, email, password, date_of_birth, household_id, color)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s);""",
-                [v for v in self.__dict__.values()][1:],
-            )
+            if self.u_id:
+                cur.execute(uid_query, [v for v in self.__dict__.values()])
+            else:
+                cur.execute(no_uid_query, [v for v in self.__dict__.values()][1:])
+
+
         except mysql.connector.errors.IntegrityError:
             # means that email already exists
             raise UserError("User with email {self.email} already exists")
@@ -94,8 +100,34 @@ class User:
             conn.commit()
 
 
-    def delete(self):
-        ...
+    def delete(self, cur: mysql.connector.cursor.MySQLCursor, conn: mysql.connector.MySQLConnection):
+        """Only let user delete their account if they are not involved in a household"""
+        # check to see if part of a household
+        cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.email])
+        if h_id := cur.fetchone():
+            raise UserError(f"Cannot delete account as you are still part of household {h_id[0]}")
+
+        # pull u_id if it is 0
+        if not self.u_id:
+            cur.execute("""SELECT id FROM user WHERE email = %s""", [self.email])
+            self.u_id = cur.fetchone()[0]
+
+        # delete all transactions which user was involved in
+        cur.execute("""SELECT id FROM pairs WHERE src = %s OR dest = %s""", 2 * [self.u_id])
+        pair_ids = cur.fetchall()
+
+        for pair_id in pair_ids:
+            cur.execute("""DELETE FROM transaction WHERE pair_id = %s""", [pair_id[0]])
+
+        conn.commit()
+
+        # delete all pairs which the user was involved in
+        for pair_id in pair_ids:
+            cur.execute("""DELETE FROM pairs WHERE id = %s""", [pair_id[0]])
+
+        # now all fks have been deleted - delete user
+        cur.execute("""DELETE FROM user WHERE id = %s""", [self.u_id])
+        conn.commit()
 
     @staticmethod
     def build_from_email(email: str):
