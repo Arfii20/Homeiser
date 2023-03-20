@@ -65,6 +65,10 @@
             <div class="form__input-error-message"></div>
         </div>
         <div class="form__input-group">
+            <input type="text" id="signupBirth" class="form__input" autofocus placeholder="Date of Birth (yyyy-mm-dd)">
+            <div class="form__input-error-message"></div>
+        </div>
+        <div class="form__input-group">
             <input type="text" id="signupEmail" class="form__input" autofocus placeholder="Email Address">
             <div class="form__input-error-message"></div>
         </div>
@@ -76,14 +80,14 @@
             <input type="password" id="signupPassword2" class="form__input" autofocus placeholder="Confirm Password">
             <div class="form__input-error-message"></div>
         </div>
-        <button class="form__button" type="submit">Continue</button>
+        <button class="form__button" type="submit" onclick="postRegister(event)">Continue</button>
         <p class="form__text">
             <a class="form__link" href="./login.html" id="linkLogin">Already have an account? Log in</a>
         </p>    
     </form>
   </div>
 
-  <script src="./main.js"></script>
+  <script src="./register.js"></script>
 
 </body>
 </html>
