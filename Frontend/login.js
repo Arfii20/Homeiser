@@ -92,7 +92,6 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 }
 
 function isValidEmail(login_Email) {
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const register_Email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return register_Email.test(login_Email);
 }
