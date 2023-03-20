@@ -1,5 +1,3 @@
-const BASE = "http://127.0.0.1:5000/";
-
 const eventsArr = [];
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -11,13 +9,15 @@ function getCookie(name) {
 // const house_id = getCookie("household_id");
 const user_id = 630;
 const house_id = 620;
-if (userID === null || userID === undefined) {
+
+if (user_id === null || user_id === undefined) {
 	window.location.href = "URL of login page";
 }
 if (house_id === null || house_id === undefined) {
 	window.location.href = "URL of household login page";
 }
 
+const BASE = "http://127.0.0.1:5000/";
 get_lists(house_id);
 
 // Shared List methods start from here

@@ -12,9 +12,10 @@ function getCookie(name) {
 }
 
 // const userID = getCookie("user_id");
-const house_id = getCookie("household_id");
-console.log(house_id);
+// const house_id = getCookie("household_id");
 const userID = 630;
+const house_id = 620;
+
 if (userID === null || userID === undefined) {
 	window.location.href = "URL of login page";
 }

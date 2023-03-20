@@ -1,3 +1,21 @@
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// const user_id = getCookie("user_id");
+// const house_id = getCookie("household_id");
+const user_id = 630;
+const house_id = 620;
+
+if (user_id === null || user_id === undefined) {
+  window.location.href = "URL of login page";
+}
+if (house_id === null || house_id === undefined) {
+  window.location.href = "URL of household login page";
+}
+
 const calendar = document.querySelector(".calendar"),
   date = document.querySelector(".date"),
   daysContainer = document.querySelector(".days"),
@@ -45,24 +63,6 @@ const months = [
 ];
 
 const eventsArr = [];
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
-if (userID === null || userID === undefined) {
-  window.location.href = "URL of login page";
-}
-if (house_id === null || house_id === undefined) {
-  window.location.href = "URL of household login page";
-}
-
-get_calendarEvent(house_id);
 
 //function to add days in days with class day and prev-date next-date on previous month and next month days and active on today
 function initCalendar() {
@@ -787,3 +787,5 @@ async function deleteOutdatedEvents(){
   initCalendar();
   updateEvents(activeDay);
 }
+
+get_calendarEvent(house_id);
