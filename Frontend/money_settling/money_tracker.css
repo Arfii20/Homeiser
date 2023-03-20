@@ -388,7 +388,8 @@ th.header{
 }
 
 .detailsTable {
-  max-height: 260px;
+  max-height: 218px;
+  min-height: 218px;
   overflow-y: auto;
 }
 
