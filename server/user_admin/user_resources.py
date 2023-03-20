@@ -18,7 +18,7 @@ class UserResource(Resource):
             u = User.build_from_email(email, cur)
         except UserError as ue:
             # if we fail to build from email, return a 404
-            return ue, 404
+            return str(ue), 404
 
         return u.json, 200
 

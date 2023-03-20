@@ -16,4 +16,11 @@ class TestUserResource(TestCase):
               '"household_id": 1, ' \
               '"colour": null}'
 
-        self.assertEqual(exp, r.json())
+        with self.subTest('exists'):
+            self.assertEqual(exp, r.json())
+
+
+        r = requests.get(target + "user/dsafaswedf.com")
+        with self.subTest('email doesn\'t exist'):
+            print(r.json())
+            self.assertEqual(r.status_code, 404)
