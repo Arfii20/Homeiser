@@ -3,15 +3,36 @@ const rightContainer = document.querySelector(".container-right");
 const mainTable = document.querySelector(".main-table");
 const detailsTable = document.querySelector(".detailsTable");
 const leftCreateButton = document.querySelector("#Create-window-button");
+const simplifyButton = document.querySelector(".simplify_button")
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// const userID = getCookie("user_id");
+const house_id = getCookie("household_id");
+console.log(house_id);
+const userID = 630;
+if (userID === null || userID === undefined) {
+	window.location.href = "URL of login page";
+}
+if (house_id === null || house_id === undefined) {
+	window.location.href = "URL of household login page";
+}
+
+getLedgerResources(userID);
 
 async function getLedgerResources(userID){
 	var returnedData;
-	mainTable.setAttribute('id', userID);
 	mainTable.innerHTML = "<tbody><tr><td style='border: none;'><h2 style='text-align: center; color: purple;'>No Transaction Pending</h2></td></td></tbody>";
+	simplifyButton.style.display = "none";
 
 	const response = await fetch(BASE + "ledger/" + userID);
 	
 	if (response.ok) {
+		simplifyButton.style.display = "";
 		mainTable.innerHTML = `<thead>
 				                <th class="header">
 				                  Source User --> Destination User
@@ -89,7 +110,7 @@ async function getTransaction(event) {
 		}
 		rightContainer.innerHTML =  `<div class="container2">
 									  <form class="text" id="transactions">
-									    <h1 class="form__title" style="Color:purple">Transaction</h1>
+									    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
 									    <div class="form__input-error-message"></div>
 									    <div class="form__input-group">
 									      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
@@ -127,7 +148,7 @@ async function createcloseRightContainer(event){
 	if (event.target.innerText === "Create Transaction"){
 		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
-							<h1 class="form__title" style="Color:purple">New Transaction</h1>
+							<h1 class="form__title" style="color:#a220a4">New Transaction</h1>
 						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
 						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
@@ -179,7 +200,7 @@ async function patchTransaction(event){
 			}
 			else{
 				event.target.innerText = "Mark as Paid";
-			getLedgerResources(mainTable.id);
+			getLedgerResources(userID);
 			}
 		} else {
 			throw new Error('Request failed.');
@@ -204,7 +225,9 @@ async function deleteTransaction(event){
 		if (response.ok) {
 			console.log(response.json());
 			rightContainer.innerHTML = "";
-			getLedgerResources(mainTable.getAttribute('id'));
+			getLedgerResources(userID);
+			rightContainer.innerHTML = "";
+			leftCreateButton.innerText = "Create Transaction";
 		} else {
 			throw new Error('Request failed.');
 		}
@@ -309,7 +332,7 @@ async function postTransaction(event){
 	    	const returnedData = response.json();
 			rightContainer.innerHTML = "";
 			leftCreateButton.innerText = "Create Transaction";
-			getLedgerResources(mainTable.id);
+			getLedgerResources(userID);
 	  	} else {
 	    	throw new Error('Request failed.');
 	  	}
@@ -321,6 +344,13 @@ async function postTransaction(event){
 	  	console.log(error);
 	});
 }
+
+async function simplifyDebts(event){
+	
+
+
+}
+
 
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
 	const inputGroupElement = inputElement.closest(inputGroupSelector);
@@ -347,5 +377,3 @@ function isValidDate(dateString) {
 	}
 	return true;
 }
-
-getLedgerResources(630);

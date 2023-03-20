@@ -289,14 +289,13 @@ li.dropdown {
     width: fit-content;
     align-self: center;
     font-weight: bold;
+    color: #ffffff;
     font-size: 1.1rem;
-    color: var(--color-primary-dark);
     border: none;
     border-radius: var(--border-radius);
     outline: none;
     cursor: pointer;
-    background: transparent;
-    border: solid black 2px;
+    background: var(--color-primary-dark);
 }
 
 .form__button:hover {
@@ -361,7 +360,7 @@ li.dropdown {
   border-radius: var(--border-radius);
   background: #ffffff;
   display: inline-block;
-  border: solid black 2px;
+  border: solid var(--color-primary-dark) 2px;
 } 
 
 .container2 {
@@ -372,19 +371,26 @@ li.dropdown {
   border-radius: var(--border-radius);
   background: #ffffff;
   display: inline-block;
-  border: solid black 2px;
+  border: solid var(--color-primary-dark) 2px;
 } 
 
 /* Table styles */
 
-td.table-data, th.header{
+td.table-data {
   border: none;
-  padding-left: 1rem;
-  padding-right: 1rem;
+}
+
+th.header{
+  border: none;
+  background: rgba(162, 32, 164, 0.6);
+}
+
+.main-table {
+  overflow: auto;
 }
 
 .main-table tbody:nth-child(odd) {
-  background: #dddddd;
+  background: rgba(162, 32, 164, 0.3)
 }
 
 

@@ -1,8 +1,28 @@
 const BASE = "http://127.0.0.1:5000/";
 
+const eventsArr = [];
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// const user_id = getCookie("user_id");
+// const house_id = getCookie("household_id");
+const user_id = 630;
+const house_id = 620;
+if (userID === null || userID === undefined) {
+	window.location.href = "URL of login page";
+}
+if (house_id === null || house_id === undefined) {
+	window.location.href = "URL of household login page";
+}
+
+get_lists(house_id);
+
 // Shared List methods start from here
-async function get_lists(household_id){
-	const response = await fetch(BASE + "shared_list/" + household_id);
+async function get_lists(house_id){
+	const response = await fetch(BASE + "shared_list/" + house_id);
 	if (response.ok){
 		const response_array = JSON.parse(await response.json());
 
@@ -165,7 +185,6 @@ async function get_lists(household_id){
 
 async function post_list(event){
 	event.preventDefault();
-	house_id = 620;
 	const closestForm = event.target.closest('form');
 
 	const inputValue = closestForm.querySelector('.new-list-input').value;

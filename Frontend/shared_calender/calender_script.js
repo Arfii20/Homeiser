@@ -45,8 +45,24 @@ const months = [
 ];
 
 const eventsArr = [];
-// getEvents();
-get_calendarEvent(620);
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// const user_id = getCookie("user_id");
+// const house_id = getCookie("household_id");
+const user_id = 630;
+const house_id = 620;
+if (userID === null || userID === undefined) {
+  window.location.href = "URL of login page";
+}
+if (house_id === null || house_id === undefined) {
+  window.location.href = "URL of household login page";
+}
+
+get_calendarEvent(house_id);
 
 //function to add days in days with class day and prev-date next-date on previous month and next month days and active on today
 function initCalendar() {
@@ -413,15 +429,13 @@ async function deleteEvent(event){
 
 //function to POST events to the database
 addEventSubmit.addEventListener("click", async () => {
-  const house_id = 620;
-  const user_id = 630;
   const eventTitle = addEventTitle.value;
   const eventTimeFrom = addEventFrom.value;
   const eventTimeTo = addEventTo.value;
   const eventNotes = addEventNotes.value;
   const eventLocation = addEventLocation.value;
   const eventTaggedUsers = addEventTaggedUsers.value;
-  const eventAddedBy = 630;
+  const eventAddedBy = user_id;
 
   if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === "" || eventTaggedUsers === ""){
     alert("Please fill all the fields");
@@ -539,8 +553,8 @@ addEventSubmit.addEventListener("click", async () => {
 });
 
 // Function to get calendar events
-async function get_calendarEvent(household_id){
-  const url = BASE + "get_shared_calendar/" + household_id;
+async function get_calendarEvent(house_id){
+  const url = BASE + "get_shared_calendar/" + house_id;
   const data = new URLSearchParams();
 
   const startDate = '2000-01-01 00:00:00';
@@ -614,8 +628,6 @@ async function get_calendarEvent(household_id){
 
 // Function to edit calendar event
 async function editEvent(event){
-  const user_id = 630;
-  const house_id = 620;
   const siblingDiv = event.target.parentNode.previousElementSibling;
   const calendarEventID = siblingDiv.id;
   
