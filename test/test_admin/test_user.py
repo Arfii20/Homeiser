@@ -2,6 +2,7 @@ import datetime
 from unittest import TestCase
 import mysql.connector
 
+from admin.user import User, UserError
 
 def setUpModule():
     """Check that first 7 rows of user db are as expected"""
@@ -20,7 +21,7 @@ def setUpModule():
         (1, "Alice", "_", "alice", "alice@alice.com", None, 1, None),
         (2, "Bob", "_", "bob", "bob@bob.com", None, 1, None),
         (3, "Test", "Ledger", "l", "l@l.com", datetime.date(1, 2, 2), 2, None),
-        (4, "Test2", "Ledger", "l", "l@l.com", datetime.date(1, 1, 1), 2, None),
+        (4, "Test2", "Ledger", "l", "l@2.com", datetime.date(1, 1, 1), 2, None),
         (5, "Andrew", "Lees", "alees", "a@a.com", datetime.date(2023, 3, 13), 3, None),
         (6, "Bandicoot", "Crash", "bc", "b@c.com", datetime.date(2023, 3, 13), 3, None),
         (7, "Kez", "Carey", "kc", "k@c.com", datetime.date(2023, 3, 13), 3, None),
@@ -46,12 +47,40 @@ def setUpModule():
     conn.commit()
 
 class TestUser(TestCase):
-    def setUp(self) -> None:
-        """insert rows needed for tests"""
-
 
     def test_insert_to_database(self):
-        ...
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+
+        john = User(0, 'John', "Heereboys", "j@heere.com", b"test", datetime.date(1, 1, 1), None, None)
+        john.insert_to_database(db, conn)
+
+        del db
+        cur2 = conn.cursor()
+
+        # ensure that insert worked
+        cur2.execute("""SELECT * FROM user WHERE email = %s""", ["j@heere.com"])
+
+        got = cur2.fetchall()[0]
+
+        with self.subTest("Insert"):
+            self.assertEqual(got[1:], ('John', "Heereboys", "test", "j@heere.com", datetime.date(1, 1, 1), None, None))
+
+        # cleanup
+        cur2.execute("""DELETE FROM user WHERE id = %s""", [got[0]])
+        conn.commit()
+
+        # try to insert where an email adress already exists
+        fail = User(0, 'John', "Heereboys", "l@l.com", b"test", datetime.date(1, 1, 1), None, None)
+
+        with self.subTest("email exists"), self.assertRaises(UserError):
+            fail.insert_to_database(cur2, conn)
+
+
 
     def test_join_household(self):
         ...
