@@ -35,6 +35,7 @@ async function get_lists(house_id){
 			// Create a new header element
 			const headerElement = document.createElement('header');
 			headerElement.setAttribute("id", obj.id);
+			headerElement.setAttribute("class", "inner-header")
 
 			// Create a new div element and set its ID
 			const divElement = document.createElement('div');

@@ -5,18 +5,9 @@ body {
   --color-error: #cc3333;
   --color-success: #4bb544;
   --border-radius: 4px;
+  margin: 0;
   font-family: 'Merriweather Sans', sans-serif;
-<<<<<<<< HEAD:Frontend/money_settling/money_tracker.css
-  max-width: 100vw;
-  overflow: auto;
-========
->>>>>>>> origin/frontend:Frontend/style.css
 }
-
-html{
-  display: none;
-}
-
 
 /*--- Navigation Bar ---*/
 
@@ -118,17 +109,7 @@ li a, .dropbtn {
   background-color: #BB56D7;
 }
 
-.header {
-  outline: none;
-  background: #cccccc;
-  transition: background 0.2s, border-color 0.2s;
-  box-shadow: none;
-  cursor: default;
-}
 
-.table-data{
-  cursor: default;
-}
 
 
 /*--- Dropdown ---*/
@@ -196,14 +177,6 @@ li.dropdown {
     margin: 0 auto;
 } 
 
-/* Container styles */
-.container-left{
-  display: flex;
-  flex-direction: column;
-/*  gap: 2.5rem;*/
-}
-
-
 .container,
 .form__input,
 .form__button {
@@ -240,24 +213,8 @@ li.dropdown {
     color: var(--color-error);
 }
 
-/*.form__input-group {
-    margin-bottom: 1rem;
-}*/
-
 .form__input-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-  align-items: flex-start;
-  position: relative;
-}
-
-.form__input-error-message {
-  color: red;
-  font-size: 12px !important;
-  position: absolute;
-  bottom: -13px;
-  left: 0;
+    margin-bottom: 1rem;
 }
 
 .form__input {
@@ -270,15 +227,13 @@ li.dropdown {
     outline: none;
     background: #eeeeee;
     transition: background 0.2s, border-color 0.2s;
-    box-shadow: none;
-    cursor: default;
 }
 
-/*.form__input:focus {
+.form__input:focus {
     border-color: var(--color-primary);
     background: #ffffff;
 }
-*/
+
 .form__input--error {
     color: var(--color-error);
     border-color: var(--color-error);
@@ -291,13 +246,11 @@ li.dropdown {
 }
 
 .form__button {
-    margin-top: 2.5rem;
+    width: 100%;
     padding: 1rem 2rem;
-    width: fit-content;
-    align-self: center;
     font-weight: bold;
-    color: #ffffff;
     font-size: 1.1rem;
+    color: #ffffff;
     border: none;
     border-radius: var(--border-radius);
     outline: none;
@@ -360,70 +313,17 @@ li.dropdown {
 }
 
 .container1 {
-<<<<<<<< HEAD:Frontend/money_settling/money_tracker.css
-  width: 450px;
-  max-width: 450px;
-  min-height: 376px;
-  margin: 1rem;
-  padding: 1rem;
-========
   width: 400px;
   max-width: 400px;
   margin: 2rem;
   padding: 2rem;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
->>>>>>>> origin/frontend:Frontend/style.css
   border-radius: var(--border-radius);
-  box-shadow: 0px 0px 40px rgba(0,0,0,0.2);
   background: #ffffff;
   display: inline-block;
   vertical-align: middle;
 } 
 
-.container2 {
-  width: 450px;
-  max-width: 450px;
-  max-height: 450px;
-  margin: 1rem;
-  padding: 2rem 1rem;
-  border-radius: var(--border-radius);
-  background: #ffffff;
-  display: inline-block;
-  box-shadow: 0px 0px 40px rgba(0,0,0,0.2);
-} 
-
-/* Table styles */
-
-td.table-data {
-  border: none;
-}
-
-th.header{
-  border: none;
-  background: rgba(162, 32, 164, 0.6);
-}
-
-.detailsTable {
-  max-height: 218px;
-  min-height: 218px;
-  overflow-y: auto;
-}
-
-.main-table tbody:nth-child(odd) {
-  background: rgba(162, 32, 164, 0.3)
-}
-
-
-/* Side by Side view */
-.side_by_side{
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-form input strong {
-  font-weight: bold;
-}
 
 /*--- Welcome ---*/
 .gallery {
@@ -473,21 +373,6 @@ form input strong {
   text-align: center;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th, td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #DDD;
-  border: 1px solid black;
-}
-
-tr:hover {background-color: #D592F4;}
-
-
 /* html {
   max-height: 300%;
   max-width: 300%;
@@ -495,20 +380,6 @@ tr:hover {background-color: #D592F4;}
 } */
 
 
-/* Responsive */
-@media only screen and (max-width: 1050px) {
-  .side_by_side{
-    display: flex;
-    flex-direction: column;
-  }
 
-  .container-left{
-    display: flex;
-    justify-items: center;
-    align-items: center;
-  }
 
-  body{
-    width: 100vw;
-  }
-}
+
