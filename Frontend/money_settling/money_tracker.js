@@ -11,30 +11,30 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// const userID = getCookie("user_id");
+// const user_id = getCookie("user_id");
 // const house_id = getCookie("household_id");
-const userID = 630;
+const user_id = 630;
 const house_id = 620;
 
-if (userID === null || userID === undefined) {
+if (user_id === null || user_id === undefined) {
 	window.location.href = "URL of login page";
 }
 if (house_id === null || house_id === undefined) {
 	window.location.href = "URL of household login page";
 }
 
-getLedgerResources(userID);
+getLedgerResources(user_id);
 
-async function getLedgerResources(userID){
-	var returnedData;
+async function getLedgerResources(user_id){
 	mainTable.innerHTML = "<tbody><tr><td style='border: none;'><h2 style='text-align: center; color: purple;'>No Transaction Pending</h2></td></td></tbody>";
 	simplifyButton.style.display = "none";
 
-	const response = await fetch(BASE + "ledger/" + userID);
+	const response = await fetch(BASE + "ledger/" + user_id);
 	
 	if (response.ok) {
+		console.log({message: "Ledger Received"});
 		simplifyButton.style.display = "";
-		mainTable.innerHTML = `<thead>
+		mainTable.innerHTML = `<thead class="fixed">
 				                <th class="header">
 				                  Source User --> Destination User
 				                </th>
@@ -51,7 +51,6 @@ async function getLedgerResources(userID){
 		for (let i = 0; i < response_array.length; i++) {
 		    const obj = await JSON.parse(response_array[i]);
 
-			console.log(obj);
 			var paid;
 			if (obj.paid === "true"){
 				mainTable.innerHTML += `<tbody id="data-output">
@@ -92,14 +91,11 @@ async function getLedgerResources(userID){
 
 async function getTransaction(event) {
 	transactionID = event.target.parentNode.getAttribute("id");
-	let returnedData;
-	console.log(transactionID);
-	console.log(event.target);
 
 	const response = await fetch(BASE + "transaction/" + transactionID)
 
   	if (response.ok) {
-  		// console.log(response.json())
+  		console.log({message: "transaction Received"});
     	const obj = await JSON.parse(await response.json());
 
 		var paidButton;
@@ -147,6 +143,7 @@ async function getTransaction(event) {
 async function createcloseRightContainer(event){
 	event.preventDefault();
 	if (event.target.innerText === "Create Transaction"){
+		console.log({message: "Right container created"});
 		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
 							<h1 class="form__title" style="color:#a220a4">New Transaction</h1>
@@ -177,6 +174,7 @@ async function createcloseRightContainer(event){
 		event.target.innerText = "Close Transaction Window";
 	}
 	else{
+		console.log({message: "Right container closed"});
 		rightContainer.innerHTML = "";
 		event.target.innerText = "Create Transaction";
 	}
@@ -201,7 +199,7 @@ async function patchTransaction(event){
 			}
 			else{
 				event.target.innerText = "Mark as Paid";
-			getLedgerResources(userID);
+			getLedgerResources(user_id);
 			}
 		} else {
 			throw new Error('Request failed.');
@@ -224,11 +222,11 @@ async function deleteTransaction(event){
 	})
 	.then(response => {
 		if (response.ok) {
-			console.log(response.json());
 			rightContainer.innerHTML = "";
-			getLedgerResources(userID);
 			rightContainer.innerHTML = "";
 			leftCreateButton.innerText = "Create Transaction";
+			getLedgerResources(user_id);
+			console.log({message: "Transaction deleted"});
 		} else {
 			throw new Error('Request failed.');
 		}
@@ -330,10 +328,10 @@ async function postTransaction(event){
 	})
 	.then(response => {
 	  	if (response.ok) {
-	    	const returnedData = response.json();
+	    	console.log({message: "Creation successful"});
 			rightContainer.innerHTML = "";
 			leftCreateButton.innerText = "Create Transaction";
-			getLedgerResources(userID);
+			getLedgerResources(user_id);
 	  	} else {
 	    	throw new Error('Request failed.');
 	  	}
@@ -347,11 +345,25 @@ async function postTransaction(event){
 }
 
 async function simplifyDebts(event){
-	
+	const url = `${BASE}${house_id}/simplify`;
+	const options = 
 
-
+	fetch(url, {
+	  method: 'POST',
+	  headers: {
+	    'Content-Type': 'application/json'
+	  }
+	})
+	.then(response => {
+		if (response.ok) {
+	  		getLedgerResources(user_id);
+	  		console.log({message: "transactions simplified"});
+		}
+	})
+	.catch(error => {
+		console.error('Could not simplify', error);
+	});
 }
-
 
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
 	const inputGroupElement = inputElement.closest(inputGroupSelector);
@@ -370,11 +382,11 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 function isValidDate(dateString) {
 	const regex = /^\d{4}-\d{2}-\d{2}$/;
 	if (!regex.test(dateString)) {
-	return false;
+		return false;
 	}
 	const date = new Date(dateString);
 	if (isNaN(date.getTime())) {
-	return false;
+		return false;
 	}
 	return true;
 }

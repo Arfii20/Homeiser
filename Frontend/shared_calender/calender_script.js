@@ -783,7 +783,6 @@ async function deleteOutdatedEvents(){
       console.log(response_error);
     }
   }
-  //after removing from array , update event
   initCalendar();
   updateEvents(activeDay);
 }
