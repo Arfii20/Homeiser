@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import mysql.connector
 import mysql.connector.cursor
+import requests
 
 from transactions import ledger
 
@@ -16,6 +17,21 @@ class UserError(Exception):
 
 @dataclass
 class User:
+
+    """
+    JSON Format
+     {
+            "user_id": int | None,
+            "first_name": str,
+            "surname": str,
+            "email": str,
+            "password": bytes,
+            "dob": date (isoformat),
+            "household_id": int | None,
+            "colour": int | None,
+        }
+    """
+
     u_id: int
     first_name: str
     surname: str
@@ -159,6 +175,16 @@ class User:
 
         return User(*attrs)
 
+    @staticmethod
+    def build_from_req(*, request: requests.Response | dict) -> User:
+        # load json representation of User into a dict if it is not already a dict
+        if type(request) != dict:
+            r = json.loads(request.json())  # type: ignore
+        else:
+            r = request
+
+        return User(*r.values())
+
     @property
     def json(self):
         return json.dumps(
@@ -167,8 +193,8 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": str(self.password, encoding="utf-8"),
-                "dob": self.dob.isoformat(),
+                "password": str(self.password, encoding="utf-8") if type(self.password) is bytes else self.password,
+                "dob": self.dob.isoformat() if type(self.dob) is datetime.date else self.dob,
                 "household_id": self.household,
                 "colour": self.colour,
             }

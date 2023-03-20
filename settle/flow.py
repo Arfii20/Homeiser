@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass
-import graphviz  # type: ignore
 from os import getcwd
 from typing import Callable
+
+import graphviz  # type: ignore
 
 
 class FlowGraphError(Exception):

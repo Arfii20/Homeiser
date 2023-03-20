@@ -1,11 +1,11 @@
 """Entry point for server"""
 
 from flask import Flask, g
+from flask_cors import CORS
 from flask_restful import Api  # type: ignore
 
 import server.db_handler as db_handler
 import server.endpoints as endpoints
-from flask_cors import CORS
 
 # create the app
 app = Flask(__name__)

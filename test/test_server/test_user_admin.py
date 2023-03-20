@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 import requests
 
 target = "http://127.0.0.1:5000/"
@@ -18,7 +19,6 @@ class TestUserResource(TestCase):
 
         with self.subTest('exists'):
             self.assertEqual(exp, r.json())
-
 
         r = requests.get(target + "user/dsafaswedf.com")
         with self.subTest('email doesn\'t exist'):

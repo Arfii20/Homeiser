@@ -1,7 +1,8 @@
 import unittest
-import requests
-from random import randint
 from json import loads
+from random import randint
+
+import requests
 
 # from shared_list import SharedList, ListDetails
 

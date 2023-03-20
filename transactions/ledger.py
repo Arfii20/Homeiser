@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import json
+import logging
 import sys
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+from mysql.connector import cursor, MySQLConnection
 
 from settle import flow, flow_algorithms
 from transactions.transaction import (
@@ -8,12 +14,6 @@ from transactions.transaction import (
     TransactionInsertionFailed,
     CalendarEvent,
 )
-
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-import json
-import logging
-from mysql.connector import cursor, MySQLConnection
 
 # initialise logger
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)

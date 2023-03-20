@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-import settle.flow_algorithms
 from settle.flow_algorithms import *
 
 

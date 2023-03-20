@@ -7,13 +7,12 @@ from flask_restful import Resource, Api  # type: ignore
 from mysql.connector import cursor
 
 import server.db_handler as db
+import transactions.ledger as ledger
 from transactions.transaction import (
     Transaction,
     TransactionConstructionError,
     TransactionInsertionFailed,
 )
-
-import transactions.ledger as ledger
 
 
 class TransactionResource(Resource):

@@ -1,6 +1,7 @@
-import requests
 import unittest
 from json import loads
+
+import requests
 
 BASE = "http://127.0.0.1:5000/"
 

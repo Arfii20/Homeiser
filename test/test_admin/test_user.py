@@ -1,9 +1,11 @@
 import datetime
 from unittest import TestCase
+
 import mysql.connector
 
 from admin.user import User, UserError
 from transactions.transaction import Transaction
+import requests
 
 
 def setUpModule():
@@ -278,3 +280,12 @@ class TestUser(TestCase):
 
         with self.subTest("No user with email"), self.assertRaises(UserError):
             User.build_from_email("asfas", db)
+
+    def test_build_from_req(self):
+        """Try to build User object from request"""
+        target = "http://127.0.0.1:5000/"
+
+        r = requests.get(target + "user/alice@alice.com")
+        alice = User.build_from_req(request=r)
+
+        print(alice.json)

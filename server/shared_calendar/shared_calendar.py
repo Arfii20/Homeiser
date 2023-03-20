@@ -2,11 +2,13 @@
 The shared calendar methods are defined here
 """
 
+import re
+from json import dumps
+
 from flask_restful import Resource, reqparse, abort
+
 from server.db_handler import get_conn, get_db
 from server.shared_list.Calendar_and_List_Builds import CalendarEventBuild
-from json import dumps
-import re
 
 
 class SharedCalendar(Resource):

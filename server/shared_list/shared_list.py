@@ -2,10 +2,12 @@
 The shared list methods are defined here
 """
 
+from json import dumps
+
 from flask_restful import Resource, reqparse, abort
+
 from server.db_handler import get_conn, get_db
 from .Calendar_and_List_Builds import ListEventBuild, ListBuild
-from json import dumps
 
 
 class SharedList(Resource):

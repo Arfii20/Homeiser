@@ -1,5 +1,6 @@
-import settle.flow as flow
 import copy
+
+import settle.flow as flow
 
 
 class PathError(Exception):

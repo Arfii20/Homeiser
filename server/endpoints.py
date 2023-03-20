@@ -1,10 +1,10 @@
 """Endpoints for transaction_resources"""
 import flask_restful  # type: ignore
 
-import server.transaction_resources.ledger_resource as lr
-import server.transaction_resources.transaction_resources as tr
 import server.shared_calendar.shared_calendar as calendar
 import server.shared_list.shared_list as lists
+import server.transaction_resources.ledger_resource as lr
+import server.transaction_resources.transaction_resources as tr
 import server.user_admin.user_resources as usr
 
 
@@ -30,4 +30,5 @@ def attach(api: flask_restful.Api):
     api.add_resource(tr.CalendarTransactions, "/transaction/as_events/<int:user_id>")
 
     # users
-    api.add_resource(usr.UserResource, "/user/<string:email>")
+    api.add_resource(usr.UserResource, "/user", "/user/<string:email>", '/user/<int:household_id>/<int:user_id>')
+    api.add_resource(usr.House, "/house", "/house/<int:household_id>")
