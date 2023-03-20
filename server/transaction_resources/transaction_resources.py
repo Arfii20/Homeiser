@@ -74,10 +74,10 @@ class TransactionResource(Resource):
         cur: cursor.MySQLCursor
 
         conn, cur = db.get_conn()
-        conn.commit()
         result = cur.execute(
             "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
         )
+        conn.commit()
 
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1

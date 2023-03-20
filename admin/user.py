@@ -193,8 +193,12 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": str(self.password, encoding="utf-8") if type(self.password) is bytes else self.password,
-                "dob": self.dob.isoformat() if type(self.dob) is datetime.date else self.dob,
+                "password": str(self.password, encoding="utf-8")
+                if type(self.password) is bytes
+                else self.password,
+                "dob": self.dob.isoformat()
+                if type(self.dob) is datetime.date
+                else self.dob,
                 "household_id": self.household,
                 "colour": self.colour,
             }

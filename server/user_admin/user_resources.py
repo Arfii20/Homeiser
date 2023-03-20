@@ -41,9 +41,9 @@ class UserResource(Resource):
         except UserError as ue:
             return str(ue), 500
 
-    def patch(self, household_id: int, email: str, joining: bool):
-        """If joining is true, user will try to join household
-        If joining is false, user will try to leave household
+    def patch(self, household_id: int, email: str, joining: int):
+        """If joining is true (non-zero), user will try to join household
+        If joining is false (0), user will try to leave household
         """
         conn, cur = get_conn()
         usr = User.build_from_email(email, cur)
@@ -68,7 +68,6 @@ class UserResource(Resource):
             return str(ue), 500
 
         return f"Deleted user {email}", 200
-
 
 
 class House(Resource):

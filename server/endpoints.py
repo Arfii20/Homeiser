@@ -30,5 +30,10 @@ def attach(api: flask_restful.Api):
     api.add_resource(tr.CalendarTransactions, "/transaction/as_events/<int:user_id>")
 
     # users
-    api.add_resource(usr.UserResource, "/user", "/user/<string:email>", '/user/<int:household_id>/<string:email>')
-    api.add_resource(usr.House, "/house", "/house/<int:household_id>/<bool:joining>")
+    api.add_resource(
+        usr.UserResource,
+        "/user",
+        "/user/<string:email>",
+        "/user/<int:household_id>/<string:email>",
+    )
+    api.add_resource(usr.House, "/house", "/house/<int:household_id>/<int:joining>")
