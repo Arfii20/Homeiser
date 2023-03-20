@@ -26,7 +26,7 @@ class LedgerResource(Resource):
         try:
             l = Ledger.build_from_house_id(house_id, cur)
         except LedgerConstructionError:
-            return f'Failed to access transactions for household {house_id}'
+            return f"Failed to access transactions for household {house_id}"
 
         try:
             l.simplify(house_id, cur, conn)

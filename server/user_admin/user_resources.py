@@ -7,7 +7,6 @@ from flask_restful import Resource
 
 
 class User(Resource):
-
     def get(self, email: str):
         """return a user given an email"""
 
