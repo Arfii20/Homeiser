@@ -55,7 +55,6 @@ def setUpModule():
         User(201, "b", "", "b@testdel.com", b"b", None, 1, None),
     ]
 
-
     db.execute("""SELECT id FROM user WHERE id = %s OR id = %s""", [200, 201])
     ids = db.fetchall()
 
@@ -73,7 +72,6 @@ def setUpModule():
 
     t1.insert_transaction(db, conn)
     t2.insert_transaction(db, conn)
-
 
 
 class TestUser(TestCase):
@@ -257,7 +255,6 @@ class TestUser(TestCase):
         self.assertFalse(results)
 
     def test_build_from_email(self):
-
         # connect to db
         conn = mysql.connector.connect(
             host="localhost", user="root", password="I_love_stew!12", database="x5db"
@@ -265,7 +262,20 @@ class TestUser(TestCase):
 
         db = conn.cursor()
 
-        exp_user = User(1, "Alice", "_", "alice@alice.com", b"alice", datetime.date(1, 2, 2), 1, None)
+        exp_user = User(
+            1,
+            "Alice",
+            "_",
+            "alice@alice.com",
+            b"alice",
+            datetime.date(1, 2, 2),
+            1,
+            None,
+        )
         got_usr = User.build_from_email("alice@alice.com", db)
+        with self.subTest("User built"):
+            self.assertEqual(exp_user.json, got_usr.json)
 
-        self.assertEqual(exp_user.json, got_usr.json)
+        with self.subTest("No user with email"), self.assertRaises(UserError):
+            User.build_from_email("asfas", db)
+            

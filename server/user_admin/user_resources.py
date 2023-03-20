@@ -1,10 +1,11 @@
 """Resources to do with user admin. Here are the resources for:
-    Adding, removing, modifying users
+    Adding, removing, ~modifying~ users
     Adding and removing houses
     Joining and leaving houses"""
 
 from flask_restful import Resource
 
+from admin.user import User
 
 class User(Resource):
     def get(self, email: str):

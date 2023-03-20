@@ -147,10 +147,15 @@ class User:
     @staticmethod
     def build_from_email(email: str, cur: mysql.connector.cursor.MySQLCursor) -> User:
         cur.execute("""SELECT * FROM user WHERE email = %s""", [email])
-        attrs = cur.fetchall()[0]
+        attrs = cur.fetchall()
+
+        if attrs:
+            attrs = attrs[0]
+        else:
+            raise UserError(f"No user with the email {email}")
 
         # swap password and email field to fit with database column order
-        attrs = attrs[:3] + (attrs[4], bytes(attrs[3], encoding='utf-8')) + attrs[5:]
+        attrs = attrs[:3] + (attrs[4], bytes(attrs[3], encoding="utf-8")) + attrs[5:]
 
         return User(*attrs)
 
