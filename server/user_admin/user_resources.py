@@ -41,18 +41,34 @@ class UserResource(Resource):
         except UserError as ue:
             return str(ue), 500
 
-    def patch(self, household_id: int, user_id: int):
-        """Allows a user to join a household given an id, if the user is not a member of a household.
-        If the user is a member of a household, this call will try to remove the user from the household.
-        This will be allowed iff the user is a member of the given household and the user owes / is owed no money
-        to/by the group.
+    def patch(self, household_id: int, email: str, joining: bool):
+        """If joining is true, user will try to join household
+        If joining is false, user will try to leave household
         """
+        conn, cur = get_conn()
+        usr = User.build_from_email(email, cur)
 
-    def put(self):
-        """Used to update any user info"""
+        try:
+            if joining:
+                usr.join_household(household_id, cur, conn)
+            else:
+                usr.leave_household(cur, conn)
+        except UserError as ue:
+            return str(ue), 500
 
-    def delete(self):
-        """Used to delete a user account. Has to have left a house to delete an account"""
+        return 200
+
+    def delete(self, email: str):
+        """Used to delete a user account"""
+        conn, cur = get_conn()
+        u = User.build_from_email(email, cur)
+        try:
+            u.delete(cur, conn)
+        except UserError as ue:
+            return str(ue), 500
+
+        return f"Deleted user {email}", 200
+
 
 
 class House(Resource):
