@@ -36,37 +36,22 @@ async function postGroup(event){
 		clearInputError(group_JGElement);
 	}
 
-	if (group_CGPass === "") {
-		setInputError(group_CGPassElement, 'Please enter Password');
-		return;
-	}
-	else if (isNaN(parseInt(group_CGPass))) {
-		setInputError(group_CGElement, 'The password is invalid');
-		return;
-	}
-	else{
-		clearInputError(group_CGElement);
-	}
 
-    if (group_JGPass === "") {
-		setInputError(group_JGPassElement, 'Please enter Password');
-		return;
-	}
-	else if (isNaN(parseInt(group_JGPass))) {
-		setInputError(group_JGElement, 'The password is invalid');
-		return;
-	}
-	else{
-		clearInputError(group_JGElement);
-	}
 
-	if (group_Maxuser === "") {
+    if (group_Maxuser === "") {
 		setInputError(group_MaxuserElement, 'Please enter max users');
+		return;
+	}
+	else if (maxuser(parseInt(group_Maxuser))) {
+		setInputError(group_MaxuserElement, 'The number of user should greater than 0');
 		return;
 	}
 	else{
 		clearInputError(group_MaxuserElement);
 	}
+
+
+
 
 	fetch(BASE + "group", {
 	  	method: 'POST',
@@ -120,4 +105,17 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
 	inputGroupElement.classList.remove('form__input-group--error');
 	errorElement.innerText = '';
+}
+
+
+function isValidDate(dateString) {
+	const regex = /^\d{4}-\d{2}-\d{2}$/;
+	if (!regex.test(dateString)) {
+		return false;
+	}
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) {
+		return false;
+	}
+	return true;
 }
