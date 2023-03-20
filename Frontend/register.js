@@ -109,6 +109,7 @@ async function postRegister(event){
 		clearInputError(register_FnameElement);
 	}
 
+	
 	if (register_Lname === "") {
 		setInputError(register_LnameElement, 'Please enter Last Name');
 		return;
@@ -116,6 +117,7 @@ async function postRegister(event){
 	else{
 		clearInputError(register_Lname);
 	}
+
 
 	if (register_Birth === "") {
 		setInputError(register_BirthElement, 'Please enter birthday');
@@ -129,6 +131,7 @@ async function postRegister(event){
 		clearInputError(register_BirthElement);
 	}
 
+
 	if (register_Email === "") {
 		setInputError(register_EmailElement, 'Please enter Email');
 		return;
@@ -141,6 +144,7 @@ async function postRegister(event){
 		clearInputError(register_EmailElement);
 	}
 
+
 	if (register_Password === "") {
 		setInputError(register_PasswordElement, 'Please enter password');
 		return;
@@ -148,6 +152,7 @@ async function postRegister(event){
 	else{
 		clearInputError(register_PasswordElement);
 	}
+
 
 	if (register_Confirm === "") {
 		setInputError(register_ConfirmElement, 'Please enter password again');
@@ -173,25 +178,20 @@ async function postRegister(event){
 	    	'Content-Type': 'application/json'
 	  	},
 	  	body: JSON.stringify({
-	    	// Fname_id: register_FnameID,
-	    	// Lname_id: register_LnameID,
-	    	fname: register_Fname,
-	    	lname: register_Lname,
-	    	// amount: parseInt(register_Amount),
-	    	confirm: register_Confirm,
-	    	password: register_Password,
-            email: register_Email,
-            color: null,
-
-	    	// paid: register_Paid,
-	    	// house_id: register_HouseId
+			user_id: null,
+	    	first_name: register_Fname,
+	    	surname: register_Lname,
+			email: register_Email,
+			password: register_Password,
+			dob: register_Birth,
+	    	// confirm: register_Confirm,
+			household_id: null,
+			color: null,
 	  	})
 	})
 	.then(response => {
 	  	if (response.ok) {
 	    	console.log({message: "Registration successful"});
-			// rightContainer.innerHTML = "";
-			// rightContainer.style.display = "none";
 			ContinueButton.innerText = "Register";
 			getLedgerResources(user_id);
 	  	} else {
