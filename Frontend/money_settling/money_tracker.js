@@ -23,6 +23,8 @@ if (house_id === null || house_id === undefined) {
 	window.location.href = "URL of household login page";
 }
 
+rightContainer.style.display = "none";
+
 getLedgerResources(user_id);
 
 async function getLedgerResources(user_id){
@@ -95,6 +97,7 @@ async function getTransaction(event) {
 	const response = await fetch(BASE + "transaction/" + transactionID)
 
   	if (response.ok) {
+  		rightContainer.style.display = "";
   		console.log({message: "transaction Received"});
     	const obj = await JSON.parse(await response.json());
 
@@ -143,6 +146,7 @@ async function getTransaction(event) {
 async function createcloseRightContainer(event){
 	event.preventDefault();
 	if (event.target.innerText === "Create Transaction"){
+		rightContainer.style.display = "";
 		console.log({message: "Right container created"});
 		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
@@ -176,6 +180,7 @@ async function createcloseRightContainer(event){
 	else{
 		console.log({message: "Right container closed"});
 		rightContainer.innerHTML = "";
+		rightContainer.style.display = "none";
 		event.target.innerText = "Create Transaction";
 	}
 }
@@ -223,7 +228,7 @@ async function deleteTransaction(event){
 	.then(response => {
 		if (response.ok) {
 			rightContainer.innerHTML = "";
-			rightContainer.innerHTML = "";
+			rightContainer.style.display = "none";
 			leftCreateButton.innerText = "Create Transaction";
 			getLedgerResources(user_id);
 			console.log({message: "Transaction deleted"});
@@ -259,7 +264,7 @@ async function postTransaction(event){
 	const transaction_Description = transaction_DescriptionElement.value;
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
-	const transaction_HouseId = 620;
+	const transaction_HouseId = house_id;
 
 	if (transaction_Src === "") {
 		setInputError(transaction_SrcElement, 'Please enter source user');
@@ -330,6 +335,7 @@ async function postTransaction(event){
 	  	if (response.ok) {
 	    	console.log({message: "Creation successful"});
 			rightContainer.innerHTML = "";
+			rightContainer.style.display = "none";
 			leftCreateButton.innerText = "Create Transaction";
 			getLedgerResources(user_id);
 	  	} else {
