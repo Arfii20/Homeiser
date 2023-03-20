@@ -4,6 +4,8 @@
     Joining and leaving houses"""
 
 from flask_restful import Resource
+from flask import request
+import json
 
 from admin.user import User, UserError
 from server.db_handler import get_conn
@@ -26,6 +28,18 @@ class UserResource(Resource):
     def post(self):
         """Insert a new user into the table"""
 
+        conn, cur = get_conn()
+        r = request.get_json()
+
+        if type(r) is str:
+            r = json.loads(r)
+
+        usr = User.build_from_req(request=r)
+
+        try:
+            usr.insert_to_database(cur, conn)
+        except UserError as ue:
+            return str(ue), 500
 
     def patch(self, household_id: int, user_id: int):
         """Allows a user to join a household given an id, if the user is not a member of a household.
