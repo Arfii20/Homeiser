@@ -5,6 +5,7 @@ import server.transaction_resources.ledger_resource as lr
 import server.transaction_resources.transaction_resources as tr
 import server.shared_calendar.shared_calendar as calendar
 import server.shared_list.shared_list as lists
+import server.user_admin.user_resources as usr
 
 
 def attach(api: flask_restful.Api):
@@ -27,3 +28,6 @@ def attach(api: flask_restful.Api):
         lr.LedgerResource, "/ledger/<int:user_id>", "/<int:house_id>/simplify"
     )
     api.add_resource(tr.CalendarTransactions, "/transaction/as_events/<int:user_id>")
+
+    # users
+    api.add_resource(usr.UserResource, "/user/<string:email>")

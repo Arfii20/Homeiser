@@ -278,4 +278,3 @@ class TestUser(TestCase):
 
         with self.subTest("No user with email"), self.assertRaises(UserError):
             User.build_from_email("asfas", db)
-            

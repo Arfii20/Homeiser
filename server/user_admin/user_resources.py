@@ -4,12 +4,23 @@
     Joining and leaving houses"""
 
 from flask_restful import Resource
+from server.db_handler import get_conn
+from admin.user import User, UserError
 
-from admin.user import User
 
-class User(Resource):
+class UserResource(Resource):
     def get(self, email: str):
         """return a user given an email"""
+
+        conn, cur = get_conn()
+
+        try:
+            u = User.build_from_email(email, cur)
+        except UserError as ue:
+            # if we fail to build from email, return a 404
+            return ue, 404
+
+        return u.json, 200
 
     def post(self):
         """Insert a new user into the table"""
