@@ -1,8 +1,10 @@
 import datetime
+import time
 from unittest import TestCase
 import mysql.connector
 
 from admin.user import User, UserError
+
 
 def setUpModule():
     """Check that first 7 rows of user db are as expected"""
@@ -32,22 +34,25 @@ def setUpModule():
     for exp, got in zip(expected_user_table, received):
         if exp != got:
             # if there is a discrepancy delete row and insert the correct row
-            db.execute("UPDATE user "
-                       "SET "
-                       "first_name = %s, "
-                       "surname = %s, "
-                       "password = %s, "
-                       "email = %s, "
-                       "date_of_birth = %s, "
-                       "household_id = %s, "
-                       "color = %s "
-                       "WHERE id=%s", [*exp[1:], exp[0]])
+            db.execute(
+                "UPDATE user "
+                "SET "
+                "first_name = %s, "
+                "surname = %s, "
+                "password = %s, "
+                "email = %s, "
+                "date_of_birth = %s, "
+                "household_id = %s, "
+                "color = %s "
+                "WHERE id=%s",
+                [*exp[1:], exp[0]],
+            )
 
     # commit any changes
     conn.commit()
 
-class TestUser(TestCase):
 
+class TestUser(TestCase):
     def test_insert_to_database(self):
         # connect to db
         conn = mysql.connector.connect(
@@ -56,7 +61,16 @@ class TestUser(TestCase):
 
         db = conn.cursor()
 
-        john = User(0, 'John', "Heereboys", "j@heere.com", b"test", datetime.date(1, 1, 1), None, None)
+        john = User(
+            0,
+            "John",
+            "Heereboys",
+            "j@heere.com",
+            b"test",
+            datetime.date(1, 1, 1),
+            None,
+            None,
+        )
         john.insert_to_database(db, conn)
 
         del db
@@ -68,22 +82,39 @@ class TestUser(TestCase):
         got = cur2.fetchall()[0]
 
         with self.subTest("Insert"):
-            self.assertEqual(got[1:], ('John', "Heereboys", "test", "j@heere.com", datetime.date(1, 1, 1), None, None))
+            self.assertEqual(
+                got[1:],
+                (
+                    "John",
+                    "Heereboys",
+                    "test",
+                    "j@heere.com",
+                    datetime.date(1, 1, 1),
+                    None,
+                    None,
+                ),
+            )
 
         # cleanup
         cur2.execute("""DELETE FROM user WHERE id = %s""", [got[0]])
         conn.commit()
 
         # try to insert where an email adress already exists
-        fail = User(0, 'John', "Heereboys", "l@l.com", b"test", datetime.date(1, 1, 1), None, None)
+        fail = User(
+            0,
+            "John",
+            "Heereboys",
+            "l@l.com",
+            b"test",
+            datetime.date(1, 1, 1),
+            None,
+            None,
+        )
 
         with self.subTest("email exists"), self.assertRaises(UserError):
             fail.insert_to_database(cur2, conn)
 
-
-
     def test_join_household(self):
-
         # connect to db
         conn = mysql.connector.connect(
             host="localhost", user="root", password="I_love_stew!12", database="x5db"
@@ -92,7 +123,16 @@ class TestUser(TestCase):
         db = conn.cursor()
 
         # create a user with no household and insert into db
-        john = User(0, 'John', "Heereboys", "j@heere.com", b"test", datetime.date(1, 1, 1), None, None)
+        john = User(
+            0,
+            "John",
+            "Heereboys",
+            "j@heere.com",
+            b"test",
+            datetime.date(1, 1, 1),
+            None,
+            None,
+        )
         john.insert_to_database(db, conn)
 
         john.join_household(2, db, conn)
@@ -106,10 +146,55 @@ class TestUser(TestCase):
         cur.execute("""DELETE FROM user WHERE email = 'j@heere.com'""")
         conn.commit()
 
-
-
     def test_leave_household(self):
-        ...
+        """Three subtests:
+            1: fail - person who is not part of a house tries to leave household
+            2: fail - person who is involved in transactions tries to leave household
+            3: success - person with no transactions leaves the household
+            """
+
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        cur = conn.cursor()
+
+        person1 = User(
+            0,
+            "No",
+            "Transactions",
+            "j@heere.com",
+            b"test",
+            datetime.date(1, 1, 1),
+            None,
+            None,)
+
+        person2 = User(5, "Andrew", "Lees", "a@a.com", b'alees', datetime.date(2023, 3, 13), 3, None)
+
+        person1.insert_to_database(cur, conn)
+
+        with self.subTest("User not in household"), self.assertRaises(UserError):
+            person1.leave_household(cur, conn)
+
+        with self.subTest("User has open transactions"), self.assertRaises(UserError):
+            person2.leave_household(cur, conn)
+
+        # make person1 join a house, and then check they leave successfully
+        person1.join_household(3, cur, conn)
+        cur2 = conn.cursor()
+        person1.leave_household(cur2, conn)
+
+        cur2.execute("SELECT household_id FROM user WHERE email='j@heere.com'")
+        h_id = cur2.fetchone()[0]
+
+        with self.subTest('Successful leave'):
+            self.assertIsNone(h_id)
+
+        # cleanup
+        cur2.execute("""DELETE FROM user WHERE email = 'j@heere.com'""")
+        conn.commit()
+
 
     def test_delete(self):
         ...
@@ -117,8 +202,6 @@ class TestUser(TestCase):
     def test_build_from_email(self):
         ...
 
-    def test_build_from_id(self):
-        ...
 
     def test_json(self):
         ...

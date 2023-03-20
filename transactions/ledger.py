@@ -28,6 +28,9 @@ class SimplificationError(Exception):
     ...
 
 
+class EmptyLedger(Exception): ...
+
+
 @dataclass
 class Ledger:
     """List of transaction_resources. In JSON:
@@ -59,7 +62,7 @@ class Ledger:
 
         # throw an exception if no results were returned
         if not transaction_rows:
-            raise LedgerConstructionError
+            raise EmptyLedger
 
         transaction_ids = [
             v for v in {tid[0] for tid in [row for row in transaction_rows]}
