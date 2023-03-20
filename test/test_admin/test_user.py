@@ -5,6 +5,7 @@ import mysql.connector
 from admin.user import User, UserError
 from transactions.transaction import Transaction
 
+
 def setUpModule():
     """Check that first 7 rows of user db are as expected"""
 
@@ -19,7 +20,7 @@ def setUpModule():
 
     # make sure that first 7 rows in db are as expected
     expected_user_table = [
-        (1, "Alice", "_", "alice", "alice@alice.com", None, 1, None),
+        (1, "Alice", "_", "alice", "alice@alice.com", datetime.date(1, 2, 2), 1, None),
         (2, "Bob", "_", "bob", "bob@bob.com", None, 1, None),
         (3, "Test", "Ledger", "l", "l@l.com", datetime.date(1, 2, 2), 2, None),
         (4, "Test2", "Ledger", "l", "l@2.com", datetime.date(1, 1, 1), 2, None),
@@ -50,27 +51,29 @@ def setUpModule():
     # add user a and user b for testing delete user, and transactions from a->b and b->a
 
     usrs = [
-        User(200, 'a', '', 'a@testdel.com', b'a', None, 1, None),
-        User(201, 'b', '', 'b@testdel.com', b'b', None, 1, None),
+        User(200, "a", "", "a@testdel.com", b"a", None, 1, None),
+        User(201, "b", "", "b@testdel.com", b"b", None, 1, None),
     ]
 
-    for usr in usrs:
-        usr.insert_to_database(db, conn)
+
+    db.execute("""SELECT id FROM user WHERE id = %s OR id = %s""", [200, 201])
+    ids = db.fetchall()
+
+    if not ids:
+        for usr in usrs:
+            usr.insert_to_database(db, conn)
 
     conn.commit()
 
     # transaction a -> b
-    t1 = Transaction(0, 200, 201, 'a', 'b', 5, '', datetime.date(3000, 1, 1), False, 1)
+    t1 = Transaction(0, 200, 201, "a", "b", 5, "", datetime.date(3000, 1, 1), False, 1)
 
     # transaction b -> a
-    t2 = Transaction(0, 201, 200, 'b', 'a', 10, '', datetime.date(3000, 1, 1), False, 1)
+    t2 = Transaction(0, 201, 200, "b", "a", 10, "", datetime.date(3000, 1, 1), False, 1)
 
     t1.insert_transaction(db, conn)
     t2.insert_transaction(db, conn)
 
-
-    # commit any changes
-    conn.commit()
 
 
 class TestUser(TestCase):
@@ -169,10 +172,10 @@ class TestUser(TestCase):
 
     def test_leave_household(self):
         """Three subtests:
-            1: fail - person who is not part of a house tries to leave household
-            2: fail - person who is involved in transactions tries to leave household
-            3: success - person with no transactions leaves the household
-            """
+        1: fail - person who is not part of a house tries to leave household
+        2: fail - person who is involved in transactions tries to leave household
+        3: success - person with no transactions leaves the household
+        """
 
         # connect to db
         conn = mysql.connector.connect(
@@ -189,9 +192,19 @@ class TestUser(TestCase):
             b"test",
             datetime.date(1, 1, 1),
             None,
-            None,)
+            None,
+        )
 
-        person2 = User(5, "Andrew", "Lees", "a@a.com", b'alees', datetime.date(2023, 3, 13), 3, None)
+        person2 = User(
+            5,
+            "Andrew",
+            "Lees",
+            "a@a.com",
+            b"alees",
+            datetime.date(2023, 3, 13),
+            3,
+            None,
+        )
 
         person1.insert_to_database(cur, conn)
 
@@ -209,13 +222,12 @@ class TestUser(TestCase):
         cur2.execute("SELECT household_id FROM user WHERE email='j@heere.com'")
         h_id = cur2.fetchone()[0]
 
-        with self.subTest('Successful leave'):
+        with self.subTest("Successful leave"):
             self.assertIsNone(h_id)
 
         # cleanup
         cur2.execute("""DELETE FROM user WHERE email = 'j@heere.com'""")
         conn.commit()
-
 
     def test_delete(self):
         """In setup, two users, a and b created.
@@ -229,8 +241,8 @@ class TestUser(TestCase):
         db = conn.cursor()
 
         usrs = [
-            User(200, 'a', '', 'a@testdel.com', b'a', None, 1, None),
-            User(201, 'b', '', 'b@testdel.com', b'b', None, 1, None),
+            User(200, "a", "", "a@testdel.com", b"a", None, 1, None),
+            User(201, "b", "", "b@testdel.com", b"b", None, 1, None),
         ]
 
         for usr in usrs:
@@ -238,13 +250,22 @@ class TestUser(TestCase):
 
         # make sure users no longer exist
         cur = conn.cursor()
-        cur.execute("""SELECT id FROM transaction WHERE id = %s OR id = %s""", [200, 201])
+        cur.execute(
+            """SELECT id FROM transaction WHERE id = %s OR id = %s""", [200, 201]
+        )
         results = cur.fetchall()
         self.assertFalse(results)
 
     def test_build_from_email(self):
-        ...
 
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
 
-    def test_json(self):
-        ...
+        db = conn.cursor()
+
+        exp_user = User(1, "Alice", "_", "alice@alice.com", b"alice", datetime.date(1, 2, 2), 1, None)
+        got_usr = User.build_from_email("alice@alice.com", db)
+
+        self.assertEqual(exp_user.json, got_usr.json)

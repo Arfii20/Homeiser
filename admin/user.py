@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import json
 from dataclasses import dataclass
@@ -6,6 +8,7 @@ import mysql.connector
 import mysql.connector.cursor
 
 from transactions import ledger
+
 
 class UserError(Exception):
     ...
@@ -26,7 +29,7 @@ class User:
         self,
         cur: mysql.connector.cursor.MySQLCursor,
         conn: mysql.connector.MySQLConnection,
-    ):
+    ) -> None:
         """Insert self to database"""
 
         no_uid_query = """ INSERT INTO user (first_name, surname, email, password, date_of_birth, household_id, color)
@@ -40,7 +43,6 @@ class User:
             else:
                 cur.execute(no_uid_query, [v for v in self.__dict__.values()][1:])
 
-
         except mysql.connector.errors.IntegrityError:
             # means that email already exists
             raise UserError("User with email {self.email} already exists")
@@ -52,7 +54,7 @@ class User:
         house: int,
         cur: mysql.connector.cursor.MySQLCursor,
         conn: mysql.connector.MySQLConnection,
-    ):
+    ) -> None:
         """Join a household if not already part of one"""
 
         # check to see if already part of a household
@@ -68,10 +70,14 @@ class User:
         )
         conn.commit()
 
-    def leave_household(self, cur: mysql.connector.cursor.MySQLCursor, conn: mysql.connector.MySQLConnection):
+    def leave_household(
+        self,
+        cur: mysql.connector.cursor.MySQLCursor,
+        conn: mysql.connector.MySQLConnection,
+    ) -> None:
         """Leave a household if
-            a. already part of household
-            b. no open transactions in group"""
+        a. already part of household
+        b. no open transactions in group"""
 
         # check to see if part of a household
         cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.email])
@@ -96,16 +102,23 @@ class User:
 
         except ledger.EmptyLedger:
             # update db with new household id having passed both checks
-            cur.execute("""UPDATE user SET household_id = null WHERE email = %s""", [self.email])
+            cur.execute(
+                """UPDATE user SET household_id = null WHERE email = %s""", [self.email]
+            )
             conn.commit()
 
-
-    def delete(self, cur: mysql.connector.cursor.MySQLCursor, conn: mysql.connector.MySQLConnection):
+    def delete(
+        self,
+        cur: mysql.connector.cursor.MySQLCursor,
+        conn: mysql.connector.MySQLConnection,
+    ) -> None:
         """Only let user delete their account if they are not involved in a household"""
         # check to see if part of a household
         cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.email])
         if h_id := cur.fetchone():
-            raise UserError(f"Cannot delete account as you are still part of household {h_id[0]}")
+            raise UserError(
+                f"Cannot delete account as you are still part of household {h_id[0]}"
+            )
 
         # pull u_id if it is 0
         if not self.u_id:
@@ -113,7 +126,9 @@ class User:
             self.u_id = cur.fetchone()[0]
 
         # delete all transactions which user was involved in
-        cur.execute("""SELECT id FROM pairs WHERE src = %s OR dest = %s""", 2 * [self.u_id])
+        cur.execute(
+            """SELECT id FROM pairs WHERE src = %s OR dest = %s""", 2 * [self.u_id]
+        )
         pair_ids = cur.fetchall()
 
         for pair_id in pair_ids:
@@ -130,8 +145,14 @@ class User:
         conn.commit()
 
     @staticmethod
-    def build_from_email(email: str):
-        ...
+    def build_from_email(email: str, cur: mysql.connector.cursor.MySQLCursor) -> User:
+        cur.execute("""SELECT * FROM user WHERE email = %s""", [email])
+        attrs = cur.fetchall()[0]
+
+        # swap password and email field to fit with database column order
+        attrs = attrs[:3] + (attrs[4], bytes(attrs[3], encoding='utf-8')) + attrs[5:]
+
+        return User(*attrs)
 
     @property
     def json(self):

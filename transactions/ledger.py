@@ -28,7 +28,8 @@ class SimplificationError(Exception):
     ...
 
 
-class EmptyLedger(Exception): ...
+class EmptyLedger(Exception):
+    ...
 
 
 @dataclass

@@ -144,6 +144,8 @@ class Transaction:
     def insert_transaction(self, cur: cursor.MySQLCursor, conn: MySQLConnection):
         """Inserts transaction into table"""
 
+        cur.fetchall()
+
         # get pair id
         cur.execute(
             "SELECT id FROM pairs WHERE src = %s AND dest = %s",
@@ -157,6 +159,8 @@ class Transaction:
                 "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
                 [self.src_id, self.dest_id],
             )
+
+            conn.commit()
 
             # get id from pair entry that was just generated
             cur.execute(
