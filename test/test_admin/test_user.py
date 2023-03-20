@@ -83,7 +83,30 @@ class TestUser(TestCase):
 
 
     def test_join_household(self):
-        ...
+
+        # connect to db
+        conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        db = conn.cursor()
+
+        # create a user with no household and insert into db
+        john = User(0, 'John', "Heereboys", "j@heere.com", b"test", datetime.date(1, 1, 1), None, None)
+        john.insert_to_database(db, conn)
+
+        john.join_household(2, db, conn)
+
+        del db
+        cur = conn.cursor()
+        cur.execute("""SELECT household_id FROM user WHERE email = 'j@heere.com'""")
+
+        self.assertEqual(cur.fetchone()[0], 2)
+
+        cur.execute("""DELETE FROM user WHERE email = 'j@heere.com'""")
+        conn.commit()
+
+
 
     def test_leave_household(self):
         ...

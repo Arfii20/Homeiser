@@ -32,14 +32,19 @@ class User:
 
         conn.commit()
 
-    def join_household(self, house: int, cur: mysql.connector.cursor.MySQLCursor):
+    def join_household(self, house: int, cur: mysql.connector.cursor.MySQLCursor, conn: mysql.connector.MySQLConnection):
         """Join a household if not already part of one"""
 
         # check to see if already part of a household
         cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.email])
 
-        # if not update household_id with new id; otherwise raise error
+        # if part of a household raise an error
+        if h_id := cur.fetchone()[0]:
+            raise UserError(f"User is already part of household {h_id}")
 
+        # otherwise update db
+        cur.execute("UPDATE user SET household_id = %s WHERE email = %s", [house, self.email])
+        conn.commit()
 
     def leave_household(self, house: int):
         ...
