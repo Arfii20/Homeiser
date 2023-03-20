@@ -11,14 +11,14 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 cors = [
-        CORS(app, resources={r"/shared_list/*": {"origins": "*"}}),
-        CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
-        CORS(app, resources={r"/list_events/*": {"origins": "*"}}),
-        CORS(app, resources={r"/list_event_details/*": {"origins": "*"}}),
-        CORS(app, resources={r"/shared_calendar/*": {"origins": "*"}}),
-        CORS(app, resources={r"/calendar_event/*": {"origins": "*"}}),
-        CORS(app, resources={r"/user_color/*": {"origins": "*"}})
-        ]
+    CORS(app, resources={r"/shared_list/*": {"origins": "*"}}),
+    CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
+    CORS(app, resources={r"/list_events/*": {"origins": "*"}}),
+    CORS(app, resources={r"/list_event_details/*": {"origins": "*"}}),
+    CORS(app, resources={r"/shared_calendar/*": {"origins": "*"}}),
+    CORS(app, resources={r"/calendar_event/*": {"origins": "*"}}),
+    CORS(app, resources={r"/user_color/*": {"origins": "*"}}),
+]
 
 
 api = Api(app)
@@ -27,6 +27,7 @@ app.run()
 
 with app.app_context():
     conn = db_handler.get_db()
+
 
 @app.teardown_appcontext
 def close_connection(exception):

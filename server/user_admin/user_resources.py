@@ -7,8 +7,30 @@ from flask_restful import Resource
 
 
 class User(Resource):
-    ...
+
+    def get(self, email: str):
+        """return a user given an email"""
+
+    def post(self):
+        """Insert a new user into the table"""
+
+    def patch(self, household_id: int, user_id: int):
+        """Allows a user to join a household given an id, if the user is not a member of a household.
+        If the user is a member of a household, this call will try to remove the user from the household.
+        This will be allowed iff the user is a member of the given household and the user owes / is owed no money
+        to/by the group.
+        """
+
+    def put(self):
+        """Used to update any user info"""
+
+    def delete(self):
+        """Used to delete a user account. Has to have left a house to delete an account"""
 
 
 class House(Resource):
-    ...
+    def post(self):
+        """Used to create a household"""
+
+    def delete(self, household_id: int):
+        """Used to delete a household given only one person is a member of the house"""

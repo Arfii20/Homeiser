@@ -12,7 +12,6 @@ target = "http://127.0.0.1:5000/"
 
 
 class TestTransactionResources(TestCase):
-
     def setUp(self) -> None:
         """Make sure appropriate rows exist in db"""
 
@@ -24,7 +23,6 @@ class TestTransactionResources(TestCase):
         ]
 
         setup_db_test_rows(rows)
-
 
     def test_get(self):
         """Ensures get request returns transaction object in the correct format"""
@@ -163,7 +161,6 @@ class TestTransactionResources(TestCase):
 
 
 class TestCalendarTransactions(TestCase):
-
     def setUp(self) -> None:
         # make sure all necessary rows exist in db
         TestLedger.setUp(self)  # type: ignore

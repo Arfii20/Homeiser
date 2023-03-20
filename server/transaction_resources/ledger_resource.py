@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 from server import db_handler as db
-from transactions.ledger import Ledger, LedgerConstructionError
+from transactions.ledger import Ledger, LedgerConstructionError, SimplificationError
 
 
 class LedgerResource(Resource):
@@ -17,3 +17,19 @@ class LedgerResource(Resource):
 
         except LedgerConstructionError:
             return "Could not return given user's transaction_resources", 404
+
+    def post(self, house_id: int):
+        """Simplifies ledger"""
+
+        conn, cur = db.get_conn()
+
+        try:
+            l = Ledger.build_from_house_id(house_id, cur)
+        except LedgerConstructionError:
+            return f'Failed to access transactions for household {house_id}'
+
+        try:
+            l.simplify(house_id, cur, conn)
+            return 201
+        except SimplificationError as se:
+            return str(se), 500

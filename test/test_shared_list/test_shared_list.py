@@ -36,7 +36,7 @@ class TestSharedList(unittest.TestCase):
         while True:
             word = words[randint(0, file_length)]
             response = requests.post(
-                BASE + "shared_list/620", {"id": 651, "name": word[0: len(word) - 2]}
+                BASE + "shared_list/620", {"id": 651, "name": word[0 : len(word) - 2]}
             )
 
             if response.json() != {"error": "List Name Must Be Unique"}:
@@ -44,7 +44,7 @@ class TestSharedList(unittest.TestCase):
         file.close()
 
         response = requests.post(
-            BASE + "shared_list/620", {"id": 651, "name": word[0: len(word) - 2]}
+            BASE + "shared_list/620", {"id": 651, "name": word[0 : len(word) - 2]}
         )
         self.assertEqual(response.json(), {"error": "ID Must Be Unique"})
 
@@ -58,14 +58,14 @@ class TestSharedList(unittest.TestCase):
             if len(word) > 4:
                 response = requests.post(
                     BASE + "shared_list/621",
-                    {"id": number, "name": word[0: len(word) - 2]},
+                    {"id": number, "name": word[0 : len(word) - 2]},
                 )
                 if response.json() == {"message": "List Created"}:
                     break
         file.close()
         requests.delete(f"{BASE}list_details/{number}")
         response = requests.post(
-            BASE + "shared_list/621", {"id": number, "name": word[0: len(word) - 2]}
+            BASE + "shared_list/621", {"id": number, "name": word[0 : len(word) - 2]}
         )
         self.assertEqual(response.json(), {"message": "List Created"})
 
@@ -81,7 +81,7 @@ class TestListDetails(unittest.TestCase):
             if len(word) > 4:
                 response = requests.post(
                     BASE + "shared_list/620",
-                    {"id": number, "name": word[0: len(word) - 2]},
+                    {"id": number, "name": word[0 : len(word) - 2]},
                 )
                 if response.json() == {"message": "List Created"}:
                     break
@@ -97,7 +97,9 @@ class TestListDetails(unittest.TestCase):
         """
         Should work as name is unique and the row exists
         """
-        response = requests.patch(BASE + "list_details/651", {"new_name": "list b changed"})
+        response = requests.patch(
+            BASE + "list_details/651", {"new_name": "list b changed"}
+        )
         self.assertEqual(response.json(), {"message": "Update Successful"})
 
     def test_list_patch_bad(self):
@@ -120,7 +122,9 @@ class TestListDetails(unittest.TestCase):
         """
         Should fail as id does not exist but name is valid
         """
-        response = requests.patch(BASE + "list_details/659", {"new_name": "list j changed"})
+        response = requests.patch(
+            BASE + "list_details/659", {"new_name": "list j changed"}
+        )
         self.assertEqual(response.json(), {"error": "List id does not exist"})
 
 
@@ -134,8 +138,8 @@ class TestListEvents(unittest.TestCase):
             {
                 "task_name": "task h",
                 "description_of_task": "description h",
-                "added_user_id": 633
-            }
+                "added_user_id": 633,
+            },
         )
         self.assertEqual(response.json(), {"message": "List Event Created"})
 
@@ -149,8 +153,8 @@ class TestListEvents(unittest.TestCase):
                 "event_id": 661,
                 "task_name": "task g",
                 "description_of_task": "description g",
-                "added_user_id": 631
-            }
+                "added_user_id": 631,
+            },
         )
         self.assertEqual(response.json(), {"error": "Event id already exists"})
 
@@ -191,8 +195,8 @@ class ListEventDetails(unittest.TestCase):
                 "event_id": 669,
                 "task_name": "task g",
                 "description_of_task": "description g",
-                "added_user_id": 631
-            }
+                "added_user_id": 631,
+            },
         )
         response = requests.delete(BASE + "list_event_details/669")
         self.assertEqual(response.json(), {"message": "List Event Deleted"})
@@ -205,7 +209,7 @@ class ListEventDetails(unittest.TestCase):
                 "task_name": "task g",
                 "description_of_task": "description g",
                 "added_user_id": 631,
-            }
+            },
         )
         response = requests.patch(BASE + "list_event_details/669")
         requests.delete(BASE + "list_event_details/669")
@@ -219,7 +223,7 @@ class ListEventDetails(unittest.TestCase):
                 "task_name": "task g",
                 "description_of_task": "description g",
                 "added_user_id": 631,
-            }
+            },
         )
         response = requests.patch(BASE + "list_event_details/669", {"user_id": 631})
         requests.delete(BASE + "list_event_details/669")
@@ -233,7 +237,7 @@ class ListEventDetails(unittest.TestCase):
                 "task_name": "task g",
                 "description_of_task": "description g",
                 "added_user_id": 631,
-            }
+            },
         )
         requests.patch(BASE + "list_event_details/669", {"user_id": 631})
         response = requests.patch(BASE + "list_event_details/669")
@@ -248,7 +252,7 @@ class ListEventDetails(unittest.TestCase):
                 "task_name": "task g",
                 "description_of_task": "description g",
                 "added_user_id": 631,
-            }
+            },
         )
         response = requests.put(
             BASE + "list_event_details/669",
@@ -265,7 +269,7 @@ class ListEventDetails(unittest.TestCase):
                 "task_name": "task g",
                 "description_of_task": "description g",
                 "added_user_id": 631,
-            }
+            },
         )
         requests.delete(BASE + "list_event_details/669")
         response = requests.put(

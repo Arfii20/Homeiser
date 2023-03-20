@@ -5,10 +5,14 @@ class CalendarEventBuild:
     def __init__(self, event: tuple, tagged_user: list, added_by: int):
         self.event_id = event[0]
         self.title_of_event = event[1]
-        self.starting_time = f"{event[2].year}-{event[2].month}-{event[2].day} " \
-                             f"{event[2].hour}:{event[2].minute}:{event[2].second}"
-        self.ending_time = f"{event[3].year}-{event[3].month}-{event[3].day} " \
-                           f"{event[3].hour}:{event[3].minute}:{event[3].second}"
+        self.starting_time = (
+            f"{event[2].year}-{event[2].month}-{event[2].day} "
+            f"{event[2].hour}:{event[2].minute}:{event[2].second}"
+        )
+        self.ending_time = (
+            f"{event[3].year}-{event[3].month}-{event[3].day} "
+            f"{event[3].hour}:{event[3].minute}:{event[3].second}"
+        )
         self.additional_notes = event[4]
         self.location_of_event = event[5]
         self.household_id = event[6]
@@ -40,11 +44,7 @@ class ListBuild:
 
     def build_list(self):
         dump = json.dumps(
-            {
-                "id": self.id,
-                "name": self.name,
-                "household_id": self.household_id
-            }
+            {"id": self.id, "name": self.name, "household_id": self.household_id}
         )
         return dump
 
@@ -66,7 +66,7 @@ class ListEventBuild:
                 "description_of_task": self.description,
                 "added_user_id": self.added_user,
                 "checked_off_by_user": self.checked_off_by_user,
-                "list": self.list_id
+                "list": self.list_id,
             }
         )
         return dump

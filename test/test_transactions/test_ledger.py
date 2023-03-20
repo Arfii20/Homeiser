@@ -15,15 +15,11 @@ def setup_db_test_rows(rows: list):
     db = conn.cursor()
     # remove any transaction_resources under 428, 429, 430 which exist
     for row in rows:
-        db.execute(
-            """DELETE FROM transaction WHERE id = %s""", [row[0]]
-        )
+        db.execute("""DELETE FROM transaction WHERE id = %s""", [row[0]])
 
     # insert test rows
     for row in rows:
-        db.execute(
-            """INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row
-        )
+        db.execute("""INSERT INTO transaction VALUES (%s, %s, %s, %s, %s, %s) """, row)
     # also delete any simplified transaction_resources that may have been added
     db.execute(
         """DELETE FROM transaction WHERE description = "Simplified Transaction";"""
@@ -33,7 +29,7 @@ def setup_db_test_rows(rows: list):
 
 
 class TestLedger(TestCase):
-    def setUp(self) -> None:    
+    def setUp(self) -> None:
         """Make sure relevant rows are present in database"""
 
         rows = [

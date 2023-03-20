@@ -7,6 +7,7 @@ from server.db_handler import get_conn, get_db
 from .Calendar_and_List_Builds import ListEventBuild, ListBuild
 from json import dumps
 
+
 class SharedList(Resource):
     def get(self, household_id):
         """
@@ -76,7 +77,10 @@ class SharedList(Resource):
         name = args.get("name")
         list_id = args.get("id")
 
-        cursor.execute("SELECT * FROM list WHERE name = '%s' AND household_id = %s;" % (name, household_id))
+        cursor.execute(
+            "SELECT * FROM list WHERE name = '%s' AND household_id = %s;"
+            % (name, household_id)
+        )
         list_back = cursor.fetchone()
 
         id_back = None
@@ -167,7 +171,9 @@ class ListDetails(Resource):
         house_id = cursor.fetchone()[0]
         print(house_id)
 
-        query2 = "SELECT * FROM list WHERE name = '%s' AND id != %s AND household_id = %s"
+        query2 = (
+            "SELECT * FROM list WHERE name = '%s' AND id != %s AND household_id = %s"
+        )
         cursor.execute(query2 % (new_name, list_id, house_id))
         name_present = cursor.fetchall()
 

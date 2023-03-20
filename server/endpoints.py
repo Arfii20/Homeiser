@@ -7,7 +7,6 @@ import server.shared_calendar.shared_calendar as calendar
 import server.shared_list.shared_list as lists
 
 
-
 def attach(api: flask_restful.Api):
     """Attaches all endpoints to the flask app"""
 
@@ -24,5 +23,5 @@ def attach(api: flask_restful.Api):
 
     # transactions
     api.add_resource(tr.TransactionResource, "/transaction/<int:t_id>", "/transaction")
-    api.add_resource(lr.LedgerResource, "/ledger/<int:user_id>")
+    api.add_resource(lr.LedgerResource, "/ledger/<int:user_id>", "/<int:house_id>/simplify")
     api.add_resource(tr.CalendarTransactions, "/transaction/as_events/<int:user_id>")

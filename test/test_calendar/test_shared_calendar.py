@@ -15,7 +15,7 @@ class TestSharedCalendar(unittest.TestCase):
             {
                 "starting_time": "2027-02-19 00:00:00",
                 "ending_time": "2029-02-19 00:00:00",
-            }
+            },
         )
         self.assertEqual(response.json(), {"error": "No event found"})
 
@@ -63,7 +63,7 @@ class TestSharedCalendar(unittest.TestCase):
                 "location_of_event": "location of event",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(response.json(), {"message": "Event Added"})
 
@@ -84,7 +84,7 @@ class TestSharedCalendar(unittest.TestCase):
                 "location_of_event": "location of event",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(response.json(), {"message": "Event Added"})
 
@@ -104,7 +104,7 @@ class TestSharedCalendar(unittest.TestCase):
                 "location_of_event": "location of event",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(
             response.json(), {"message": "Cannot use this ID. Already exists"}
@@ -163,7 +163,7 @@ class TestCalendarEvent(unittest.TestCase):
                 "location_of_event": "location of event changed",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(response.json(), {"message": "Task details updated"})
 
@@ -182,7 +182,7 @@ class TestCalendarEvent(unittest.TestCase):
                 "location_of_event": "location of event changed",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(response.json(), {"message": "Event does not exist"})
 
@@ -201,7 +201,7 @@ class TestCalendarEvent(unittest.TestCase):
                 "location_of_event": "location of event changed",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         self.assertEqual(response.json(), {"message": "Format of date is wrong"})
 
@@ -260,7 +260,7 @@ class TestCalendarEvent(unittest.TestCase):
                 "location_of_event": "location of event changed",
                 "tagged_users": "630 631 632",
                 "added_by": 630,
-            }
+            },
         )
         requests.delete(BASE + "calendar_event/676")
         response = requests.delete(BASE + "calendar_event/676")

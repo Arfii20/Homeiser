@@ -24,3 +24,8 @@ class TestLedgerResource(TestCase):
 
         with self.subTest("Expect 404 where user doesn't exist"):
             self.assertEqual(r.status_code, 404)
+
+    def test_post(self):
+        r = requests.post("http://127.0.0.1:5000/3/simplify")
+        self.assertEqual(r.status_code, 200)
+
