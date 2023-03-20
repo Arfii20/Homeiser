@@ -77,7 +77,7 @@ document.querySelectorAll(".form__input").forEach(inputElement => {
 //
 async function postRegister(event){
 	event.preventDefault();
-    console.log("sis");
+    // console.log("sis");
 	const button = event.target;
 
 	const form = button.closest('form');
@@ -136,7 +136,7 @@ async function postRegister(event){
 		setInputError(register_EmailElement, 'Please enter Email');
 		return;
 	}
-	else if (isNaN(parseInt(register_Email))) {
+	else if (!isValidEmail(register_Email)) {
 		setInputError(register_EmailElement, 'The email address is invalid');
 		return;
 	}
@@ -154,15 +154,7 @@ async function postRegister(event){
 	}
 
 
-	if (register_Confirm === "") {
-		setInputError(register_ConfirmElement, 'Please enter password again');
-		return;
-	}
-	else{
-		clearInputError(register_ConfirmElement);
-	}
-
-	if (register_Confirm === register_Password) {
+	if (register_Confirm !== register_Password) {
 		setInputError(register_ConfirmElement, 'Passwords don\'t match');
 		return;
 	}
@@ -221,14 +213,19 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	errorElement.innerText = '';
 }
 
-function isValidDate(dateString) {
+function isValidDate(register_Birth) {
 	const regex = /^\d{4}-\d{2}-\d{2}$/;
-	if (!regex.test(dateString)) {
+	if (!regex.test(register_Birth)) {
 		return false;
 	}
-	const date = new Date(dateString);
-	if (isNaN(date.getTime())) {
+	const date = new Date(register_Birth);
+	if (isValidDate(date.getTime())) {
 		return false;
 	}
 	return true;
+}
+
+function isValidEmail(register_Email) {
+    const register_Email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return register_Email.test(register_Email);
 }
