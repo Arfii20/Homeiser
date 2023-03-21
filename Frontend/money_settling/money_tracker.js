@@ -272,9 +272,7 @@ async function postTransaction(event){
 	const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
-
-	console.log(transaction_AmountElement.value);
-
+	
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
 	const transaction_Src = transaction_SrcElement.value;
@@ -284,8 +282,6 @@ async function postTransaction(event){
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
 	const transaction_HouseId = house_id;
-
-	console.log(transaction_Amount);
 
 	if (transaction_Src === "") {
 		setInputError(transaction_SrcElement, 'Please enter source user');
@@ -303,11 +299,11 @@ async function postTransaction(event){
 		clearInputError(transaction_DestElement);
 	}
 
-	if (transaction_Amount === "") {
+	if (transaction_Amount === 0) {
 		setInputError(transaction_AmountElement, 'Please enter amount');
 		return;
 	}
-	else if (isNaN(parseInt(transaction_Amount))) {
+	else if (transaction_Amount <= 0) {
 		setInputError(transaction_AmountElement, 'The amount is invalid');
 		return;
 	}
