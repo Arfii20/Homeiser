@@ -653,8 +653,15 @@ async function editEvent(event){
     evDescription.removeAttribute("readonly");
     evLocation.removeAttribute("readonly");
     evUsersTagged.removeAttribute("readonly");
-    evTitle.focus;
+    evTitle.focus();
     evTitle.setSelectionRange(0, evTitle.value.length);
+
+    evTitle.style.color = "black";
+    evtime.style.color = "black";
+    evDescription.style.color = "black";
+    evLocation.style.color = "black";    
+    evUsersTagged.style.color = "black";
+
   }
   else { 
     if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === "" || evUsersTagged.value === ""){
