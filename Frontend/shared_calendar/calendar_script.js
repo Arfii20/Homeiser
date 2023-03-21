@@ -804,27 +804,27 @@ function createMockupHTML(){
   const yearFrom = dateFrom.getFullYear(); // 2022
   const monthFrom = dateFrom.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
   const dayFrom = dateFrom.getDate(); // 19
-  const hoursFrom = "00"; // '00'
-  const minutesFrom = "00"; // '00'
+  const hoursFrom = "12";
+  const minutesFrom = "00";
 
   const dateTo = new Date();
   const yearTo = dateTo.getFullYear(); // 2022
   const monthTo = dateTo.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
-  const dayTo = "18"; // 19
-  const hoursTo = "00"; // '00'
-  const minutesTo = "00"; // '00'
+  const dayTo = dateTo.getDate();
+  const hoursTo = "15";
+  const minutesTo = "00";
 
   const timeFrom = convertTime(hoursFrom+":"+minutesFrom);
   const timeTo = convertTime(hoursTo +":"+ minutesTo);
 
   const newEvent = {
-    id: obj.event_id,
-    title: obj.title_of_event,
+    id: 20,
+    title: "Title of Mock Event",
     time: timeFrom + " - " + timeTo,
-    location : obj.location_of_event,
-    notes : obj.additional_notes,
-    tagged : obj.tagged_users.join(" "), 
-    addedBy : obj.added_by,
+    location : "Location of Mock Event",
+    notes : "Notes of Mock Event",
+    tagged : "MockUser1 MockUser2", 
+    addedBy : 40,
   };
 
   // if event array empty or current day has no event, create new 
@@ -835,9 +835,52 @@ function createMockupHTML(){
     events: [newEvent],
   });
 
+  console.log({message: "Mock Calendar events added"});
+
+  const timeFrom2 = convertTime((hoursFrom+6)+":"+minutesFrom);
+  const timeTo2 = convertTime((hoursTo+8) +":"+ minutesTo);
+
+  const newEvent2 = {
+    id: 24,
+    title: "Title of Mock Event 2",
+    time: timeFrom2 + " - " + timeTo2,
+    location : "Location of Mock Event 2",
+    notes : "Notes of Mock Event 2",
+    tagged : "MockUser1 MockUser3", 
+    addedBy : 40,
+  };
+
+  // if event array empty or current day has no event, create new 
+  eventsArr.push({
+    day: dayFrom,
+    month: monthFrom,
+    year: yearFrom,
+    events: [newEvent2],
+  });
+
+  const timeFrom3 = convertTime((hoursFrom+3)+":"+minutesFrom);
+  const timeTo3 = convertTime((hoursTo+5) +":"+ minutesTo);
+
+  const newEvent3 = {
+    id: 28,
+    title: "Title of Mock Event 3",
+    time: timeFrom3 + " - " + timeTo3,
+    location : "Location of Mock Event 3",
+    notes : "Notes of Mock Event 3",
+    tagged : "MockUser1 MockUser2", 
+    addedBy : 30,
+  };
+
+  // if event array empty or current day has no event, create new 
+  eventsArr.push({
+    day: dayFrom + 2,
+    month: monthFrom,
+    year: yearFrom,
+    events: [newEvent3],
+  });
+
     //select active day and add event class if not added
   initCalendar();
   updateEvents(activeDay);
-  deleteOutdatedEvents();
-  console.log({message: "Calendar events added"});
+  console.log({message: "Mock Calendar events added"});
 }
