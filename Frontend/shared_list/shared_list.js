@@ -763,11 +763,137 @@ function createMockupHTMLofList(){
 	// Append the header element to the parent element
 	parentElement.appendChild(headerElement);
 
-	// get_list_event(20);
+	createMockupHTMLofListEvent();
 
 	parentElement.appendChild(hrElement);
 	console.log({message: 'list added'});
+}
 
+function createMockupHTMLofListEvent(){
+	const list_id = 20;
+	const response_array =
+	[         
+		{
+			id: 60,
+			task_name: 'Name of Mockup Event 1',
+			description_of_task: 'Description of Mockup Event 1',
+			added_user_id: 70,
+			checked_off_by_user: null,
+			list: 20,
+	  },
+	  {
+			id: 61,
+			task_name: 'Name of Mockup Event 2',
+			description_of_task: 'Description of Mockup Event 2',
+			added_user_id: 70,
+			checked_off_by_user: null,
+			list: 20,
+	  },
+	  {
+			id: 62,
+			task_name: 'Name of Mockup Event 3',
+			description_of_task: 'Description of Mockup Event 3',
+			added_user_id: 80,
+			checked_off_by_user: 80,
+			list: 20,
+	  },
+	  {
+			id: 63,
+			task_name: 'Name of Mockup Event 4',
+			description_of_task: 'Description of Mockup Event 4',
+			added_user_id: 80,
+			checked_off_by_user: null,
+			list: 20,
+	  }
+	]
 
+	for (let i = 0; i < response_array.length; i++) {
+		const obj = response_array[i];
 
+		const parentElement = document.getElementById(list_id);
+
+		// Create a new div element and set its ID
+		const divElement = document.createElement('div');
+		divElement.setAttribute('id', 'tasks');
+		divElement.setAttribute('class', 'task-list');
+
+		// Create a new div element and set its class
+		const taskDivElement = document.createElement('div');
+		taskDivElement.setAttribute('class', 'task');
+		taskDivElement.setAttribute('id', obj.id);
+		taskDivElement.setAttribute('data-list_id', obj.list);
+		taskDivElement.setAttribute('data-added-user-id', obj.added_user_id);
+		taskDivElement.setAttribute('data-checked-off-by-user', obj.checked_off_by_user);
+
+		// Create a new div element and set its class
+		const contentDivElement = document.createElement('div');
+		contentDivElement.setAttribute('class', 'content');
+
+		// Create a new input element and set its attributes
+		const inputId = 'input-' + obj.id;
+		const inputElement = document.createElement('input');
+		inputElement.setAttribute('type', 'text');
+		inputElement.setAttribute('class', 'text');
+		inputElement.setAttribute('id', inputId)
+		inputElement.setAttribute('value', obj.task_name);
+		inputElement.setAttribute('readonly', '');
+		inputElement.setAttribute('maxlength', '100');
+
+		// Cheate a new input element for showing description
+		const inputNameId = 'input-name-' + obj.id;
+		const inputElementName = document.createElement('input');
+		inputElementName.setAttribute('type', 'text');
+		inputElementName.setAttribute('class', 'text');
+		inputElementName.setAttribute('id', inputNameId)
+		inputElementName.setAttribute('value', obj.description_of_task);
+		inputElementName.setAttribute('readonly', '');
+		inputElementName.setAttribute('maxlength', '100');
+
+		// Append the input element to the content div element
+		contentDivElement.appendChild(inputElement);
+		contentDivElement.appendChild(inputElementName);
+
+		// Create a new div element and set its class
+		const actionsDivElement = document.createElement('div');
+		actionsDivElement.setAttribute('class', 'actions');
+
+		// Create a new button element and set its class and text content
+		const editButtonId = 'edit-' + obj.id;
+		const editButtonElement = document.createElement('button');
+		editButtonElement.setAttribute('class', 'edit');
+		editButtonElement.textContent = 'Edit';
+		editButtonElement.setAttribute('id', editButtonId)
+		editButtonElement.setAttribute('onclick', 'put_list_event(event)')
+
+		// Create a new button element and set its class and text content
+		const deleteButtonElement = document.createElement('button');
+		deleteButtonElement.setAttribute('class', 'delete');
+		deleteButtonElement.textContent = 'Delete';
+		deleteButtonElement.setAttribute('onclick', 'delete_list_event(event)')
+
+		// Create a new checkbox element and set its class and text content
+		const checkboxInput = document.createElement('input');
+		checkboxInput.type = 'checkbox';
+		checkboxInput.className = 'checkbox';
+		checkboxInput.setAttribute('onclick', 'patch_list_event(event)');
+		if (obj.checked_off_by_user){
+			checkboxInput.checked = true;
+		}
+
+		// Append the button elements to the actions div element
+		actionsDivElement.appendChild(editButtonElement);
+		actionsDivElement.appendChild(deleteButtonElement);
+		actionsDivElement.appendChild(checkboxInput);
+
+		// Append the content and actions div elements to the task div element
+		taskDivElement.appendChild(contentDivElement);
+		taskDivElement.appendChild(actionsDivElement);
+
+		// Append the task div element to the tasks div element
+		divElement.appendChild(taskDivElement);
+
+		// Append the h2 and tasks div elements to the section element
+		parentElement.appendChild(divElement);
+		console.log({message: 'list event added'});
+	}
 }
