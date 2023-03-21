@@ -1,5 +1,7 @@
 const BASE = "http://127.0.0.1:5000/";
-const rightContainer = document.querySelector(".container");
+const container = document.querySelector(".container");
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -23,45 +25,75 @@ if (house_id === null || house_id === undefined) {
 
 not_logged_in_hrefs.style.display = "none";
 logged_in_hrefs.style.display = "";
+getDetails(user_id);
 
+async function getDetails(user_id){
 
-async function getDetails(){
-
-	const response = 
-
-	<form class="form" id="createAccount">
-        <h1 class="form__title">Your Details</h1>
-        <div class="form__message form__message--error"></div>
-        <div class="form__input-group">
-            <input type="text" id="first_name" class="form__input" autofocus placeholder="First name: " readonly>
-            <div class="form__input-error-message"></div>
-        </div>
-        <div class="form__input-group">
-            <input type="text" id="surname" class="form__input" autofocus placeholder="Last name: " readonly>
-            <div class="form__input-error-message"></div>
-        </div>
-        <div class="form__input-group">
-            <input type="text" id="email" class="form__input" autofocus placeholder="Email address: " readonly>
-            <div class="form__input-error-message"></div>
-        </div>
-        <div class="form__input-group">
-            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: " readonly>
-            <div class="form__input-error-message"></div>
-        </div>
-        <div class="form__input-group">
-            <input type="password" id="signupPassword2" class="form__input" autofocus placeholder="Confirm password"  readonly>
-            <div class="form__input-error-message"></div>
-        </div>
-        <button class="form__button" type="submit">Edit Details</button>
-    </form>
-
+	try{
+		const response = await fetch(BASE + "user_profile/" + user_id);
+		
+		if (response.ok) {
+			console.log({message: "Profile Received"});
+			const obj = await response.json();
+			container.innerHTML = `<form class="form" id="createAccount">
+							        <h1 class="form__title">Your Details</h1>
+							        <div class="form__message form__message--error"></div>
+							        <div class="form__input-group">
+							            <input type="text" id="first_name" class="form__input" autofocus placeholder="First name: ${obj.first_name}" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="surname" class="form__input" autofocus placeholder="Last name: ${obj.surname}" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="email" class="form__input" autofocus placeholder="Email address: ${obj.email}" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: ${obj.date_of_birth}" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <button class="form__button" type="submit">Edit Details</button>
+							    </form>`;
+		}
+		else {
+	    	throw new Error('Error retrieving ledger.');
+	    	return;
+		}
+	}
+	catch (error) {
+    console.error(error);
+    if (error.message === 'Failed to fetch') {
+        createMockUpHTMLofProfile();
+    }
+  }
 }
 
 
-
-
-
-
+function createMockUpHTMLofProfile(){
+	container.innerHTML = `<form class="form" id="createAccount">
+							        <h1 class="form__title">Your Details</h1>
+							        <div class="form__message form__message--error"></div>
+							        <div class="form__input-group">
+							            <input type="text" id="first_name" class="form__input" autofocus placeholder="First name: Mock First Name" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="surname" class="form__input" autofocus placeholder="Last name: Mock Surame" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="email" class="form__input" autofocus placeholder="Email address: mock.email@gmail.com" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <div class="form__input-group">
+							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: 2000-03-22" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+							        <button class="form__button" type="submit">Edit Details</button>
+							    </form>`;
+}
 
 function logout(){
   // Get all cookies and split them into an array
