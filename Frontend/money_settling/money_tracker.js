@@ -31,63 +31,71 @@ async function getLedgerResources(user_id){
 	mainTable.innerHTML = "<tbody><tr><td style='border: none;'><h2 style='text-align: center; color: purple;'>No Transaction Pending</h2></td></td></tbody>";
 	simplifyButton.style.display = "none";
 
-	const response = await fetch(BASE + "ledger/" + user_id);
-	
-	if (response.ok) {
-		console.log({message: "Ledger Received"});
-		simplifyButton.style.display = "";
-		mainTable.innerHTML = `<thead class="fixed">
-				                <th class="header">
-				                  Source User --> Destination User
-				                </th>
-				                <th class="header">
-				                  Due Date
-				                </th>
-				                <th class="header">
-				                  Amount
-				                </th>
-				              </thead>`
+	try{
+		const response = await fetch(BASE + "ledger/" + user_id);
+		
+		if (response.ok) {
+			console.log({message: "Ledger Received"});
+			simplifyButton.style.display = "";
+			mainTable.innerHTML = `<thead class="fixed">
+					                <th class="header">
+					                  Source User --> Destination User
+					                </th>
+					                <th class="header">
+					                  Due Date
+					                </th>
+					                <th class="header">
+					                  Amount
+					                </th>
+					              </thead>`
 
-		const response_array = await JSON.parse(await response.json());
+			const response_array = await JSON.parse(await response.json());
 
-		for (let i = 0; i < response_array.length; i++) {
-		    const obj = await JSON.parse(response_array[i]);
+			for (let i = 0; i < response_array.length; i++) {
+			    const obj = await JSON.parse(response_array[i]);
 
-			var paid;
-			if (obj.paid === "true"){
-				mainTable.innerHTML += `<tbody id="data-output">
-							              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
-								                <td class="table-data"> ${obj.src} --> ${obj.dest}
-								                </td>
-								                <td class="table-data">
-								                  ${obj.due_date}
-								                </td>
-								                <td class="table-data" style="align:center">
-								                  £${obj.amount}
-								                </td>
-								            <tr>
-							              </tbody>`;
-			}
-			else{
-				mainTable.innerHTML +=  `<tbody id="data-output">
-							              	<tr id="${obj.transaction_id}" onclick=getTransaction(event)>
-								                <td class="table-data"> ${obj.src} --> ${obj.dest}
-								                </td>
-								                <td class="table-data">
-								                  ${obj.due_date}
-								                </td>
-								                <td class="table-data">
-								                  £${obj.amount}
-								                </td>
-								            <tr>
-							              </tbody>`;
+				var paid;
+				if (obj.paid === "true"){
+					mainTable.innerHTML += `<tbody id="data-output">
+								              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+									                <td class="table-data"> ${obj.src} --> ${obj.dest}
+									                </td>
+									                <td class="table-data">
+									                  ${obj.due_date}
+									                </td>
+									                <td class="table-data" style="align:center">
+									                  £${obj.amount}
+									                </td>
+									            <tr>
+								              </tbody>`;
+				}
+				else{
+					mainTable.innerHTML +=  `<tbody id="data-output">
+								              	<tr id="${obj.transaction_id}" onclick=getTransaction(event)>
+									                <td class="table-data"> ${obj.src} --> ${obj.dest}
+									                </td>
+									                <td class="table-data">
+									                  ${obj.due_date}
+									                </td>
+									                <td class="table-data">
+									                  £${obj.amount}
+									                </td>
+									            <tr>
+								              </tbody>`;
+				}
 			}
 		}
+		else {
+	    	throw new Error('Error retrieving ledger.');
+	    	return;
+		}
 	}
-	else {
-    	throw new Error('Error retrieving ledger.');
-    	return;
-	}
+	catch (error) {
+    console.error(error);
+    if (error.message === 'Failed to fetch') {
+        createMockUpHTMLofLedger();
+    }
+  }
 }
 
 
@@ -397,4 +405,157 @@ function isValidDate(dateString) {
 		return false;
 	}
 	return true;
+}
+
+function createMockUpHTMLofLedger(){
+	mainTable.innerHTML = "<tbody><tr><td style='border: none;'><h2 style='text-align: center; color: purple;'>No Transaction Pending</h2></td></td></tbody>";
+	simplifyButton.style.display = "none";
+	
+	console.log({message: "Ledger Received"});
+	simplifyButton.style.display = "";
+	mainTable.innerHTML = `<thead class="fixed">
+			                <th class="header">
+			                  Source User --> Destination User
+			                </th>
+			                <th class="header">
+			                  Due Date
+			                </th>
+			                <th class="header">
+			                  Amount
+			                </th>
+			              </thead>`
+
+	const response_array =
+	[
+    {   
+    	transaction_id: 51,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 20,
+      description: "Description of Mock Transaction 1",
+      due_date: "2023-06-25",
+      paid: "false",
+      house_id: 20
+    },
+        {   
+    	transaction_id: 52,
+      src_id: 50,
+      dest_id: 40,
+     	src: "Mock Person 2",
+      dest: "Mock Person 1",
+      amount: 10,
+      description: "Description of Mock Transaction 2",
+      due_date: "2023-05-20",
+      paid: "false",
+      house_id: 20
+    },
+        {   
+    	transaction_id: 53,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 50,
+      description: "Description of Mock Transaction 3",
+      due_date: "2023-06-15",
+      paid: "true",
+      house_id: 20
+    },
+    {   
+    	transaction_id: 54,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 20,
+      description: "Description of Mock Transaction 4",
+      due_date: "2023-06-0",
+      paid: "false",
+      house_id: 20
+    },
+    {   
+    	transaction_id: 55,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 20,
+      description: "Description of Mock Transaction 5",
+      due_date: "2023-06-06",
+      paid: "false",
+      house_id: 20
+    },
+        {   
+    	transaction_id: 56,
+      src_id: 50,
+      dest_id: 40,
+     	src: "Mock Person 2",
+      dest: "Mock Person 1",
+      amount: 10,
+      description: "Description of Mock Transaction 6",
+      due_date: "2023-05-20",
+      paid: "false",
+      house_id: 20
+    },
+        {   
+    	transaction_id: 57,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 50,
+      description: "Description of Mock Transaction 7",
+      due_date: "2023-06-21",
+      paid: "true",
+      house_id: 20
+    },
+    {   
+    	transaction_id: 58,
+      src_id: 40,
+      dest_id: 50,
+     	src: "Mock Person 1",
+      dest: "Mock Person 2",
+      amount: 20,
+      description: "Description of Mock Transaction 8",
+      due_date: "2023-05-22",
+      paid: "false",
+      house_id: 20
+    }
+	]
+
+	for (let i = 0; i < response_array.length; i++) {
+	  const obj = response_array[i];
+
+		var paid;
+		if (obj.paid === "true"){
+			mainTable.innerHTML += `<tbody id="data-output">
+						              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+							                <td class="table-data"> ${obj.src} --> ${obj.dest}
+							                </td>
+							                <td class="table-data">
+							                  ${obj.due_date}
+							                </td>
+							                <td class="table-data" style="align:center">
+							                  £${obj.amount}
+							                </td>
+							            <tr>
+						              </tbody>`;
+		}
+		else{
+			mainTable.innerHTML +=  `<tbody id="data-output">
+						              	<tr id="${obj.transaction_id}" onclick=getTransaction(event)>
+							                <td class="table-data"> ${obj.src} --> ${obj.dest}
+							                </td>
+							                <td class="table-data">
+							                  ${obj.due_date}
+							                </td>
+							                <td class="table-data">
+							                  £${obj.amount}
+							                </td>
+							            <tr>
+						              </tbody>`;
+		}
+	}
 }
