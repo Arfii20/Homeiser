@@ -144,7 +144,7 @@ class Transaction:
     def insert_transaction(self, cur: cursor.MySQLCursor, conn: MySQLConnection):
         """Inserts transaction into table"""
 
-        cur.fetchall()
+        # cur.fetchall()
 
         # get pair id
         cur.execute(

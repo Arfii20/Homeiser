@@ -74,8 +74,9 @@ class TransactionResource(Resource):
         cur: cursor.MySQLCursor
 
         conn, cur = db.get_conn()
+
         result = cur.execute(
-            "UPDATE transaction SET paid = 1 - paid WHERE id = %s; commit", [t_id]
+            "UPDATE transaction SET paid = 1 - paid WHERE id = %s", [t_id]
         )
         conn.commit()
 
@@ -88,8 +89,8 @@ class TransactionResource(Resource):
             return f"Transaction {t_id} doesn't exist", 404
 
     def delete(self, t_id: int):
-        conn: mysql.connector.MySQLConnection
-        cur: cursor.MySQLCursor
+        # conn: mysql.connector.MySQLConnection
+        # cur: cursor.MySQLCursor
 
         conn, cur = db.get_conn()
         cur.execute("SELECT id FROM transaction WHERE id = %s", [t_id])
