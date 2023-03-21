@@ -339,10 +339,10 @@ async function postTransaction(event){
 	  	body: JSON.stringify({
 	    	src_id: transaction_SrcID,
 	    	dest_id: transaction_DestID,
-	    	src: transaction_Src,
-	    	dest: transaction_Dest,
+	    	src: transaction_Src.replace(/'/g, "\\'"),
+	    	dest: transaction_Dest.replace(/'/g, "\\'"),
 	    	amount: parseInt(transaction_Amount),
-	    	description: transaction_Description,
+	    	description: transaction_Description.replace(/'/g, "\\'"),
 	    	due_date: transaction_DueDate,
 	    	paid: transaction_Paid,
 	    	house_id: transaction_HouseId
