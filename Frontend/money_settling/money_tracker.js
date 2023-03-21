@@ -607,3 +607,20 @@ function createMockUpHTMLofTransaction(){
 								</div>`;
 	leftCreateButton.innerText = "Close Transaction Window";
 }
+
+function logout(){
+  // Get all cookies and split them into an array
+  const cookies = document.cookie.split(";");
+
+  // Loop through all cookies and delete them by setting their expiration date to a date in the past
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+
+  console.log("Cookies cleared");
+  
+  window.location.href = "../login.html";
+}
