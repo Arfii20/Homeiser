@@ -15,10 +15,10 @@ const house_id = 620;
 if (user_id === null || user_id === undefined) {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
-  window.location.href = "URL of login page";
+  window.location.href = "../login.html";
 }
 if (house_id === null || house_id === undefined) {
-  window.location.href = "URL of household login page";
+  window.location.href = "../group";
 }
 
 not_logged_in_hrefs.style.display = "none";
@@ -1176,6 +1176,6 @@ function logout(){
   }
 
   console.log("Cookies cleared");
-  
+
   window.location.href = "../login.html";
 }

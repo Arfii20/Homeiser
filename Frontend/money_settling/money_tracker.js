@@ -21,10 +21,10 @@ const house_id = 620;
 if (user_id === null || user_id === undefined) {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
-  window.location.href = "URL of login page";
+  window.location.href = "../login.html";
 }
 if (house_id === null || house_id === undefined) {
-  window.location.href = "URL of household login page";
+  window.location.href = "../group";
 }
 
 not_logged_in_hrefs.style.display = "none";
@@ -70,7 +70,7 @@ async function getLedgerResources(user_id){
 									                  ${obj.due_date}
 									                </td>
 									                <td class="table-data" style="align:center">
-									                  £${obj.amount}
+									                  £${obj.amount/100}
 									                </td>
 									            <tr>
 								              </tbody>`;
@@ -84,7 +84,7 @@ async function getLedgerResources(user_id){
 									                  ${obj.due_date}
 									                </td>
 									                <td class="table-data">
-									                  £${obj.amount}
+									                  £${obj.amount/100}
 									                </td>
 									            <tr>
 								              </tbody>`;
@@ -103,7 +103,6 @@ async function getLedgerResources(user_id){
     }
   }
 }
-
 
 async function getTransaction(event) {
 	transactionID = event.target.parentNode.getAttribute("id");
@@ -135,7 +134,7 @@ async function getTransaction(event) {
 										      <div class="form__input-error-message"></div>
 										    </div>
 										    <div class="form__input-group">
-										      <input type="text" class="form__input" placeholder="Amount - £${obj.amount} " readonly>
+										      <input type="text" class="form__input" placeholder="Amount - £${obj.amount/100} " readonly>
 										      <div class="form__input-error-message"></div>
 										    </div>
 										    <div class="form__input-group">
@@ -163,7 +162,6 @@ async function getTransaction(event) {
   }
 }
 
-
 async function createcloseRightContainer(event){
 	event.preventDefault();
 	if (event.target.innerText === "Create Transaction"){
@@ -182,7 +180,7 @@ async function createcloseRightContainer(event){
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" placeholder="Amount in GBP: ">
+						      <input type="number" class="form__input" placeholder="Amount in GBP: " step="0.01">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
@@ -205,7 +203,6 @@ async function createcloseRightContainer(event){
 		event.target.innerText = "Create Transaction";
 	}
 }
-
 
 async function patchTransaction(event){
 	event.preventDefault();
@@ -265,7 +262,6 @@ async function deleteTransaction(event){
 	});
 }
 
-
 async function postTransaction(event){
 	event.preventDefault();
 	const button = event.target;
@@ -277,17 +273,19 @@ async function postTransaction(event){
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 
-	console.log(transaction_SrcElement);
+	console.log(transaction_AmountElement.value);
 
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
 	const transaction_Src = transaction_SrcElement.value;
 	const transaction_Dest = transaction_DestElement.value;
-	const transaction_Amount = transaction_AmountElement.value;
+	const transaction_Amount = parseInt(transaction_AmountElement.value*100);
 	const transaction_Description = transaction_DescriptionElement.value;
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
 	const transaction_HouseId = house_id;
+
+	console.log(transaction_Amount);
 
 	if (transaction_Src === "") {
 		setInputError(transaction_SrcElement, 'Please enter source user');
@@ -621,6 +619,6 @@ function logout(){
   }
 
   console.log("Cookies cleared");
-  
+
   window.location.href = "../login.html";
 }
