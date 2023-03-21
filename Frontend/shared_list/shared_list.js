@@ -22,159 +22,166 @@ get_lists(house_id);
 
 // Shared List methods start from here
 async function get_lists(house_id){
-	const response = await fetch(BASE + "shared_list/" + house_id);
-	if (response.ok){
-		const response_array = JSON.parse(await response.json());
+	try{
+		const response = await fetch(BASE + "shared_list/" + house_id);
+		if (response.ok){
+			const response_array = JSON.parse(await response.json());
 
-		for (let i = 0; i < response_array.length; i++) {
-			const obj = JSON.parse(response_array[i]);
+			for (let i = 0; i < response_array.length; i++) {
+				const obj = JSON.parse(response_array[i]);
 
-			// Get the parent element where you want to append the HTML
-			const parentElement = document.querySelector('div#lists');
+				// Get the parent element where you want to append the HTML
+				const parentElement = document.querySelector('div#lists');
 
-			// Create a new header element
-			const headerElement = document.createElement('header');
-			headerElement.setAttribute("id", obj.id);
-			headerElement.setAttribute("class", "inner-header")
+				// Create a new header element
+				const headerElement = document.createElement('header');
+				headerElement.setAttribute("id", obj.id);
+				headerElement.setAttribute("class", "inner-header")
 
-			// Create a new div element and set its ID
-			const divElement = document.createElement('div');
-			divElement.setAttribute('id', 'list-desc');
-			divElement.setAttribute('class', 'list-name');
+				// Create a new div element and set its ID
+				const divElement = document.createElement('div');
+				divElement.setAttribute('id', 'list-desc');
+				divElement.setAttribute('class', 'list-name');
 
-			// Create a new div element and set its class
-			const taskDivElement = document.createElement('div');
-			taskDivElement.setAttribute('class', 'list-name');
+				// Create a new div element and set its class
+				const taskDivElement = document.createElement('div');
+				taskDivElement.setAttribute('class', 'list-name');
 
-			// Create a new div element and set its class
-			const contentDivElement = document.createElement('div');
-			contentDivElement.setAttribute('class', 'content');
+				// Create a new div element and set its class
+				const contentDivElement = document.createElement('div');
+				contentDivElement.setAttribute('class', 'content');
 
-			// Create a new input element and set its attributes
-			const inputElementH1Id = 'input-element-h1-' + obj.id;
-			const inputElementH1 = document.createElement('input');
-			inputElementH1.setAttribute('type', 'text');
-			inputElementH1.setAttribute('class', 'text');
-			inputElementH1.setAttribute('id', inputElementH1Id);
-			inputElementH1.setAttribute('value', obj.name);
-			inputElementH1.setAttribute('readonly', '');
-			inputElementH1.setAttribute('maxlength', '100')
+				// Create a new input element and set its attributes
+				const inputElementH1Id = 'input-element-h1-' + obj.id;
+				const inputElementH1 = document.createElement('input');
+				inputElementH1.setAttribute('type', 'text');
+				inputElementH1.setAttribute('class', 'text');
+				inputElementH1.setAttribute('id', inputElementH1Id);
+				inputElementH1.setAttribute('value', obj.name);
+				inputElementH1.setAttribute('readonly', '');
+				inputElementH1.setAttribute('maxlength', '100')
 
-			// Append the input element to the content div element
-			contentDivElement.appendChild(inputElementH1);
+				// Append the input element to the content div element
+				contentDivElement.appendChild(inputElementH1);
 
-			// Create a new div element and set its class
-			const actionsDivElement = document.createElement('div');
-			actionsDivElement.setAttribute('class', 'actions');
+				// Create a new div element and set its class
+				const actionsDivElement = document.createElement('div');
+				actionsDivElement.setAttribute('class', 'actions');
 
-			// Create a new button element and set its class and text content
-			const editButtonId = 'edit-button-list-' + obj.id;
-			const editButtonElement = document.createElement('button');
-			editButtonElement.setAttribute('class', 'edit');
-			editButtonElement.setAttribute('id', editButtonId);
-			editButtonElement.textContent = 'Edit';
-			editButtonElement.setAttribute('onclick', 'patch_list(event)');
+				// Create a new button element and set its class and text content
+				const editButtonId = 'edit-button-list-' + obj.id;
+				const editButtonElement = document.createElement('button');
+				editButtonElement.setAttribute('class', 'edit');
+				editButtonElement.setAttribute('id', editButtonId);
+				editButtonElement.textContent = 'Edit';
+				editButtonElement.setAttribute('onclick', 'patch_list(event)');
 
-			// Create a new button element and set its class and text content
-			const deleteButtonElement = document.createElement('button');
-			deleteButtonElement.setAttribute('class', 'delete');
-			deleteButtonElement.textContent = 'Delete';
-			deleteButtonElement.setAttribute('onclick', 'delete_list(event)');
+				// Create a new button element and set its class and text content
+				const deleteButtonElement = document.createElement('button');
+				deleteButtonElement.setAttribute('class', 'delete');
+				deleteButtonElement.textContent = 'Delete';
+				deleteButtonElement.setAttribute('onclick', 'delete_list(event)');
 
-			// Append the button elements to the actions div element
-			actionsDivElement.appendChild(editButtonElement);
-			actionsDivElement.appendChild(deleteButtonElement);
+				// Append the button elements to the actions div element
+				actionsDivElement.appendChild(editButtonElement);
+				actionsDivElement.appendChild(deleteButtonElement);
 
-			// Append the content and actions div elements to the task div element
-			taskDivElement.appendChild(contentDivElement);
-			taskDivElement.appendChild(actionsDivElement);
+				// Append the content and actions div elements to the task div element
+				taskDivElement.appendChild(contentDivElement);
+				taskDivElement.appendChild(actionsDivElement);
 
-			// Append the task div element to the tasks div element
-			divElement.appendChild(taskDivElement);
+				// Append the task div element to the tasks div element
+				divElement.appendChild(taskDivElement);
 
-			// Append the h2 and tasks div elements to the section element
-			headerElement.appendChild(divElement);
+				// Append the h2 and tasks div elements to the section element
+				headerElement.appendChild(divElement);
 
-			// Create a horizontal line element
-			const hrID = 'hr-' + obj.id
-			const hrElement = document.createElement('hr');
-			hrElement.className = 'hr-element';
-			hrElement.setAttribute('id', hrID)
+				// Create a horizontal line element
+				const hrID = 'hr-' + obj.id
+				const hrElement = document.createElement('hr');
+				hrElement.className = 'hr-element';
+				hrElement.setAttribute('id', hrID)
 
-			// Create a new form element and set its attributes
-			const new_task_form_id = 'new-task-form-' + obj.id;
-			const formElement = document.createElement('form');
-			formElement.setAttribute('class', 'new-task-form');
-			formElement.setAttribute('id', new_task_form_id);
-			formElement.setAttribute('onsubmit', 'post_list_event(event)')
+				// Create a new form element and set its attributes
+				const new_task_form_id = 'new-task-form-' + obj.id;
+				const formElement = document.createElement('form');
+				formElement.setAttribute('class', 'new-task-form');
+				formElement.setAttribute('id', new_task_form_id);
+				formElement.setAttribute('onsubmit', 'post_list_event(event)')
 
-			// Create a new input element and set its attributes
-			const new_task_input_id = 'new-task-input-' + obj.id;
-			const inputElement = document.createElement('input');
-			inputElement.setAttribute('type', 'text');
-			inputElement.setAttribute('name', 'new-task-input');
-			inputElement.setAttribute('class', 'new-task-input');
-			inputElement.setAttribute('id', new_task_input_id);
-			inputElement.setAttribute('placeholder', 'Enter new task name');
-			inputElement.setAttribute('maxlength', '100');
-			inputElement.addEventListener('keydown', function(event) {
-			    const charCode = event.which || event.keyCode;
-			    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
-			      event.preventDefault();
-			    }
-			  });
+				// Create a new input element and set its attributes
+				const new_task_input_id = 'new-task-input-' + obj.id;
+				const inputElement = document.createElement('input');
+				inputElement.setAttribute('type', 'text');
+				inputElement.setAttribute('name', 'new-task-input');
+				inputElement.setAttribute('class', 'new-task-input');
+				inputElement.setAttribute('id', new_task_input_id);
+				inputElement.setAttribute('placeholder', 'Enter new task name');
+				inputElement.setAttribute('maxlength', '100');
+				inputElement.addEventListener('keydown', function(event) {
+				    const charCode = event.which || event.keyCode;
+				    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+				      event.preventDefault();
+				    }
+				  });
 
-			// Create a new input element and set its attributes
-			const new_task_description_id = 'new-task-description-' + obj.id;
-			const inputElementDescription = document.createElement('input');
-			inputElementDescription.setAttribute('type', 'text');
-			inputElementDescription.setAttribute('name', 'new-task-description');
-			inputElementDescription.setAttribute('class', 'new-task-description');
-			inputElementDescription.setAttribute('id', new_task_description_id);
-			inputElementDescription.setAttribute('placeholder', 'Enter new task description');
-			inputElementDescription.setAttribute('maxlength', '100');
-			inputElementDescription.addEventListener('keydown', function(event) {
-			    const charCode = event.which || event.keyCode;
-			    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
-			      event.preventDefault();
-			    }
-			  });
+				// Create a new input element and set its attributes
+				const new_task_description_id = 'new-task-description-' + obj.id;
+				const inputElementDescription = document.createElement('input');
+				inputElementDescription.setAttribute('type', 'text');
+				inputElementDescription.setAttribute('name', 'new-task-description');
+				inputElementDescription.setAttribute('class', 'new-task-description');
+				inputElementDescription.setAttribute('id', new_task_description_id);
+				inputElementDescription.setAttribute('placeholder', 'Enter new task description');
+				inputElementDescription.setAttribute('maxlength', '100');
+				inputElementDescription.addEventListener('keydown', function(event) {
+				    const charCode = event.which || event.keyCode;
+				    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+				      event.preventDefault();
+				    }
+				  });
 
-			// Create a new input element and set its attributes
-			const new_task_submit_id = 'new-task-submit-' + obj.id;
-			const submitElement = document.createElement('input');
-			submitElement.setAttribute('type', 'submit');
-			submitElement.setAttribute('class', 'new-task-submit');
-			submitElement.setAttribute('id', new_task_submit_id);
-			submitElement.setAttribute('value', 'Add task');
+				// Create a new input element and set its attributes
+				const new_task_submit_id = 'new-task-submit-' + obj.id;
+				const submitElement = document.createElement('input');
+				submitElement.setAttribute('type', 'submit');
+				submitElement.setAttribute('class', 'new-task-submit');
+				submitElement.setAttribute('id', new_task_submit_id);
+				submitElement.setAttribute('value', 'Add task');
 
-			// Create a new h2 element and set its text content
-			const h2Element = document.createElement('h2');
-			h2Element.textContent = 'Tasks';
+				// Create a new h2 element and set its text content
+				const h2Element = document.createElement('h2');
+				h2Element.textContent = 'Tasks';
 
-			// Append the input elements to the form element
-			formElement.appendChild(inputElement);
-			formElement.appendChild(inputElementDescription);
-			formElement.appendChild(submitElement);
+				// Append the input elements to the form element
+				formElement.appendChild(inputElement);
+				formElement.appendChild(inputElementDescription);
+				formElement.appendChild(submitElement);
 
-			
-			// Append the form element to the header element
-			headerElement.appendChild(formElement);
-			headerElement.appendChild(h2Element);
+				
+				// Append the form element to the header element
+				headerElement.appendChild(formElement);
+				headerElement.appendChild(h2Element);
 
-			// Append the header element to the parent element
-			parentElement.appendChild(headerElement);
+				// Append the header element to the parent element
+				parentElement.appendChild(headerElement);
 
-			get_list_event(obj.id);
+				get_list_event(obj.id);
 
-			parentElement.appendChild(hrElement);
-			console.log({message: 'list added'});
+				parentElement.appendChild(hrElement);
+				console.log({message: 'list added'});
+			}
+		}else{
+			const response_error = await response.json();
+			console.log(response_error.error);
 		}
-	}else{
-		const response_error = await response.json();
-		console.log(response_error.error);
 	}
-
+	catch (error) {
+    console.error(error);
+    if (error.message === 'Failed to fetch') {
+        createMockupHTMLofList();
+    }
+  }
 	const newListInput = document.getElementById('new-list');
 	newListInput.addEventListener('keydown', function(event) {
 	const charCode = event.which || event.keyCode;
@@ -617,4 +624,150 @@ function make_events(inputEvent, list_id){
 	// Append the h2 and tasks div elements to the section element
 	parentElement.appendChild(divElement);
 	console.log({message: 'list event added'});
+}
+
+function createMockupHTMLofList(){
+// Get the parent element where you want to append the HTML
+	const parentElement = document.querySelector('div#lists');
+
+	// Create a new header element
+	const headerElement = document.createElement('header');
+	headerElement.setAttribute("id", 20);
+	headerElement.setAttribute("class", "inner-header")
+
+	// Create a new div element and set its ID
+	const divElement = document.createElement('div');
+	divElement.setAttribute('id', 'list-desc');
+	divElement.setAttribute('class', 'list-name');
+
+	// Create a new div element and set its class
+	const taskDivElement = document.createElement('div');
+	taskDivElement.setAttribute('class', 'list-name');
+
+	// Create a new div element and set its class
+	const contentDivElement = document.createElement('div');
+	contentDivElement.setAttribute('class', 'content');
+
+	// Create a new input element and set its attributes
+	const inputElementH1Id = 'input-element-h1-' + 20;
+	const inputElementH1 = document.createElement('input');
+	inputElementH1.setAttribute('type', 'text');
+	inputElementH1.setAttribute('class', 'text');
+	inputElementH1.setAttribute('id', inputElementH1Id);
+	inputElementH1.setAttribute('value', "Name of Mock List");
+	inputElementH1.setAttribute('readonly', '');
+	inputElementH1.setAttribute('maxlength', '100')
+
+	// Append the input element to the content div element
+	contentDivElement.appendChild(inputElementH1);
+
+	// Create a new div element and set its class
+	const actionsDivElement = document.createElement('div');
+	actionsDivElement.setAttribute('class', 'actions');
+
+	// Create a new button element and set its class and text content
+	const editButtonId = 'edit-button-list-' + 20;
+	const editButtonElement = document.createElement('button');
+	editButtonElement.setAttribute('class', 'edit');
+	editButtonElement.setAttribute('id', editButtonId);
+	editButtonElement.textContent = 'Edit';
+	editButtonElement.setAttribute('onclick', 'patch_list(event)');
+
+	// Create a new button element and set its class and text content
+	const deleteButtonElement = document.createElement('button');
+	deleteButtonElement.setAttribute('class', 'delete');
+	deleteButtonElement.textContent = 'Delete';
+	deleteButtonElement.setAttribute('onclick', 'delete_list(event)');
+
+	// Append the button elements to the actions div element
+	actionsDivElement.appendChild(editButtonElement);
+	actionsDivElement.appendChild(deleteButtonElement);
+
+	// Append the content and actions div elements to the task div element
+	taskDivElement.appendChild(contentDivElement);
+	taskDivElement.appendChild(actionsDivElement);
+
+	// Append the task div element to the tasks div element
+	divElement.appendChild(taskDivElement);
+
+	// Append the h2 and tasks div elements to the section element
+	headerElement.appendChild(divElement);
+
+	// Create a horizontal line element
+	const hrID = 'hr-' + 20
+	const hrElement = document.createElement('hr');
+	hrElement.className = 'hr-element';
+	hrElement.setAttribute('id', hrID)
+
+	// Create a new form element and set its attributes
+	const new_task_form_id = 'new-task-form-' + 20;
+	const formElement = document.createElement('form');
+	formElement.setAttribute('class', 'new-task-form');
+	formElement.setAttribute('id', new_task_form_id);
+	formElement.setAttribute('onsubmit', 'post_list_event(event)')
+
+	// Create a new input element and set its attributes
+	const new_task_input_id = 'new-task-input-' + 20;
+	const inputElement = document.createElement('input');
+	inputElement.setAttribute('type', 'text');
+	inputElement.setAttribute('name', 'new-task-input');
+	inputElement.setAttribute('class', 'new-task-input');
+	inputElement.setAttribute('id', new_task_input_id);
+	inputElement.setAttribute('placeholder', 'Enter new task name');
+	inputElement.setAttribute('maxlength', '100');
+	inputElement.addEventListener('keydown', function(event) {
+	    const charCode = event.which || event.keyCode;
+	    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+	      event.preventDefault();
+	    }
+	  });
+
+	// Create a new input element and set its attributes
+	const new_task_description_id = 'new-task-description-' + 20;
+	const inputElementDescription = document.createElement('input');
+	inputElementDescription.setAttribute('type', 'text');
+	inputElementDescription.setAttribute('name', 'new-task-description');
+	inputElementDescription.setAttribute('class', 'new-task-description');
+	inputElementDescription.setAttribute('id', new_task_description_id);
+	inputElementDescription.setAttribute('placeholder', 'Enter new task description');
+	inputElementDescription.setAttribute('maxlength', '100');
+	inputElementDescription.addEventListener('keydown', function(event) {
+	    const charCode = event.which || event.keyCode;
+	    if (charCode > 31 && (charCode !== 32) && (charCode < 48 || charCode > 57) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+	      event.preventDefault();
+	    }
+	  });
+
+	// Create a new input element and set its attributes
+	const new_task_submit_id = 'new-task-submit-' + 20;
+	const submitElement = document.createElement('input');
+	submitElement.setAttribute('type', 'submit');
+	submitElement.setAttribute('class', 'new-task-submit');
+	submitElement.setAttribute('id', new_task_submit_id);
+	submitElement.setAttribute('value', 'Add task');
+
+	// Create a new h2 element and set its text content
+	const h2Element = document.createElement('h2');
+	h2Element.textContent = 'Tasks';
+
+	// Append the input elements to the form element
+	formElement.appendChild(inputElement);
+	formElement.appendChild(inputElementDescription);
+	formElement.appendChild(submitElement);
+
+	
+	// Append the form element to the header element
+	headerElement.appendChild(formElement);
+	headerElement.appendChild(h2Element);
+
+	// Append the header element to the parent element
+	parentElement.appendChild(headerElement);
+
+	// get_list_event(20);
+
+	parentElement.appendChild(hrElement);
+	console.log({message: 'list added'});
+
+
+
 }

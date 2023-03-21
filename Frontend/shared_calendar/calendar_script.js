@@ -798,8 +798,6 @@ async function deleteOutdatedEvents(){
 get_calendarEvent(house_id);
 
 function createMockupHTML(){
-  const eventID= 20;
-
   const dateFrom = new Date();
   const yearFrom = dateFrom.getFullYear(); // 2022
   const monthFrom = dateFrom.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
