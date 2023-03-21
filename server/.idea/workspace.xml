@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/shared_calendar/calendar_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/shared_calendar/calendar_script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/shared_list/shared_list.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/shared_list/shared_list.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -190,7 +185,7 @@
       <workItem from="1679142357583" duration="15147000" />
       <workItem from="1679186568613" duration="7064000" />
       <workItem from="1679284044862" duration="8462000" />
-      <workItem from="1679393271716" duration="2157000" />
+      <workItem from="1679393271716" duration="2393000" />
     </task>
     <servers />
   </component>
