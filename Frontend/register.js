@@ -77,7 +77,7 @@ document.querySelectorAll(".form__input").forEach(inputElement => {
 //
 async function postRegister(event){
 	event.preventDefault();
-    // console.log("sis");
+    console.log("sis");
 	const button = event.target;
 
 	const form = button.closest('form');
@@ -225,7 +225,16 @@ function isValidDate(register_Birth) {
 	return true;
 }
 
+
+
 function isValidEmail(register_Email) {
-    const register_Email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return register_Email.test(register_Email);
+	const regee = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if (!regee.test(register_Email)) {
+		return false;
+	}
+	const date = new Date(register_Email);
+	if (isValidEmail(date.getEmail())) {
+		return false;
+	}
+	return true;
 }
