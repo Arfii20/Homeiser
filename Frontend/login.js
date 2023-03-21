@@ -92,9 +92,33 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 }
 
 function isValidEmail(login_Email) {
-    const register_Email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return register_Email.test(login_Email);
+    const email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return email.test(login_Email);
 }
+
+
+// Get the current date
+const currentDate = new Date();
+
+// Add one day to the current date
+const tomorrowDate = new Date(currentDate);
+tomorrowDate.setDate(currentDate.getDate() + 2);
+
+// Set the time to 12:00:00
+tomorrowDate.setHours(12);
+tomorrowDate.setMinutes(0);
+tomorrowDate.setSeconds(0);
+tomorrowDate.setMilliseconds(0);
+
+// Convert the date to a UTC string
+const expires = tomorrowDate.toUTCString();
+
+// Set the path of the cookie
+const path = "/"; 
+
+// Set the cookie with a name, value, expiration date, and path
+document.cookie = "userID=SomeValue; expires=" + expires + "; path=" + path;
+
 
 function logout(){
 	// Get all cookies and split them into an array

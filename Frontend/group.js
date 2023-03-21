@@ -36,7 +36,7 @@ async function postGroup(event){
 		setInputError(group_MaxuserElement, 'Please enter max users');
 		return;
 	}
-	else if (!Maxuser(parseInt(group_Maxuser))) {
+	else if (!isMaxUserValid(parseInt(group_Maxuser))) {
 		setInputError(group_MaxuserElement, 'The number of user should greater than 1');
 		return;
 	}
@@ -74,6 +74,28 @@ async function postGroup(event){
 	  	console.log(error);
 	});
 }
+
+
+// function isMaxUserValid(group_Maxuser, group_MaxuserElement) {
+//     const regex = /^[1-9]\d*$/;
+//     if (!regex.test(group_Maxuser)) {
+//       setInputError(group_MaxuserElement, 'The number of users should be a positive integer');
+//       return false;
+//     }
+//     const num = parseInt(group_Maxuser);
+//     if (num <= 0) {
+//       setInputError(group_MaxuserElement, 'The number of users should be greater than 0');
+//       return false;
+//     }
+//     clearInputError(group_MaxuserElement);
+//     return true;
+//   }
+  
+//   if (group_Maxuser === "") {
+//     setInputError(group_MaxuserElement, 'Please enter max users');
+//     return;
+//   }
+  
 
 
 async function patchGroup(event){
@@ -130,14 +152,32 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 // 	return true;
 // }
 
-function Maxuser(num) {
-    if (typeof num !== "number" || num < 1 || Number.isNaN(num)) {
-      console.log("The number must be greater than 1");
-      return false;
-    }
-    return true;
-  }
   
+
+// Get the current date
+const currentDate = new Date();
+
+// Add one day to the current date
+const tomorrowDate = new Date(currentDate);
+tomorrowDate.setDate(currentDate.getDate() + 2);
+
+// Set the time to 12:00:00
+tomorrowDate.setHours(12);
+tomorrowDate.setMinutes(0);
+tomorrowDate.setSeconds(0);
+tomorrowDate.setMilliseconds(0);
+
+// Convert the date to a UTC string
+const expires = tomorrowDate.toUTCString();
+
+// Set the path of the cookie
+const path = "/"; 
+
+// Set the cookie with a name, value, expiration date, and path
+document.cookie = "userID=SomeValue; expires=" + expires + "; path=" + path;
+
+
+
 function logout(){
 // Get all cookies and split them into an array
 const cookies = document.cookie.split(";");
