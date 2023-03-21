@@ -563,66 +563,74 @@ async function get_calendarEvent(house_id){
   data.append('starting_time', startDate);
   data.append('ending_time', endDate);
 
-  const response = await fetch(url, {
-                          method: 'POST',
-                          body: data,
-                          headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                          }
-                        })
-  if (response.ok){
-    eventsArr.length = 0;
-    const response_array = JSON.parse(await response.json());
+  try{
+    const response = await fetch(url, {
+                            method: 'POST',
+                            body: data,
+                            headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                          })
+    if (response.ok){
+      eventsArr.length = 0;
+      const response_array = JSON.parse(await response.json());
 
-    for (let i = 0; i < response_array.length; i++) {
-      const obj = JSON.parse(response_array[i]);
+      for (let i = 0; i < response_array.length; i++) {
+        const obj = JSON.parse(response_array[i]);
 
-      const eventID= obj.event_id;
+        const eventID= obj.event_id;
 
-      const dateFrom = new Date(obj.starting_time);
-      const yearFrom = dateFrom.getFullYear(); // 2022
-      const monthFrom = dateFrom.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
-      const dayFrom = dateFrom.getDate(); // 19
-      const hoursFrom = String(dateFrom.getHours()).padStart(2, '0'); // '00'
-      const minutesFrom = String(dateFrom.getMinutes()).padStart(2, '0'); // '00'
+        const dateFrom = new Date(obj.starting_time);
+        const yearFrom = dateFrom.getFullYear(); // 2022
+        const monthFrom = dateFrom.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
+        const dayFrom = dateFrom.getDate(); // 19
+        const hoursFrom = String(dateFrom.getHours()).padStart(2, '0'); // '00'
+        const minutesFrom = String(dateFrom.getMinutes()).padStart(2, '0'); // '00'
 
-      const dateTo = new Date(obj.ending_time);
-      const yearTo = dateTo.getFullYear(); // 2022
-      const monthTo = dateTo.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
-      const dayTo = dateTo.getDate(); // 19
-      const hoursTo = String(dateTo.getHours()).padStart(2, '0'); // '00'
-      const minutesTo = String(dateTo.getMinutes()).padStart(2, '0'); // '00'
+        const dateTo = new Date(obj.ending_time);
+        const yearTo = dateTo.getFullYear(); // 2022
+        const monthTo = dateTo.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
+        const dayTo = dateTo.getDate(); // 19
+        const hoursTo = String(dateTo.getHours()).padStart(2, '0'); // '00'
+        const minutesTo = String(dateTo.getMinutes()).padStart(2, '0'); // '00'
 
-      const timeFrom = convertTime(hoursFrom+":"+minutesFrom);
-      const timeTo = convertTime(hoursTo +":"+ minutesTo);
+        const timeFrom = convertTime(hoursFrom+":"+minutesFrom);
+        const timeTo = convertTime(hoursTo +":"+ minutesTo);
 
-      const newEvent = {
-        id: obj.event_id,
-        title: obj.title_of_event,
-        time: timeFrom + " - " + timeTo,
-        location : obj.location_of_event,
-        notes : obj.additional_notes,
-        tagged : obj.tagged_users.join(" "), 
-        addedBy : obj.added_by,
-      };
+        const newEvent = {
+          id: obj.event_id,
+          title: obj.title_of_event,
+          time: timeFrom + " - " + timeTo,
+          location : obj.location_of_event,
+          notes : obj.additional_notes,
+          tagged : obj.tagged_users.join(" "), 
+          addedBy : obj.added_by,
+        };
 
-      // if event array empty or current day has no event, create new 
-      eventsArr.push({
-        day: dayFrom,
-        month: monthFrom,
-        year: yearFrom,
-        events: [newEvent],
-      });
+        // if event array empty or current day has no event, create new 
+        eventsArr.push({
+          day: dayFrom,
+          month: monthFrom,
+          year: yearFrom,
+          events: [newEvent],
+        });
 
-      //select active day and add event class if not added
+        //select active day and add event class if not added
+      }
+      initCalendar();
+      updateEvents(activeDay);
+      deleteOutdatedEvents();
+      console.log({message: "Calendar events added"});
     }
-    initCalendar();
-    updateEvents(activeDay);
-    deleteOutdatedEvents();
-    console.log({message: "Calendar events added"});
+    else {
+      console.log({error: "Error adding events"});
+    }
   }
-  else{
-    console.log({error: "Error adding events"})
+  catch (error) {
+    console.error(error);
+    if (error.message === 'Failed to fetch') {
+        createMockupHTML();
+    }
   }
 }
 
@@ -788,3 +796,48 @@ async function deleteOutdatedEvents(){
 }
 
 get_calendarEvent(house_id);
+
+function createMockupHTML(){
+  const eventID= 20;
+
+  const dateFrom = new Date();
+  const yearFrom = dateFrom.getFullYear(); // 2022
+  const monthFrom = dateFrom.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
+  const dayFrom = dateFrom.getDate(); // 19
+  const hoursFrom = "00"; // '00'
+  const minutesFrom = "00"; // '00'
+
+  const dateTo = new Date();
+  const yearTo = dateTo.getFullYear(); // 2022
+  const monthTo = dateTo.getMonth() + 1; // 2 (Note: month is 0-indexed, so add 1 to get the actual month)
+  const dayTo = "18"; // 19
+  const hoursTo = "00"; // '00'
+  const minutesTo = "00"; // '00'
+
+  const timeFrom = convertTime(hoursFrom+":"+minutesFrom);
+  const timeTo = convertTime(hoursTo +":"+ minutesTo);
+
+  const newEvent = {
+    id: obj.event_id,
+    title: obj.title_of_event,
+    time: timeFrom + " - " + timeTo,
+    location : obj.location_of_event,
+    notes : obj.additional_notes,
+    tagged : obj.tagged_users.join(" "), 
+    addedBy : obj.added_by,
+  };
+
+  // if event array empty or current day has no event, create new 
+  eventsArr.push({
+    day: dayFrom,
+    month: monthFrom,
+    year: yearFrom,
+    events: [newEvent],
+  });
+
+    //select active day and add event class if not added
+  initCalendar();
+  updateEvents(activeDay);
+  deleteOutdatedEvents();
+  console.log({message: "Calendar events added"});
+}

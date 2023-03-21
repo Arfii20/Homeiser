@@ -256,6 +256,8 @@ async function postTransaction(event){
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 
+	console.log(transaction_SrcElement);
+
 	const transaction_SrcID = 0;
 	const transaction_DestID = 0;
 	const transaction_Src = transaction_SrcElement.value;

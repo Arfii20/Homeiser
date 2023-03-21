@@ -386,7 +386,7 @@ td.table-data {
 
 th.header{
   border: none;
-  background: rgba(162, 32, 164, 0.6);
+  background: rgba(213,146,244, 0.8);
 }
 
 .detailsTable {
@@ -396,7 +396,7 @@ th.header{
 }
 
 .main-table tbody:nth-child(odd) {
-  background: rgba(162, 32, 164, 0.3)
+  background: rgba(213,146,244, 0.4)
 }
 
 
