@@ -403,7 +403,7 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 }
 
 function isValidDate(dateString) {
-	const regex = /^\d{4}-\d{2}-\d{2}$/;
+	const regex = /^(?:(?:19|20)[0-9]{2})-(?:(?:0[1-9])|(?:1[0-2]))-(?:(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$/;
 	if (!regex.test(dateString)) {
 		return false;
 	}

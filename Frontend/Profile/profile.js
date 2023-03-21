@@ -39,19 +39,19 @@ async function getDetails(user_id){
 							        <h1 class="form__title">Your Details</h1>
 							        <div class="form__message form__message--error"></div>
 							        <div class="form__input-group">
-							            <input type="text" id="first_name" class="form__input" autofocus placeholder="First Name: ${obj.first_name}" readonly>
+							            <input type="text" id="first_name" class="form__input" placeholder="First Name: ${obj.first_name}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
 							        <div class="form__input-group">
-							            <input type="text" id="surname" class="form__input" autofocus placeholder="Last Name: ${obj.surname}" readonly>
+							            <input type="text" id="surname" class="form__input" placeholder="Last Name: ${obj.surname}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
 							        <div class="form__input-group">
-							            <input type="text" id="email" class="form__input" autofocus placeholder="Email Address: ${obj.email}" readonly>
+							            <input type="text" id="email" class="form__input" placeholder="Email Address: ${obj.email}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
 							        <div class="form__input-group">
-							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: ${obj.date_of_birth}" readonly>
+							            <input type="text" id="date_of_birth" class="form__input" placeholder="Date of Birth: ${obj.date_of_birth}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
 							        <button class="form__button" type="submit" onclick=postDetails(event)>Edit Details</button>
@@ -109,6 +109,7 @@ async function postDetails(event){
 				            <div class="form__input-error-message"></div>
 				        </div>
 				        <button class="form__button" type="submit" onclick=postDetails(event)>Save</button>
+				        <button class="form__button" type="submit" style="margin-top:0.8rem">Cancel</button>
 				    </form>`;
 
 		profile_FnameElement.removeAttribute("readonly", "readonly");
@@ -182,16 +183,16 @@ async function postDetails(event){
 			return;
 		}
 		else{
-			clearInputError(register_ConfirmElement);
+			clearInputError(profile_confirmPasswordElement);
 		}
 
 		const url = BASE + "user_profile/" + user_id;
-	    const data = new URLSearchParams();
+	    const data_confirm = new URLSearchParams();
 
-		data.append('password', profile_password);
+		data_confirm.append('password', profile_password);
 	    const response_confirm = await fetch(url, {
 	                    method: 'PATCH',
-	                    body: data,
+	                    body: data_confirm,
 	                    headers: {
 	                      'Content-Type': 'application/x-www-form-urlencoded'
 	                    }
@@ -205,6 +206,7 @@ async function postDetails(event){
 			clearInputError(profile_passwordElement);
 		}
 
+	    const data = new URLSearchParams();
 	    data.append('first_name', profile_Fname.replace(/'/g, "\\'"));
 	    data.append('surname', profile_Lname.replace(/'/g, "\\'"));
 	    data.append('email', profile_Email.replace(/'/g, "\\'"));
@@ -226,6 +228,9 @@ async function postDetails(event){
 			profile_EmailElement.setAttribute("readonly", "readonly");
 			profile_BirthElement.setAttribute("readonly", "readonly");
 
+			profile_passwordElement.remove();
+			profile_confirmPasswordElement.remove();
+
 			profile_FnameElement.setAttribute("placeholder", "First Name: " + profile_FnameElement.value);
 			profile_LnameElement.setAttribute("placeholder", "Last Name: " + profile_LnameElement.value);
 			profile_EmailElement.setAttribute("placeholder", "Email Address: " + profile_EmailElement.value);
@@ -239,8 +244,6 @@ async function postDetails(event){
 	    console.log(await response.json())
 	}
 }
-
-
 
 function createMockUpHTMLofProfile(){
 	container.innerHTML = `<form class="form" id="createAccount">
@@ -266,25 +269,8 @@ function createMockUpHTMLofProfile(){
 							    </form>`;
 }
 
-function logout(){
-  // Get all cookies and split them into an array
-  const cookies = document.cookie.split(";");
-
-  // Loop through all cookies and delete them by setting their expiration date to a date in the past
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  console.log("Cookies cleared");
-
-  window.location.href = "../login.html";
-}
-
 function isValidDate(register_Birth) {
-	const regex = /^\d{4}-\d{2}-\d{2}$/;
+	const regex = /^(?:(?:19|20)[0-9]{2})-(?:(?:0[1-9])|(?:1[0-2]))-(?:(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$/;
 	if (!regex.test(register_Birth)) {
 		return false;
 	}
@@ -303,7 +289,6 @@ function isValidEmail(register_Email) {
 	return true;
 }
 
-
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
 	const inputGroupElement = inputElement.closest(inputGroupSelector);
 	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
@@ -316,4 +301,21 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
 	inputGroupElement.classList.remove('form__input-group--error');
 	errorElement.innerText = '';
+}
+
+function logout(){
+  // Get all cookies and split them into an array
+  const cookies = document.cookie.split(";");
+
+  // Loop through all cookies and delete them by setting their expiration date to a date in the past
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+
+  console.log("Cookies cleared");
+
+  window.location.href = "../login.html";
 }
