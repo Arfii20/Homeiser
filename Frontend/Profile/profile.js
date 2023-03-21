@@ -54,7 +54,7 @@ async function getDetails(user_id){
 							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: ${obj.date_of_birth}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
-							        <button class="form__button" type="submit">Edit Details</button>
+							        <button class="form__button" type="submit" onclick=postDetails(event)>Edit Details</button>
 							    </form>`;
 		}
 		else {
@@ -69,6 +69,123 @@ async function getDetails(user_id){
     }
   }
 }
+
+async function postDetails(event){
+	const button = event.target;
+
+	const form = button.closest('form');
+	const profile_FnameElement = form.querySelector('input[placeholder*="First Name"]');
+	const profile_LnameElement = form.querySelector('input[placeholder*="Last Name"]');
+	const profile_EmailElement = form.querySelector('input[placeholder*="Email address"]');
+	const profile_BirthElement = form.querySelector('input[placeholder*="Date of Birth"]');
+
+	const profile_Fname = profile_FnameElement.value;
+	const profile_Lname = profile_LnameElement.value;
+	const profile_Email = profile_PasswordElement.value;
+	const profile_Birth = profile_BirthElement.value;
+
+	console.log(profile_Birth);
+	// const profile_Paid = "false";
+	// const profile_HouseId = house_id;
+
+	if (profile_Fname === "") {
+		setInputError(profile_FnameElement, 'Please enter First Name');
+		return;
+	}
+	else{
+		clearInputError(profile_FnameElement);
+	}
+
+	
+	if (profile_Lname === "") {
+		setInputError(profile_LnameElement, 'Please enter Last Name');
+		return;
+	}
+	else{
+		clearInputError(profile_Lname);
+	}
+
+
+	if (profile_Birth === "") {
+		setInputError(profile_BirthElement, 'Please enter birthday');
+		return;
+	}
+	else if (!isValidDate(profile_Birth)){
+		setInputError(profile_BirthElement, "Date must be valid and in yyyy-mm-dd format");
+		return;
+	}
+	else{
+		clearInputError(profile_BirthElement);
+	}
+
+
+	if (profile_Email === "") {
+		setInputError(profile_EmailElement, 'Please enter Email');
+		return;
+	}
+	else if (!isValidEmail(profile_Email)) {
+		setInputError(profile_EmailElement, 'The email address is invalid');
+		return;
+	}
+	else{
+		clearInputError(profile_EmailElement);
+	}
+
+
+	if (profile_Password === "") {
+		setInputError(profile_PasswordElement, 'Please enter password');
+		return;
+	}
+	else{
+		clearInputError(profile_PasswordElement);
+	}
+
+
+	if (profile_Confirm !== profile_Password) {
+		setInputError(profile_ConfirmElement, 'Passwords don\'t match');
+		return;
+	}
+	else{
+		clearInputError(profile_ConfirmElement);
+	}
+
+
+
+	fetch(BASE + "profile", {
+	  	method: 'POST',
+	  	headers: {
+	    	'Content-Type': 'application/json'
+	  	},
+	  	body: JSON.stringify({
+			user_id: null,
+	    	first_name: profile_Fname,
+	    	surname: profile_Lname,
+			email: profile_Email,
+			password: profile_Password,
+			dob: profile_Birth,
+	    	// confirm: profile_Confirm,
+			household_id: null,
+			color: null,
+	  	})
+	})
+	.then(response => {
+	  	if (response.ok) {
+	    	console.log({message: "Registration successful"});
+			ContinueButton.innerText = "profile";
+			getLedgerResources(user_id);
+	  	} else {
+	    	throw new Error('Request failed.');
+	  	}
+	})
+	.then(data => {
+	  	console.log(data);
+	})
+	.catch(error => {
+	  	console.log(error);
+	});
+
+}
+
 
 
 function createMockUpHTMLofProfile(){
@@ -110,4 +227,16 @@ function logout(){
   console.log("Cookies cleared");
 
   window.location.href = "../login.html";
+}
+
+function isValidDate(register_Birth) {
+	const regex = /^\d{4}-\d{2}-\d{2}$/;
+	if (!regex.test(register_Birth)) {
+		return false;
+	}
+	const date = new Date(register_Birth);
+	if (isValidDate(date.getTime())) {
+		return false;
+	}
+	return true;
 }
