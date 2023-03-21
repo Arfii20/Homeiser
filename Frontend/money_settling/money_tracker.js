@@ -3,7 +3,9 @@ const rightContainer = document.querySelector(".container-right");
 const mainTable = document.querySelector(".main-table");
 const detailsTable = document.querySelector(".detailsTable");
 const leftCreateButton = document.querySelector("#Create-window-button");
-const simplifyButton = document.querySelector(".simplify_button")
+const simplifyButton = document.querySelector(".simplify_button");
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -17,14 +19,18 @@ const user_id = 630;
 const house_id = 620;
 
 if (user_id === null || user_id === undefined) {
-	window.location.href = "URL of login page";
+  not_logged_in_hrefs.style.display = "";
+  logged_in_hrefs.style.display = "none";
+  window.location.href = "URL of login page";
 }
 if (house_id === null || house_id === undefined) {
-	window.location.href = "URL of household login page";
+  window.location.href = "URL of household login page";
 }
 
-rightContainer.style.display = "none";
+not_logged_in_hrefs.style.display = "none";
+logged_in_hrefs.style.display = "";
 
+rightContainer.style.display = "none";
 getLedgerResources(user_id);
 
 async function getLedgerResources(user_id){

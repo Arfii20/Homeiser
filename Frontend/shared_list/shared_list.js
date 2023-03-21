@@ -1,4 +1,6 @@
-const eventsArr = [];
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
+
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -11,11 +13,17 @@ const user_id = 630;
 const house_id = 620;
 
 if (user_id === null || user_id === undefined) {
-	window.location.href = "URL of login page";
+  not_logged_in_hrefs.style.display = "";
+  logged_in_hrefs.style.display = "none";
+  window.location.href = "URL of login page";
 }
 if (house_id === null || house_id === undefined) {
-	window.location.href = "URL of household login page";
+  window.location.href = "URL of household login page";
 }
+
+not_logged_in_hrefs.style.display = "none";
+logged_in_hrefs.style.display = "";
+
 
 const BASE = "http://127.0.0.1:5000/";
 get_lists(house_id);
