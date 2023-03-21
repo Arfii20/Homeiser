@@ -81,12 +81,11 @@ class UserProfile(Resource):
 
         query_for_id = """SELECT id FROM user WHERE id = %s """
         cursor.execute(query_for_id % user_id)
-        connection.commit()
 
         id_exists = cursor.fetchall()
 
         if id_exists:
-            query = "UPDATE FROM user " \
+            query = "UPDATE user " \
                     "SET " \
                     "first_name = '%s', " \
                     "surname = '%s'," \

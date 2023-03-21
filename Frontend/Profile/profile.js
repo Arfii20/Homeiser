@@ -86,6 +86,7 @@ async function postDetails(event){
 	    profile_LnameElement.removeAttribute("readonly", "readonly");
 	    profile_EmailElement.removeAttribute("readonly", "readonly");
 	    profile_BirthElement.removeAttribute("readonly", "readonly");
+	    profile_FnameElement.focus();
 	}
 	
 	else{
@@ -141,10 +142,10 @@ async function postDetails(event){
 		const url = BASE + "user_profile/" + user_id;
 	    const data = new URLSearchParams();
 
-	    data.append('first_name', evTitle.value.replace(/'/g, "\\'"));
-	    data.append('surname', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeFromConverted}:00`);
-	    data.append('email', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
-	    data.append('date_of_birth', evDescription.value.replace(/'/g, "\\'"));
+	    data.append('first_name', profile_Fname.replace(/'/g, "\\'"));
+	    data.append('surname', profile_Lname.replace(/'/g, "\\'"));
+	    data.append('email', profile_Email.replace(/'/g, "\\'"));
+	    data.append('date_of_birth', profile_Birth.replace(/'/g, "\\'"));
 
 	    const response = await fetch(url, {
 	                    method: 'POST',
@@ -155,14 +156,22 @@ async function postDetails(event){
 	                  });
 
 	    if (response.ok){
-	      event.target.innerText = "Edit Details";
+			event.target.innerText = "Edit Details";
 
-	      profile_FnameElement.setAttribute("readonly", "readonly");
-	      profile_LnameElement.setAttribute("readonly", "readonly");
-	      profile_EmailElement.setAttribute("readonly", "readonly");
-	      profile_BirthElement.setAttribute("readonly", "readonly");
+			profile_FnameElement.setAttribute("readonly", "readonly");
+			profile_LnameElement.setAttribute("readonly", "readonly");
+			profile_EmailElement.setAttribute("readonly", "readonly");
+			profile_BirthElement.setAttribute("readonly", "readonly");
 
-	      get_calendarEvent(620);
+			profile_FnameElement.setAttribute("placeholder", profile_FnameElement.value);
+			profile_LnameElement.setAttribute("placeholder", profile_LnameElement.value);
+			profile_EmailElement.setAttribute("placeholder", profile_EmailElement.value);
+			profile_BirthElement.setAttribute("placeholder", profile_BirthElement.value);
+
+			profile_FnameElement.value = "";
+			profile_LnameElement.value = "";
+			profile_FnameElement.value = "";
+			profile_LnameElement.value = "";
 	    }
 	    console.log(await response.json())
 	}
@@ -224,12 +233,8 @@ function isValidDate(register_Birth) {
 }
 
 function isValidEmail(register_Email) {
-	const regee = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	if (!regee.test(register_Email)) {
-		return false;
-	}
-	const date = new Date(register_Email);
-	if (isValidEmail(date.getEmail())) {
+	const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if (!regex.test(register_Email)) {
 		return false;
 	}
 	return true;
