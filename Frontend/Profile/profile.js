@@ -163,15 +163,15 @@ async function postDetails(event){
 			profile_EmailElement.setAttribute("readonly", "readonly");
 			profile_BirthElement.setAttribute("readonly", "readonly");
 
-			profile_FnameElement.setAttribute("placeholder", profile_FnameElement.value);
-			profile_LnameElement.setAttribute("placeholder", profile_LnameElement.value);
-			profile_EmailElement.setAttribute("placeholder", profile_EmailElement.value);
-			profile_BirthElement.setAttribute("placeholder", profile_BirthElement.value);
+			profile_FnameElement.setAttribute("placeholder", "First Name: " + profile_FnameElement.value);
+			profile_LnameElement.setAttribute("placeholder", "Last Name: " + profile_LnameElement.value);
+			profile_EmailElement.setAttribute("placeholder", "Email Address: " + profile_EmailElement.value);
+			profile_BirthElement.setAttribute("placeholder", "Date of Birth: " + profile_BirthElement.value);
 
 			profile_FnameElement.value = "";
 			profile_LnameElement.value = "";
-			profile_FnameElement.value = "";
-			profile_LnameElement.value = "";
+			profile_EmailElement.value = "";
+			profile_BirthElement.value = "";
 	    }
 	    console.log(await response.json())
 	}

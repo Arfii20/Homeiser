@@ -63,7 +63,7 @@ async function getLedgerResources(user_id){
 				var paid;
 				if (obj.paid === "true"){
 					mainTable.innerHTML += `<tbody id="data-output">
-								              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+								              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="color: gray; opacity: 80%">
 									                <td class="table-data"> ${obj.src} --> ${obj.dest}
 									                </td>
 									                <td class="table-data">
@@ -538,7 +538,7 @@ function createMockUpHTMLofLedger(){
 		var paid;
 		if (obj.paid === "true"){
 			mainTable.innerHTML += `<tbody id="data-output">
-						              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="text-decoration: line-through; color: gray;">
+						              	<tr id="${obj.transaction_id}" onclick=getTransaction(event) style="color: gray; opacity: 80%">
 							                <td class="table-data"> ${obj.src} --> ${obj.dest}
 							                </td>
 							                <td class="table-data">
