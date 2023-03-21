@@ -101,53 +101,60 @@ async function getLedgerResources(user_id){
 
 async function getTransaction(event) {
 	transactionID = event.target.parentNode.getAttribute("id");
+	try {
+		const response = await fetch(BASE + "transaction/" + transactionID)
 
-	const response = await fetch(BASE + "transaction/" + transactionID)
+	  	if (response.ok) {
+	  		rightContainer.style.display = "";
+	  		console.log({message: "transaction Received"});
+	    	const obj = await JSON.parse(await response.json());
 
-  	if (response.ok) {
-  		rightContainer.style.display = "";
-  		console.log({message: "transaction Received"});
-    	const obj = await JSON.parse(await response.json());
-
-		var paidButton;
-		if (obj.paid === "true"){
-			paidButton = "Mark as Unpaid";
+			var paidButton;
+			if (obj.paid === "true"){
+				paidButton = "Mark as Unpaid";
+			}
+			else{
+				paidButton = "Mark as Paid";
+			}
+			rightContainer.innerHTML =  `<div class="container2">
+										  <form class="text" id="transactions">
+										    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
+										    <div class="form__input-error-message"></div>
+										    <div class="form__input-group">
+										      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
+										      <div class="form__input-error-message"></div>
+										    </div>
+										    <div class="form__input-group">
+										      <input type="password" class="form__input" placeholder="Destination User - ${obj.dest} " readonly>
+										      <div class="form__input-error-message"></div>
+										    </div>
+										    <div class="form__input-group">
+										      <input type="text" class="form__input" placeholder="Amount - £${obj.amount} " readonly>
+										      <div class="form__input-error-message"></div>
+										    </div>
+										    <div class="form__input-group">
+										      <input type="text" class="form__input" placeholder="Description - ${obj.description} " readonly>
+										      <div class="form__input-error-message"></div>
+										    </div>
+										    <div class="form__input-group">
+										      <input type="text" class="form__input" placeholder="Due Date - ${obj.due_date} " readonly>
+										      <div class="form__input-error-message"></div>
+										    </div>
+										    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=patchTransaction(event)> ${paidButton} </button>
+										    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
+										  </form>
+										</div>`;
+			leftCreateButton.innerText = "Close Transaction Window";
+	  	} else {
+	    	throw new Error('Error retrieving transaction.');
 		}
-		else{
-			paidButton = "Mark as Paid";
-		}
-		rightContainer.innerHTML =  `<div class="container2">
-									  <form class="text" id="transactions">
-									    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
-									    <div class="form__input-error-message"></div>
-									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
-									      <div class="form__input-error-message"></div>
-									    </div>
-									    <div class="form__input-group">
-									      <input type="password" class="form__input" placeholder="Destination User - ${obj.dest} " readonly>
-									      <div class="form__input-error-message"></div>
-									    </div>
-									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Amount - £${obj.amount} " readonly>
-									      <div class="form__input-error-message"></div>
-									    </div>
-									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Description - ${obj.description} " readonly>
-									      <div class="form__input-error-message"></div>
-									    </div>
-									    <div class="form__input-group">
-									      <input type="text" class="form__input" placeholder="Due Date - ${obj.due_date} " readonly>
-									      <div class="form__input-error-message"></div>
-									    </div>
-									    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=patchTransaction(event)> ${paidButton} </button>
-									    <button id="${obj.transaction_id}" class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
-									  </form>
-									</div>`;
-		leftCreateButton.innerText = "Close Transaction Window";
-  	} else {
-    	throw new Error('Error retrieving transaction.');
 	}
+	catch (error) {
+    console.error(error);
+    if (error.message === 'Failed to fetch') {
+        createMockUpHTMLofTransaction();
+    }
+  }
 }
 
 
@@ -558,4 +565,39 @@ function createMockUpHTMLofLedger(){
 						              </tbody>`;
 		}
 	}
+}
+
+function createMockUpHTMLofTransaction(){
+	rightContainer.style.display = "";
+	console.log({message: "transaction Received"});
+	const paidButton = "Mark as Paid";
+	rightContainer.innerHTML =  `<div class="container2">
+								  <form class="text" id="transactions">
+								    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
+								    <div class="form__input-error-message"></div>
+								    <div class="form__input-group">
+								      <input type="text" class="form__input" placeholder="Source User - Mockup User 1 " readonly>
+								      <div class="form__input-error-message"></div>
+								    </div>
+								    <div class="form__input-group">
+								      <input type="password" class="form__input" placeholder="Destination User - Mockup User 2 " readonly>
+								      <div class="form__input-error-message"></div>
+								    </div>
+								    <div class="form__input-group">
+								      <input type="text" class="form__input" placeholder="Amount - £10 " readonly>
+								      <div class="form__input-error-message"></div>
+								    </div>
+								    <div class="form__input-group">
+								      <input type="text" class="form__input" placeholder="Description - Description of Mockup Transaction " readonly>
+								      <div class="form__input-error-message"></div>
+								    </div>
+								    <div class="form__input-group">
+								      <input type="text" class="form__input" placeholder="Due Date - 2023-05-25 " readonly>
+								      <div class="form__input-error-message"></div>
+								    </div>
+								    <button class="form__button" type="submit" onclick=patchTransaction(event)> ${paidButton} </button>
+								    <button class="form__button" type="submit" onclick=deleteTransaction(event)> Delete </button>
+								  </form>
+								</div>`;
+	leftCreateButton.innerText = "Close Transaction Window";
 }
