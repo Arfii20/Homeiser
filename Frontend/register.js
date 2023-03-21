@@ -97,7 +97,7 @@ async function postRegister(event){
 	const register_Confirm = register_ConfirmElement.value;
 	const register_Birth = register_BirthElement.value;
 
-	// console.log(register_Birth);
+	console.log(register_Birth);
 	// const register_Paid = "false";
 	// const register_HouseId = house_id;
 
@@ -237,4 +237,21 @@ function isValidEmail(register_Email) {
 		return false;
 	}
 	return true;
+}
+
+function logout(){
+	// Get all cookies and split them into an array
+	const cookies = document.cookie.split(";");
+  
+	// Loop through all cookies and delete them by setting their expiration date to a date in the past
+	for (let i = 0; i < cookies.length; i++) {
+	  const cookie = cookies[i];
+	  const eqPos = cookie.indexOf("=");
+	  const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+	  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	}
+  
+	console.log("Cookies cleared");
+  
+	window.location.href = "login.html";
 }

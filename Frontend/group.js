@@ -1,39 +1,9 @@
-async function fetchGroup(event){
-	event.preventDefault();
-    // console.log("sis");
-	const button = event.target;
-
-    const group_JGElement = form.querySelector('input[placeholder*="Join Group name"]');
-    const group_JGPassElement = form.querySelector('input[placeholder*="Join Group password"]');
-
-    const group_JG = group_JGElement.value;
-    const group_JGPass = group_JGPassElement.value;
-
-    if (group_JG === "") {
-		setInputError(group_JGElement, 'Please enter Group Name');
-		return;
-	}
-	else{
-		clearInputError(group_JGElement);
-	}
-
-    if (group_JGPass === "") {
-		setInputError(group_JGPassElement, 'Please enter Group Password');
-		return;
-	}
-	else{
-		clearInputError(group_JGPassElement);
-	}
-
-}
-
-
 async function postGroup(event){
 	event.preventDefault();
-    // console.log("sis");
-	const button = event.target;
+    console.log("sis");
+	const CGbutton = event.target;
 
-	const form = button.closest('form');
+	const form = CGbutton.closest('form');
 	const group_CGElement = form.querySelector('input[placeholder*="Create Group name"]');
 	const group_CGPassElement = form.querySelector('input[placeholder*="Create Group password"]');
 	const group_MaxuserElement = form.querySelector('input[placeholder*="Max Users"]');
@@ -51,6 +21,7 @@ async function postGroup(event){
 	else{
 		clearInputError(group_CGElement);
 	}
+
 
     if (group_CGPass === "") {
 		setInputError(group_CGPassElement, 'Please create Group Password');
@@ -105,6 +76,37 @@ async function postGroup(event){
 }
 
 
+async function patchGroup(event){
+	event.preventDefault();
+    console.log("sis");
+	const JGbutton = event.target;
+
+    const form = JGbutton.closest('form');
+    const group_JGElement = form.querySelector('input[placeholder*="Join Group name"]');
+    const group_JGPassElement = form.querySelector('input[placeholder*="Join Group password"]');
+
+    const group_JG = group_JGElement.value;
+    const group_JGPass = group_JGPassElement.value;
+
+    if (group_JG === "") {
+		setInputError(group_JGElement, 'Please enter Group Name');
+		return;
+	}
+	else{
+		clearInputError(group_JGElement);
+	}
+
+    if (group_JGPass === "") {
+		setInputError(group_JGPassElement, 'Please enter Group Password');
+		return;
+	}
+	else{
+		clearInputError(group_JGPassElement);
+	}
+
+}
+
+
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
 	const inputGroupElement = inputElement.closest(inputGroupSelector);
 	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
@@ -136,3 +138,19 @@ function Maxuser(num) {
     return true;
   }
   
+function logout(){
+// Get all cookies and split them into an array
+const cookies = document.cookie.split(";");
+
+// Loop through all cookies and delete them by setting their expiration date to a date in the past
+for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+console.log("Cookies cleared");
+
+window.location.href = "login.html";
+}
