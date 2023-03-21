@@ -33,7 +33,7 @@ class UserProfile(Resource):
         """
         Sends the colours assigned to individual users to the website
         How get requests for user_colours should be like:
-        requests.get(BASE + "user_profile/<int:user_id>", {first_name: first_name,
+        requests.post(BASE + "user_profile/<int:user_id>", {first_name: first_name,
                                                         surname: surname,
                                                         email: email,
                                                         date_of_birth})
@@ -97,6 +97,38 @@ class UserProfile(Resource):
             cursor.execute(query % data)
             connection.commit()
 
+            return {"message": "User Updated"}
+        else:
+            abort(404, error="User not found")
+
+    def patch(self, user_id):
+        """
+                Sends the colours assigned to individual users to the website
+                How get requests for user_colours should be like:
+                requests.patch(BASE + "user_profile/<int:user_id>", {password: pass})
+
+                :returns:
+                The server will return a json object of user
+                """
+        connection, cursor = get_conn()
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=int, location="form")
+        parser.add_argument(
+            "password",
+            type=str,
+            required=True,
+            location="form",
+            help="Password is required",
+        )
+
+        args = parser.parse_args()
+        password = args.get("password")
+
+        query_for_id = """SELECT id FROM user WHERE id = %s AND password = '%s'"""
+        cursor.execute(query_for_id % (user_id, password))
+
+        id_exists = cursor.fetchall()
+        if id_exists:
             return {"message": "User Updated"}
         else:
             abort(404, error="User not found")
