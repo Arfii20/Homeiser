@@ -22,9 +22,6 @@ if (user_id === null || user_id === undefined) {
   hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
-if (house_id === null || house_id === undefined) {
-  window.location.href = "../group";
-}
 
 not_logged_in_hrefs.style.display = "none";
 logged_in_hrefs.style.display = "";

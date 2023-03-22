@@ -5,8 +5,7 @@ import server.transactions.ledger_resource
 import server.transactions.transaction_resources as tr
 import server.shared_calendar.shared_calendar as calendar
 import server.shared_list.shared_list as lists
-import server.shared_list.user_group_details as profile
-
+import server.shared_list.user_group_details as group_user
 
 
 def attach(api: flask_restful.Api):
@@ -28,5 +27,5 @@ def attach(api: flask_restful.Api):
     api.add_resource(server.transactions.ledger_resource.LedgerResource, "/ledger/<int:user_id>")
 
     # user-group
-    api.add_resource(profile.UserProfile, "/user_profile/<int:user_id>")
-    api.add_resource(profile.GroupDetails, "/group_details/<int:house_id>")
+    api.add_resource(group_user.UserProfile, "/user_profile/<int:user_id>")
+    api.add_resource(group_user.GroupDetails, "/group_details/<int:house_id>")
