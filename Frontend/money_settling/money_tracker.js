@@ -219,14 +219,15 @@ async function patchTransaction(event){
 	})
 	.then(response => {
 		if (response.ok) {
-			console.log(response.json());
 			if (event.target.innerText === "Mark as Paid"){
 				event.target.innerText = "Mark as Unpaid";
+				console.log({message: "Marked as Paid"});
 			}
 			else{
 				event.target.innerText = "Mark as Paid";
-			getLedgerResources(user_id);
+				console.log({message: "Marked as Unpaid"});
 			}
+			getLedgerResources(user_id);
 		} else {
 			throw new Error('Request failed.');
 		}
@@ -276,15 +277,12 @@ async function postTransaction(event){
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 	
-	const transaction_SrcID = 0;
-	const transaction_DestID = 0;
 	const transaction_Src = transaction_SrcElement.value;
 	const transaction_Dest = transaction_DestElement.value;
 	const transaction_Amount = parseInt(transaction_AmountElement.value*100);
 	const transaction_Description = transaction_DescriptionElement.value;
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
-	const transaction_HouseId = house_id;
 
 	if (transaction_Src === "") {
 		setInputError(transaction_SrcElement, 'Please enter source user');
@@ -340,15 +338,16 @@ async function postTransaction(event){
 	    	'Content-Type': 'application/json'
 	  	},
 	  	body: JSON.stringify({
-	    	src_id: transaction_SrcID,
-	    	dest_id: transaction_DestID,
+	  		transaction_id: 0,
+	    	src_id: 0,
+	    	dest_id: 0,
 	    	src: transaction_Src.replace(/'/g, "\\'"),
 	    	dest: transaction_Dest.replace(/'/g, "\\'"),
 	    	amount: parseInt(transaction_Amount),
 	    	description: transaction_Description.replace(/'/g, "\\'"),
 	    	due_date: transaction_DueDate,
 	    	paid: transaction_Paid,
-	    	house_id: transaction_HouseId
+	    	house_id: 0
 	  	})
 	})
 	.then(response => {

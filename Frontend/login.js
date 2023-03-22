@@ -22,12 +22,8 @@ async function postLogin(event){
 	const login_EmailElement = form.querySelector('input[placeholder*="Email Address"]');
 	const login_PasswordElement = form.querySelector('input[placeholder*="Password"]');
 
-
-
 	const login_Email = login_EmailElement.value;
     const login_Password = login_PasswordElement.value;
-
-
 
 	if (login_Email === "") {
 		setInputError(login_EmailElement, 'Please enter email');
@@ -41,20 +37,6 @@ async function postLogin(event){
 		clearInputError(login_EmailElement);
 	}
 
-
-	// if (login_Password === "") {
-	// 	setInputError(login_PasswordElement, 'Please enter password');
-	// 	return;
-	// }
-	// else if (!isValidDate(login_Password)){
-	// 	setInputError(login_PasswordElement, "The password is invalid");
-	// 	return;
-	// }
-	// else{
-	// 	clearInputError(login_PasswordElement);
-	// }
-
-
     if (login_Password === "") {
         setInputError(login_PasswordElement, 'Please enter password');
         return;
@@ -62,23 +44,21 @@ async function postLogin(event){
     clearInputError(login_PasswordElement);
     
 
-
 	fetch(BASE + "login", {
 	  	method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json'
 	  	},
 	  	body: JSON.stringify({
-
+	  		src_id: login_Email,
+	    	dest_id: login_Password
 	  	})
 	})
 	.then(response => {
 	  	if (response.ok) {
 	    	console.log({message: "Login successful"});
-			// rightContainer.innerHTML = "";
-			// rightContainer.style.display = "none";
-			// ContinueButton.innerText = "login";
-			getLedgerResources(user_id);
+	    	
+
 	  	} else {
 	    	throw new Error('Login failed.');
 	  	}
@@ -111,29 +91,31 @@ function isValidEmail(login_Email) {
     return email.test(login_Email);
 }
 
+function setCookies(user_id, house_id) {
+	// Get the current date
+	const currentDate = new Date();
 
-// Get the current date
-const currentDate = new Date();
+	// Add one day to the current date
+	const tomorrowDate = new Date(currentDate);
+	tomorrowDate.setDate(currentDate.getDate() + 2);
 
-// Add one day to the current date
-const tomorrowDate = new Date(currentDate);
-tomorrowDate.setDate(currentDate.getDate() + 2);
+	// Set the time to 12:00:00
+	tomorrowDate.setHours(12);
+	tomorrowDate.setMinutes(0);
+	tomorrowDate.setSeconds(0);
+	tomorrowDate.setMilliseconds(0);
 
-// Set the time to 12:00:00
-tomorrowDate.setHours(12);
-tomorrowDate.setMinutes(0);
-tomorrowDate.setSeconds(0);
-tomorrowDate.setMilliseconds(0);
+	// Convert the date to a UTC string
+	const expires = tomorrowDate.toUTCString();
 
-// Convert the date to a UTC string
-const expires = tomorrowDate.toUTCString();
+	// Set the path of the cookie
+	const path = "/"; 
 
-// Set the path of the cookie
-const path = "/"; 
-
-// Set the cookie with a name, value, expiration date, and path
-document.cookie = "userID=SomeValue; expires=" + expires + "; path=" + path;
-
+	// Set the cookie with a name, value, expiration date, and path
+	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
+	// Set the cookie with a name, value, expiration date, and path
+	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
+}
 
 function logout(){
 	// Get all cookies and split them into an array
