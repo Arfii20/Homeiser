@@ -33,7 +33,7 @@ class User:
         }
     """
 
-    u_id: int
+    u_id: int | None
     first_name: str
     surname: str
     email: str

@@ -2,6 +2,7 @@
     Adding, removing, ~modifying~ users
     Adding and removing houses
     Joining and leaving houses"""
+import time
 
 from flask_restful import Resource
 from flask import request
@@ -36,11 +37,12 @@ class UserResource(Resource):
             r = json.loads(r)
 
         usr = User.build_from_req(request=r)
-
         try:
             usr.insert_to_database(cur, conn)
         except UserError as ue:
             return str(ue), 500
+
+        return usr.json, 201
 
     def patch(self, household_id: int, email: str, joining: int):
         """If joining is true (non-zero), user will try to join household
@@ -57,7 +59,7 @@ class UserResource(Resource):
         except UserError as ue:
             return str(ue), 500
 
-        return 200
+        return usr.json, 200
 
     def delete(self, email: str):
         """Used to delete a user account"""
