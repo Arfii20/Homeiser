@@ -11,6 +11,54 @@ from admin.house import House
 target = "http://127.0.0.1:5000/"
 
 
+class TestUserLoginResource(TestCase):
+
+    def setUp(self) -> None:
+
+        # connect to db
+        self.conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        self.user = User(
+            None,
+            "test",
+            "user",
+            "test@user.com",
+            "test",
+            datetime.date(1, 1, 1),
+            None,
+            None,
+        )
+
+
+    def test_post(self):
+
+        # insert new test user
+        requests.post(
+            target + "/user",
+            headers={"Content-Type": "application/json"},
+            json=self.user.json,
+        )
+
+        r = requests.post(target + '/login', headers={'Content-Type': 'application/json'},
+                          json={'email': 'test@user.com', 'password': 'test'})
+
+        with self.subTest("Correct password"):
+            self.assertEqual(r.status_code, 200)
+
+        r = requests.post(target + '/login', headers={'Content-Type': 'application/json'},
+                          json={'email': 'test@user.com', 'password': 'tesfdst'})
+
+        # try incorrect password
+        with self.subTest("Incorrect password"):
+            self.assertEqual(r.status_code, 401)
+
+        cur = self.conn.cursor()
+        cur.execute("""DELETE FROM user WHERE id = %s""", [cur.lastrowid])
+        self.conn.commit()
+
+
 class TestUserResource(TestCase):
     def setUp(self):
         # connect to db
@@ -64,17 +112,13 @@ class TestUserResource(TestCase):
         self.conn.commit()
 
         cur = self.conn.cursor(buffered=True)
-
-        try:
-            cur.execute("""DELETE FROM user ORDER BY id DESC LIMIT 1""")
-        except:
-            ...
+        cur.execute("""DELETE FROM user WHERE id = %s""", [cur.lastrowid])
 
         self.conn.commit()
 
     def test_patch(self):
         # insert new user
-        requests.post(
+        r = requests.post(
             target + "/user",
             headers={"Content-Type": "application/json"},
             json=self.user.json,
