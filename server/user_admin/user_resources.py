@@ -7,6 +7,7 @@ from flask_restful import Resource
 from flask import request
 import json
 
+from admin.house import House, HouseConstructionError, HouseInsertionError, HouseDeletionError
 from admin.user import User, UserError
 from server.db_handler import get_conn
 
@@ -70,9 +71,41 @@ class UserResource(Resource):
         return f"Deleted user {email}", 200
 
 
-class House(Resource):
+class HouseResource(Resource):
     def post(self):
         """Used to create a household"""
 
+        conn, _ = get_conn()
+
+        # try to build a house from request
+        try:
+            house = House.build_from_request(request=request)
+        except HouseConstructionError as hce:
+            return str(hce), 500
+
+        # try to insert the house into the db
+        try:
+            house.insert_to_db(conn)
+        except HouseInsertionError as hie:
+            return str(hie), 500
+
+        # if successful return the created house and a 201
+        return house.json, 201
+
     def delete(self, household_id: int):
         """Used to delete a household given only one person is a member of the house"""
+
+        conn, _ = get_conn()
+
+        # try to build a house from id
+        try:
+            house = House.build_from_id(household_id, conn)
+        except HouseConstructionError as hce:
+            # error means that id wasn't found in server
+            return str(hce), 404
+
+        # try to delete
+        try:
+            house.delete(conn)
+        except HouseDeletionError as hde:
+            return str(hde), 500
