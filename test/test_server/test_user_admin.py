@@ -6,6 +6,7 @@ import requests
 import mysql.connector
 
 from admin.user import User
+from admin.house import House
 
 target = "http://127.0.0.1:5000/"
 
@@ -127,6 +128,15 @@ class TestUserResource(TestCase):
 
 
 class TestHouseResource(TestCase):
+
+    def setUp(self):
+        # connect to db
+        self.conn = mysql.connector.connect(
+            host="localhost", user="root", password="I_love_stew!12", database="x5db"
+        )
+
+        self.house = House(0, "test", "test_password", 10, "SEYMOUR ROAD", "KT8PF")
+
     def test_get(self):
         r = requests.get(target + "/house/1")
         self.assertEqual(
@@ -142,7 +152,21 @@ class TestHouseResource(TestCase):
         )
 
     def test_post(self):
-        ...
+
+        # create house
+        requests.post(
+            target + "/house",
+            headers={"Content-Type": "application/json"},
+            json=self.house.json,
+        )
+
+        # check house is there
+        cur = self.conn.cursor()
+        cur.execute("""SELECT id FROM household ORDER BY id DESC LIMIT 1""")
+        h_id = cur.fetchone()[0]
+
+        self.assertGreater(h_id, 3, msg="New household inserted")
+
 
     def test_delete(self):
         ...

@@ -61,7 +61,7 @@ class House:
 
         # load json representation of Transaction into a dict if it is not already a dict
         if type(request) != dict:
-            r: dict = json.loads(request.json())  # type: ignore
+            r: dict = json.loads(request.get_json())  # type: ignore
         else:
             r = request
 
@@ -81,7 +81,7 @@ class House:
             # encode password as a byte string using utf8 encoding
             r["password"] = bytes(r["password"], encoding="utf8")
             hasher.update(r["password"])
-            r["password"] = hasher.digest()
+            r["password"] = str(hasher.digest())
 
         except KeyError as ke:
             # means that json was not in correct format
@@ -145,7 +145,7 @@ class House:
                         VALUES (%s, %s, %s, %s)""",
             [
                 self.name,
-                str(self.password, encoding="utf8"),
+                self.password,
                 self.max_residents,
                 postcode_id,
             ],
