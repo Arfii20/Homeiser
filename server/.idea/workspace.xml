@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="" />
+    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Frontend/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/about.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/about.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/group.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/group.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/group.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/group.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/register.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/register.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/welcome.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/welcome.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/welcome.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/welcome.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/endpoints.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/host.py" beforeDir="false" afterPath="$PROJECT_DIR$/host.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -199,7 +213,7 @@
       <workItem from="1679284044862" duration="8462000" />
       <workItem from="1679393271716" duration="5831000" />
       <workItem from="1679432328258" duration="9103000" />
-      <workItem from="1679487941456" duration="7123000" />
+      <workItem from="1679487941456" duration="9166000" />
     </task>
     <servers />
   </component>
@@ -220,7 +234,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/host_py$user_profile.coverage" NAME="user_profile Coverage Results" MODIFIED="1679461077544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/shared_list" />
     <SUITE FILE_PATH="coverage/host_py$.coverage" NAME=" Coverage Results" MODIFIED="1679004491671" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../test/test_calendar" />
-    <SUITE FILE_PATH="coverage/host_py$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1679500409035" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/host_py$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1679504588744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/host_py$Flask__host_py_.coverage" NAME="Flask (host.py) Coverage Results" MODIFIED="1678880953701" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/host_py$host.coverage" NAME="host Coverage Results" MODIFIED="1678884431952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/host_py$Encrypt_or_Decrypt.coverage" NAME="Encrypt or Decrypt Coverage Results" MODIFIED="1679266302968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="D:/Languages/Pycharm" />

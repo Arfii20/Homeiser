@@ -1,4 +1,23 @@
 const BASE = "http://127.0.0.1:5000/";
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
+const hamburger = document.querySelector(".hamburger");
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// const user_id = getCookie("user_id");
+const user_id = 630;
+
+if (user_id === null || user_id === undefined) {
+  window.location.href = "../login.html";
+}
+not_logged_in_hrefs.style.display = "";
+logged_in_hrefs.style.display = "none";
+hamburger.style.display = "none";
 
 async function postGroup(event){
 	event.preventDefault();

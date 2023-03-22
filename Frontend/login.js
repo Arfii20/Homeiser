@@ -1,3 +1,18 @@
+const BASE = "http://127.0.0.1:5000/";
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
+const hamburger = document.querySelector(".hamburger");
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+not_logged_in_hrefs.style.display = "";
+logged_in_hrefs.style.display = "none";
+hamburger.style.display = "none";
+
 async function postLogin(event){
 	event.preventDefault();
     // console.log("sis");

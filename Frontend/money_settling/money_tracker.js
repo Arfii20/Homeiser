@@ -371,14 +371,14 @@ async function postTransaction(event){
 }
 
 async function simplifyDebts(event){
-	const url = `${BASE}${house_id}/simplify`;
-	const options = 
+	const url = `${BASE}simplify/${house_id}`;
 
-	fetch(url, {
+	await fetch(url, {
 	  method: 'POST',
 	  headers: {
 	    'Content-Type': 'application/json'
-	  }
+	  },
+	  body: {}
 	})
 	.then(response => {
 		if (response.ok) {
