@@ -26,7 +26,8 @@ CORS(app, resources={
     r"/user_profile/*": {"origins": "*"},
     r"/group_details/*": {"origins": "*"},
     r"/simplify/*": {"origins": "*"},
-    r"/transaction/as_events/*": {"origins": "*"}
+    r"/transaction/as_events/*": {"origins": "*"},
+    r"/login": {"origins": "*"}
 })
 
 

@@ -41,34 +41,32 @@ async function postLogin(event){
         setInputError(login_PasswordElement, 'Please enter password');
         return;
     }
-    clearInputError(login_PasswordElement);
-    
+    else{
+    	clearInputError(login_PasswordElement);
+    }
 
-	fetch(BASE + "login", {
-	  	method: 'POST',
-	  	headers: {
-	    	'Content-Type': 'application/json'
-	  	},
-	  	body: JSON.stringify({
-	  		src_id: login_Email,
-	    	dest_id: login_Password
-	  	})
-	})
-	.then(response => {
-	  	if (response.ok) {
-	    	console.log({message: "Login successful"});
-	    	
+	const response = await fetch(BASE + "login", {
+											  	method: 'POST',
+											  	headers: {
+											    	'Content-Type': 'application/json'
+											  	},
+											  	body: JSON.stringify({
+											  		email: login_Email,
+											    	password: login_Password
+											  	})
+											})
 
-	  	} else {
-	    	throw new Error('Login failed.');
-	  	}
-	})
-	.then(data => {
-	  	console.log(data);
-	})
-	.catch(error => {
-	  	console.log(error);
-	});
+  	if (response.ok) {
+    	console.log({message: "Login successful"});
+    	const obj = await JSON.parse(await response.json());
+
+    	setCookies(obj.id, obj.household_id, obj.email);
+    	window.location.href = "./welcome"
+    	clearInputError(login_PasswordElement);
+	}
+	else {
+		setInputError(login_PasswordElement, 'Incorrect Email or Password');
+	}
 }
 
 
@@ -91,7 +89,7 @@ function isValidEmail(login_Email) {
     return email.test(login_Email);
 }
 
-function setCookies(user_id, house_id) {
+function setCookies(user_id, house_id, email_id) {
 	// Get the current date
 	const currentDate = new Date();
 
@@ -113,8 +111,8 @@ function setCookies(user_id, house_id) {
 
 	// Set the cookie with a name, value, expiration date, and path
 	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
-	// Set the cookie with a name, value, expiration date, and path
 	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
+	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
 }
 
 function logout(){

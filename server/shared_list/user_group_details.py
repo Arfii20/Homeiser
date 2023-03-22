@@ -1,3 +1,5 @@
+import hashlib
+
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
 import re
@@ -123,8 +125,13 @@ class UserProfile(Resource):
         args = parser.parse_args()
         password = args.get("password")
 
+        hasher = hashlib.sha3_256()
+        hasher.update(bytes(password, encoding='utf8'))
+        exp_password = str(hasher.digest())
+        data = (user_id, bytes(exp_password, encoding='utf8'))
+
         query_for_id = """SELECT id FROM user WHERE id = %s AND password = '%s'"""
-        cursor.execute(query_for_id % (user_id, password))
+        cursor.execute(query_for_id % data)
 
         id_exists = cursor.fetchall()
         if id_exists:
