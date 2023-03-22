@@ -21,7 +21,6 @@ hamburger.style.display = "none";
 
 async function postGroup(event){
 	event.preventDefault();
-    // console.log("sis");
 	const CGbutton = event.target;
 
 	const form = CGbutton.closest('form');
@@ -52,57 +51,42 @@ async function postGroup(event){
 		clearInputError(group_CGPassElement);
 	}
 
-
-    // if (group_Maxuser === "") {
-	// 	setInputError(group_MaxuserElement, 'Please enter max users');
-	// 	return;
-	// }
-	// else if (!isMaxUserValid(parseInt(group_Maxuser))) {
-	// 	setInputError(group_MaxuserElement, 'The number of user should greater than 1');
-	// 	return;
-	// }
-	// else{
-	// 	clearInputError(group_MaxuserElement);
-	// }
     if (group_Maxuser === 0) {
         setInputError(group_MaxuserElement, 'Please enter max users');
         return;
-    } else if (!Number.isInteger(Number(group_Maxuser)) || group_Maxuser <= 0) {
+    } else if (!Number.isInteger(Number(group_Maxuser)) || (Number(group_Maxuser) <= 0)) {
         setInputError(group_MaxuserElement, 'The number of users should be a positive integer');
         return;
     } else {
         clearInputError(group_MaxuserElement);
     }
-    
-    // console.log("e")
 
 
-	fetch(BASE + "group", {
-	  	method: 'POST',
-	  	headers: {
-	    	'Content-Type': 'application/json'
-	  	},
-	  	body: JSON.stringify({
-	
-	  	})
-	})
-	.then(response => {
-	  	if (response.ok) {
-	    	console.log({message: "Registration successful"});
-			// rightContainer.innerHTML = "";
-			// rightContainer.style.display = "none";
-			ContinueButton.innerText = "group";
-			getLedgerResources(user_id);
-	  	} else {
-	    	throw new Error('Request failed.');
-	  	}
-	})
-	.then(data => {
-	  	console.log(data);
-	})
-	.catch(error => {
-	  	console.log(error);
-	});
+	const response = await fetch(BASE + "house", {
+												  	method: 'POST',
+												  	headers: {
+												    	'Content-Type': 'application/json'
+												  	},
+												  	body: JSON.stringify({
+														user_id: null,
+												    	first_name: register_Fname,
+												    	surname: register_Lname,
+														email: register_Email,
+														password: register_Password,
+														dob: register_Birth,
+														household_id: null,
+														colour: null,
+												  	})
+												})
+  	if (response.ok) {
+    	console.log({message: "House creation successful"});
+    	const obj = await JSON.parse(await response.json());
+
+    	setCookies(obj.u_id, obj.household, obj.email);
+    	window.location.href = "./welcome.html";
+  	} else {
+    	throw new Error('Request failed.');
+  	}
 }
 
 
@@ -135,8 +119,12 @@ async function patchGroup(event){
 		clearInputError(group_JGPassElement);
 	}
 
-}
 
+
+
+
+
+}
 
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
 	const inputGroupElement = inputElement.closest(inputGroupSelector);
@@ -152,45 +140,45 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	errorElement.innerText = '';
 }
 
- 
+function setCookies(user_id, house_id, email_id) {
+	// Get the current date
+	const currentDate = new Date();
 
-// Get the current date
-const currentDate = new Date();
+	// Add one day to the current date
+	const tomorrowDate = new Date(currentDate);
+	tomorrowDate.setDate(currentDate.getDate() + 2);
 
-// Add one day to the current date
-const tomorrowDate = new Date(currentDate);
-tomorrowDate.setDate(currentDate.getDate() + 2);
+	// Set the time to 12:00:00
+	tomorrowDate.setHours(12);
+	tomorrowDate.setMinutes(0);
+	tomorrowDate.setSeconds(0);
+	tomorrowDate.setMilliseconds(0);
 
-// Set the time to 12:00:00
-tomorrowDate.setHours(12);
-tomorrowDate.setMinutes(0);
-tomorrowDate.setSeconds(0);
-tomorrowDate.setMilliseconds(0);
+	// Convert the date to a UTC string
+	const expires = tomorrowDate.toUTCString();
 
-// Convert the date to a UTC string
-const expires = tomorrowDate.toUTCString();
+	// Set the path of the cookie
+	const path = "/"; 
 
-// Set the path of the cookie
-const path = "/"; 
-
-// Set the cookie with a name, value, expiration date, and path
-document.cookie = "userID=SomeValue; expires=" + expires + "; path=" + path;
-
-
-
-function logout(){
-// Get all cookies and split them into an array
-const cookies = document.cookie.split(";");
-
-// Loop through all cookies and delete them by setting their expiration date to a date in the past
-for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	// Set the cookie with a name, value, expiration date, and path
+	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
+	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
+	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
 }
 
-console.log("Cookies cleared");
+function logout(){
+	// Get all cookies and split them into an array
+	const cookies = document.cookie.split(";");
 
-window.location.href = "login.html";
+	// Loop through all cookies and delete them by setting their expiration date to a date in the past
+	for (let i = 0; i < cookies.length; i++) {
+	    const cookie = cookies[i];
+	    const eqPos = cookie.indexOf("=");
+	    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+	    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	}
+
+	console.log("Cookies cleared");
+
+	window.location.href = "login.html";
 }
