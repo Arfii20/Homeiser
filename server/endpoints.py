@@ -1,20 +1,29 @@
 """Endpoints for transaction_resources"""
 import flask_restful  # type: ignore
 
+<<<<<<< HEAD
 import server.shared_calendar.shared_calendar as calendar
 import server.shared_list.shared_list as lists
 import server.transaction_resources.ledger_resource as lr
 import server.transaction_resources.transaction_resources as tr
 import server.user_admin.user_resources as usr
+=======
+import server.transactions.ledger_resource
+import server.transactions.transaction_resources as tr
+import server.shared_calendar.shared_calendar as calendar
+import server.shared_list.shared_list as lists
+import server.shared_list.user_group_details as group_user
+>>>>>>> calendar_money_front_end
 
 
 def attach(api: flask_restful.Api):
     """Attaches all endpoints to the flask app"""
 
     # calendar
+    api.add_resource(calendar.GetSharedCalendar, "/get_shared_calendar/<int:household_id>")
     api.add_resource(calendar.SharedCalendar, "/shared_calendar/<int:household_id>")
     api.add_resource(calendar.CalendarEvent, "/calendar_event/<int:calendar_event_id>")
-    api.add_resource(calendar.UserColour, "/user_color/<int:household_id>")
+    api.add_resource(calendar.UserAttributes, "/user_attributes/<int:household_id>")
 
     # list
     api.add_resource(lists.SharedList, "/shared_list/<int:household_id>")
@@ -24,9 +33,7 @@ def attach(api: flask_restful.Api):
 
     # transactions
     api.add_resource(tr.TransactionResource, "/transaction/<int:t_id>", "/transaction")
-    api.add_resource(
-        lr.LedgerResource, "/ledger/<int:user_id>", "/<int:house_id>/simplify"
-    )
+    api.add_resource(lr.LedgerResource, "/ledger/<int:user_id>", "/<int:house_id>/simplify")
     api.add_resource(tr.CalendarTransactions, "/transaction/as_events/<int:user_id>")
 
     # users
@@ -37,3 +44,7 @@ def attach(api: flask_restful.Api):
         "/user/<int:household_id>/<string:email>/<int:joining>",
     )
     api.add_resource(usr.HouseResource, "/house", "/house/<int:household_id>")
+
+    # user-group
+    api.add_resource(group_user.UserProfile, "/user_profile/<int:user_id>")
+    api.add_resource(group_user.GroupDetails, "/group_details/<int:house_id>")

@@ -1,18 +1,17 @@
 import unittest
-from json import loads
+from json import loads, dumps
 
 import requests
 
 BASE = "http://127.0.0.1:5000/"
 
-
-class TestSharedCalendar(unittest.TestCase):
+class TestGetSharedCalendar(unittest.TestCase):
     def test_shared_calendar_get(self):
         """
         Tests if received something
         """
-        response = requests.get(
-            BASE + "shared_calendar/620",
+        response = requests.post(
+            BASE + "get_shared_calendar/620",
             {
                 "starting_time": "2027-02-19 00:00:00",
                 "ending_time": "2029-02-19 00:00:00",
@@ -24,8 +23,8 @@ class TestSharedCalendar(unittest.TestCase):
         """
         Tests if received object have the required keys
         """
-        response = requests.get(
-            BASE + "shared_calendar/620",
+        response = requests.post(
+            BASE + "get_shared_calendar/620",
             {
                 "starting_time": "2022-02-19 00:00:00",
                 "ending_time": "2024-02-19 00:00:00",
@@ -49,6 +48,8 @@ class TestSharedCalendar(unittest.TestCase):
                 valid = False
         self.assertTrue(valid)
 
+
+class TestSharedCalendar(unittest.TestCase):
     def test_shared_calendar_without_id_post(self):
         """
         Tests if event is added to the table
@@ -268,9 +269,9 @@ class TestCalendarEvent(unittest.TestCase):
         self.assertEqual(response.json(), {"message": "Calendar Event Doesnt Exist"})
 
 
-class UserColour(unittest.TestCase):
+class UserAttributes(unittest.TestCase):
     def test_user_color_get(self):
-        response = requests.get(BASE + "user_color/620")
+        response = requests.get(BASE + "user_attributes/620")
 
         valid = True
         for i in response.json().keys():
@@ -280,9 +281,14 @@ class UserColour(unittest.TestCase):
         self.assertTrue(valid)
 
     def test_user_color_get_bad(self):
-        response = requests.get(BASE + "user_color/1620")
+        response = requests.get(BASE + "user_attributes/1620")
 
         self.assertEqual(response.json(), {"error": "Users or household id not found"})
+
+    def test_user_id_post(self):
+        response = requests.post(BASE + "user_attributes/620", {"names": "a b c"})
+
+        self.assertListEqual(loads(response.json()), [630, 631, 632])
 
 
 if __name__ == "__main__":

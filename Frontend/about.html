@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HOMEISER</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&display=swap');
+  </style>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+  <header id="header1"></header>
+  <header id="header2">
+    <div class="dropdown2 hamburger" style="display: none;">
+      <button class="dropbtn2" onclick="toggleDropdown()"><img src="../Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
+      <div class="dropdown-content2" id="dropdown-content">
+        <a href="./shared_list/shared_list.html">Shared List</a>
+        <a href="./shared_calendar/calendar.html">Shared Calendar</a>
+        <a href="./money_settling/money_tracker.html">Money Tracker</a>
+      </div>
+    </div>
+    <div class="dropdown2">
+      <button class="dropbtn2"><a href="../welcome.html" style="color: black !important; text-decoration: none;">HOMEISER<a></button>
+    </div>
+
+    <ul class="if-not-logged-in" style="display: none;">
+      <li><a href="./about.html">About</a></li>
+      <li><a href="./group.html">Group</a></li>
+      <li><a href="./register.html">Register</a></li>  
+      <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./login.html" class="dropbtn">Log in</a></li>
+    </ul>
+    <ul class="if-logged-in" style="display: none;">
+      <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./group_details/group_details.html">Group</a></li>
+      <li><a href="./about.html">About</a></li>
+      <li><a href="./login.html" onclick="logout()">Log out</a></li>
+    </ul>
+    </div>
+  </header>
+
+  <style>
+    body {
+      background-image: url("Images/IMG_0674.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+
+  <div style="text-align: center;font-size: 40px;font-weight: bold;">
+  	<a>About</a>
+  </div>
+
+<div style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 3rem; line-height: 2rem;">
+  <a>A web application for people staying in <br>the same flat. Users can create and <br>join groups by entering a unique password <br>used when initially creating the group. <br>Our hallmark features include a shared calendar, <br>shared lists as well as a money tracker. <br>The shared calendar and list allows users <br>in the same group to view tasks or chores <br>as well as social events such as <br>nights out or birthdays. <br>The money tracker allows users from <br>the same group to track transactions <br>between each other as well as keep tabs <br>on how much money they owe each other.</a>
+  
+</body>
+</html>

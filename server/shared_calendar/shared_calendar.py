@@ -10,14 +10,13 @@ from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
 from server.shared_list.Calendar_and_List_Builds import CalendarEventBuild
 
-
-class SharedCalendar(Resource):
-    def get(self, household_id):
+class GetSharedCalendar(Resource):
+    def post(self, household_id):
         """
         Sends the event details in a specific time range to the website
 
         How get requests for calendar events should be:
-        requests.get(BASE + "shared_calendar/<int: household_id>", {"starting_time": "yyyy-mm-dd HH:MM:SS",
+        requests.post(BASE + "get_shared_calendar/<int: household_id>", {"starting_time": "yyyy-mm-dd HH:MM:SS",
                                                                     "ending_time": "yyyy-mm-dd HH:MM:SS"})
 
         :returns
@@ -51,14 +50,14 @@ class SharedCalendar(Resource):
             "starting_time",
             type=str,
             required=True,
-            location="args",
+            location="form",
             help="Starting time is required",
         )
         parser.add_argument(
             "ending_time",
             type=str,
             required=True,
-            location="args",
+            location="form",
             help="End time is required",
         )
         args = parser.parse_args()
@@ -72,6 +71,7 @@ class SharedCalendar(Resource):
         fetched_result = cursor.fetchall()
 
         all_events = []
+        query_name = "SELECT first_name FROM user WHERE id = %s;"
         if fetched_result:
             query1 = "SELECT * FROM user_doing_calendar_event"
             cursor.execute(query1)
@@ -81,7 +81,8 @@ class SharedCalendar(Resource):
                 added_by = -1
                 for i in result:
                     if i[1] == x[0]:
-                        tagged.append(i[0])
+                        cursor.execute(query_name % i[0])
+                        tagged.append(cursor.fetchall()[0])
                         if i[2] != added_by:
                             added_by = i[2]
                 event_objects = CalendarEventBuild(x, tagged, added_by)
@@ -93,6 +94,7 @@ class SharedCalendar(Resource):
         else:
             abort(404, error="No event found")
 
+class SharedCalendar(Resource):
     def post(self, household_id):
         """
         Creates an event in the database by adding a new row
@@ -457,16 +459,12 @@ class CalendarEvent(Resource):
             abort(404, message="Calendar Event Doesnt Exist")
 
 
-class UserColour(Resource):
+class UserAttributes(Resource):
     def get(self, household_id):
         """
         Sends the colours assigned to individual users to the website
-
-
-
-
         How get requests for user_colours should be like:
-        requests.get(BASE + "user_color/<int:household_id>")
+        requests.get(BASE + "user_attributes/<int:household_id>")
 
         :returns:
         The server will return following json object:
@@ -488,3 +486,47 @@ class UserColour(Resource):
             return objects, 200
         else:
             abort(404, error="Users or household id not found")
+
+    def post(self, household_id):
+        """
+        Inserts the event details into the database using the calendar_event_id
+        How post requests for calendar events should be like:
+        requests.put(BASE + "user_attributes/<int:household_id>", {"names": "arefin tom sajni"})
+        *** Everything should be string apart from 'added_by' which is int
+
+        :returns:
+        if successful,
+        returns list of ids
+
+        Error otherwise
+        """
+        connection, cursor = get_conn()
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "names",
+            type=str,
+            required=True,
+            location="form",
+            help="Names are required",
+        )
+        args = parser.parse_args()
+        names = args.get("names")
+        print(names)
+        names = names.split(" ")
+        user_ids = []
+        query = "SELECT id FROM user WHERE household_id = %s AND (first_name = '%s' OR surname = '%s');"
+        for i in names:
+            cursor.execute(query % (household_id, i, i))
+            exists = cursor.fetchall()
+            print(exists)
+            if exists:
+                list_tuples = exists
+                list_ints = [int(t[0]) for t in list_tuples]
+                for j in list_ints:
+                    if j not in user_ids:
+                        user_ids.append(j)
+            else:
+                abort(404, error="User not found")
+
+        print(user_ids)
+        return dumps(user_ids), 200

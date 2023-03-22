@@ -11,15 +11,19 @@ import server.endpoints as endpoints
 app = Flask(__name__)
 
 cors = [
-    CORS(app, resources={r"/shared_list/*": {"origins": "*"}}),
-    CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
-    CORS(app, resources={r"/list_events/*": {"origins": "*"}}),
-    CORS(app, resources={r"/list_event_details/*": {"origins": "*"}}),
-    CORS(app, resources={r"/shared_calendar/*": {"origins": "*"}}),
-    CORS(app, resources={r"/calendar_event/*": {"origins": "*"}}),
-    CORS(app, resources={r"/user_color/*": {"origins": "*"}}),
-]
-
+        CORS(app, resources={r"/transaction/*": {"origins": "*"}}),
+        CORS(app, resources={r"/ledger/*": {"origins": "*"}}),
+        CORS(app, resources={r"/shared_list/*": {"origins": "*"}}),
+        CORS(app, resources={r"/list_details/*": {"origins": "*"}}),
+        CORS(app, resources={r"/list_events/*": {"origins": "*"}}),
+        CORS(app, resources={r"/list_event_details/*": {"origins": "*"}}),
+        CORS(app, resources={r"/get_shared_calendar/*": {"origins": "*"}}),
+        CORS(app, resources={r"/shared_calendar/*": {"origins": "*"}}),
+        CORS(app, resources={r"/calendar_event/*": {"origins": "*"}}),
+        CORS(app, resources={r"/user_attributes/*": {"origins": "*"}}),
+        CORS(app, resources={r"/user_profile/*": {"origins": "*"}}),
+        CORS(app, resources={r"/group_details/*": {"origins": "*"}})
+        ]
 
 api = Api(app)
 endpoints.attach(api)
