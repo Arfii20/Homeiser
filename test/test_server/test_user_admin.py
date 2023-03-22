@@ -36,11 +36,12 @@ class TestUserResource(TestCase):
             '"first_name": "Alice", '
             '"surname": "_", '
             '"email": "alice@alice.com", '
-            '"password": "alice", '
+            '"password": "", '
             '"dob": "0001-02-02", '
             '"household_id": 1, '
             '"colour": null}'
         )
+
 
         with self.subTest("exists"):
             self.assertEqual(exp, r.json())
@@ -104,7 +105,7 @@ class TestUserResource(TestCase):
             self.assertEqual(None, cur.fetchone())
 
         # cleanup
-        cur2.execute("""DELETE FROM user ORDER BY id DESC LIMIT 1""")
+        cur2.execute(f"""DELETE FROM user WHERE id = {cur.lastrowid}""")
         self.conn.commit()
 
     def test_delete(self):
