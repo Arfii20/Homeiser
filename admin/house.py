@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from flask import Request
     from mysql.connector import MySQLConnection
+    from mysql.connector.cursor import MySQLCursor
 
 
 class HouseConstructionError(Exception):
@@ -64,8 +65,8 @@ class House:
                 r["h_id"] = 0
 
             # strip whitespace from the postcode, road_name; also capitalise
-            r["postcode"] = r["postcode"].replace(' ', '').upper()
-            r["road_name"] = r["road_name"].replace(' ', '').upper()
+            r["postcode"] = r["postcode"].replace(" ", "").upper()
+            r["road_name"] = r["road_name"].upper()
 
             # hashing logic
 
@@ -87,12 +88,43 @@ class House:
     def insert_to_db(self, conn: MySQLConnection):
         """Inserts the house into the database"""
 
-        cur = conn.cursor()
+        cur: MySQLCursor = conn.cursor()
 
         # deal with insertions to postcode
 
         # see if postcode already in database
-        cur.execute("""SELECT id FROM postcode WHERE code = %s""", [self.postcode])
+        cur.execute("""SELECT id FROM postcode WHERE code = %s;""", [self.postcode])
+
+        # if it does, remember the id; else, insert into postcode
+        postcode_id: tuple[int] | None = cur.fetchone()
+
+        if postcode_id is None:
+            # insert into postcode table
+            cur.execute(
+                """ INSERT INTO postcode(code, road_name) 
+                            VALUES (%s, %s);""",
+                [self.postcode, self.road_name],
+            )
+            conn.commit()
+            postcode_id: int = cur.lastrowid
+        else:
+            postcode_id: int = postcode_id[0]  # type: ignore
+
+        cur.execute(
+            """ INSERT INTO household(name, password, max_residents, postcode_id) 
+                        VALUES (%s, %s, %s, %s)""",
+            [
+                self.name,
+                str(self.password, encoding="utf8"),
+                self.max_residents,
+                postcode_id,
+            ],
+        )
+
+        conn.commit()
+
+        # update self id
+        self.h_id = cur.lastrowid
 
     def delete(self, conn: MySQLConnection):
         ...
