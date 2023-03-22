@@ -82,7 +82,7 @@ async function postDetails(event){
 
 	if (event.target.innerText === "Edit Details"){
 		container.innerHTML = `<form class="form" id="createAccount">
-				        <h1 class="form__title">Your Details</h1>
+				        <h1 class="form__title">Update Your Details</h1>
 				        <div class="form__message form__message--error"></div>
 				        <div class="form__input-group">
 				            <input type="text" id="first_name" class="form__input" autofocus placeholder="First Name: ">
@@ -265,8 +265,41 @@ function createMockUpHTMLofProfile(){
 							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: 2000-03-22" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
-							        <button class="form__button">Edit Details</button>
+							        <button class="form__button" onclick=createMockUpHTMLofEditProfile()>Edit Details</button>
 							    </form>`;
+}
+
+function createMockUpHTMLofEditProfile(){
+	container.innerHTML = `<form class="form" id="createAccount">
+				        <h1 class="form__title">Update Your Details</h1>
+				        <div class="form__message form__message--error"></div>
+				        <div class="form__input-group">
+				            <input type="text" id="first_name" class="form__input" autofocus placeholder="First Name: ">
+				            <div class="form__input-error-message"></div>
+				        </div>
+				        <div class="form__input-group">
+				            <input type="text" id="surname" class="form__input" autofocus placeholder="Last Name: ">
+				            <div class="form__input-error-message"></div>
+				        </div>
+				        <div class="form__input-group">
+				            <input type="text" id="email" class="form__input" autofocus placeholder="Email Address: ">
+				            <div class="form__input-error-message"></div>
+				        </div>
+				        <div class="form__input-group">
+							<input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: ">
+							<div class="form__input-error-message"></div>
+						</div>
+						<div class="form__input-group">
+				            <input type="password" id="password" class="form__input" autofocus placeholder="Enter Password: ">
+				            <div class="form__input-error-message"></div>
+				        </div>
+				        <div class="form__input-group">
+				            <input type="password" id="confirm_password" class="form__input" autofocus placeholder="Confirm Password: ">
+				            <div class="form__input-error-message"></div>
+				        </div>
+				        <button class="form__button" type="submit">Save</button>
+				        <button class="form__button" type="submit" style="margin-top:0.8rem">Cancel</button>
+				    </form>`;
 }
 
 function isValidDate(register_Birth) {
