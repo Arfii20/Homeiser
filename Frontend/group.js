@@ -1,12 +1,14 @@
+const BASE = "http://127.0.0.1:5000/";
+
 async function postGroup(event){
 	event.preventDefault();
-    console.log("sis");
+    // console.log("sis");
 	const CGbutton = event.target;
 
 	const form = CGbutton.closest('form');
-	const group_CGElement = form.querySelector('input[placeholder*="Create Group name"]');
-	const group_CGPassElement = form.querySelector('input[placeholder*="Create Group password"]');
-	const group_MaxuserElement = form.querySelector('input[placeholder*="Max Users"]');
+	const group_CGElement = form.querySelector('input[placeholder*="Group name"]');
+	const group_CGPassElement = form.querySelector('input[placeholder*="Group password"]');
+	const group_MaxuserElement = form.querySelector('input[placeholder*="Max users"]');
 
 
 	const group_CG = group_CGElement.value;
@@ -32,19 +34,28 @@ async function postGroup(event){
 	}
 
 
-    if (group_Maxuser === "") {
-		setInputError(group_MaxuserElement, 'Please enter max users');
-		return;
-	}
-	else if (!isMaxUserValid(parseInt(group_Maxuser))) {
-		setInputError(group_MaxuserElement, 'The number of user should greater than 1');
-		return;
-	}
-	else{
-		clearInputError(group_MaxuserElement);
-	}
-
-
+    // if (group_Maxuser === "") {
+	// 	setInputError(group_MaxuserElement, 'Please enter max users');
+	// 	return;
+	// }
+	// else if (!isMaxUserValid(parseInt(group_Maxuser))) {
+	// 	setInputError(group_MaxuserElement, 'The number of user should greater than 1');
+	// 	return;
+	// }
+	// else{
+	// 	clearInputError(group_MaxuserElement);
+	// }
+    if (group_Maxuser === 0) {
+        setInputError(group_MaxuserElement, 'Please enter max users');
+        return;
+    } else if (!Number.isInteger(Number(group_Maxuser)) || group_Maxuser <= 0) {
+        setInputError(group_MaxuserElement, 'The number of users should be a positive integer');
+        return;
+    } else {
+        clearInputError(group_MaxuserElement);
+    }
+    
+    // console.log("e")
 
 
 	fetch(BASE + "group", {
@@ -76,36 +87,15 @@ async function postGroup(event){
 }
 
 
-// function isMaxUserValid(group_Maxuser, group_MaxuserElement) {
-//     const regex = /^[1-9]\d*$/;
-//     if (!regex.test(group_Maxuser)) {
-//       setInputError(group_MaxuserElement, 'The number of users should be a positive integer');
-//       return false;
-//     }
-//     const num = parseInt(group_Maxuser);
-//     if (num <= 0) {
-//       setInputError(group_MaxuserElement, 'The number of users should be greater than 0');
-//       return false;
-//     }
-//     clearInputError(group_MaxuserElement);
-//     return true;
-//   }
-  
-//   if (group_Maxuser === "") {
-//     setInputError(group_MaxuserElement, 'Please enter max users');
-//     return;
-//   }
-  
-
 
 async function patchGroup(event){
 	event.preventDefault();
-    console.log("sis");
+    // console.log("sis");
 	const JGbutton = event.target;
 
     const form = JGbutton.closest('form');
-    const group_JGElement = form.querySelector('input[placeholder*="Join Group name"]');
-    const group_JGPassElement = form.querySelector('input[placeholder*="Join Group password"]');
+    const group_JGElement = form.querySelector('input[placeholder*="Group name"]');
+    const group_JGPassElement = form.querySelector('input[placeholder*="Group password"]');
 
     const group_JG = group_JGElement.value;
     const group_JGPass = group_JGPassElement.value;
@@ -143,16 +133,7 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	errorElement.innerText = '';
 }
 
-
-// function Maxuser(group_Maxuser) {
-// 	const date = new Date(group_Maxuser);
-// 	if (Maxuser(date.getTime())) {
-// 		return false;
-// 	}
-// 	return true;
-// }
-
-  
+ 
 
 // Get the current date
 const currentDate = new Date();
