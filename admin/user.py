@@ -62,7 +62,7 @@ class User:
 
         except mysql.connector.errors.IntegrityError:
             # means that email already exists
-            raise UserError("User with email {self.email} already exists")
+            raise UserError(f"User with email {self.email} already exists")
 
         conn.commit()
 
@@ -195,8 +195,7 @@ class User:
         print(passwd)
         hasher.update(bytes(passwd, encoding = 'utf-8'))
         user = User(*r.values())
-        user.password = hasher.digest()
-        print(user.password)
+        user.password = str(hasher.digest())
 
         return user
 
@@ -208,9 +207,7 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": str(self.password)
-                if type(self.password) is bytes
-                else self.password,
+                "password": self.password,
                 "dob": self.dob.isoformat()
                 if type(self.dob) is datetime.date
                 else self.dob,
