@@ -13,6 +13,7 @@ function getCookie(name) {
 // const house_id = getCookie("household_id");
 const user_id = 630;
 const house_id = 620;
+let prev_values = {};
 
 if (user_id === null || user_id === undefined) {
   not_logged_in_hrefs.style.display = "";
@@ -79,10 +80,17 @@ async function postDetails(event){
 	const profile_BirthElement = form.querySelector('input[placeholder*="Date of Birth"]');
 	const profile_passwordElement = form.querySelector('input[placeholder*="Enter Password"]');
 	const profile_confirmPasswordElement = form.querySelector('input[placeholder*="Confirm Password"]');
+	const cancel_button = document.querySelector(".rem_button");
 
 	if (event.target.innerText === "Edit Details"){
+		prev_values.first_name = profile_FnameElement.placeholder.split(": ")[1].trim();
+		prev_values.surname = profile_LnameElement.placeholder.split(": ")[1].trim();
+		prev_values.email = profile_EmailElement.placeholder.split(": ")[1].trim();
+		prev_values.birth = profile_BirthElement.placeholder.split(": ")[1].trim();
+
 		container.innerHTML = `<form class="form" id="createAccount">
 				        <h1 class="form__title">Update Your Details</h1>
+				        <h6 class="form__title" style="margin-top:-30px">Leave it blank if you don't want to change</h6>
 				        <div class="form__message form__message--error"></div>
 				        <div class="form__input-group">
 				            <input type="text" id="first_name" class="form__input" autofocus placeholder="First Name: ">
@@ -109,7 +117,7 @@ async function postDetails(event){
 				            <div class="form__input-error-message"></div>
 				        </div>
 				        <button class="form__button" type="submit" onclick=postDetails(event)>Save</button>
-				        <button class="form__button" type="submit" style="margin-top:0.8rem">Cancel</button>
+				        <button class="form__button rem_button" type="submit" style="margin-top:0.8rem">Cancel</button>
 				    </form>`;
 
 		profile_FnameElement.removeAttribute("readonly", "readonly");
@@ -128,41 +136,32 @@ async function postDetails(event){
 		const profile_confirmPassword = profile_confirmPasswordElement.value;
 
 		// Validating first name
-		if (profile_Fname === "") {
-			setInputError(profile_FnameElement, 'Please enter First Name');
-			return;
-		}
-		else{
-			clearInputError(profile_FnameElement);
+		if (profile_Fname != "") {
+			prev_values.first_name = profile_Fname;
 		}
 
 		// Validating last name
-		if (profile_Lname === "") {
-			setInputError(profile_LnameElement, 'Please enter Last Name');
-			return;
-		}
-		else{
-			clearInputError(profile_LnameElement);
+		if (profile_Lname != "") {
+			prev_values.surname = profile_Lname;
 		}
 
 		// Validating email
-		if (profile_Email === "") {
-			setInputError(profile_EmailElement, 'Please enter Email');
-			return;
+		if (profile_Email != "" && isValidEmail(profile_Email)) {
+			prev_values.email = profile_Email;
 		}
-		else if (!isValidEmail(profile_Email)) {
+		else if (profile_Email != "" && !isValidEmail(profile_Email)) {
 			setInputError(profile_EmailElement, 'The email address is invalid');
 			return;
 		}
 		else{
 			clearInputError(profile_EmailElement);
 		}
+
 		// Validating dob
-		if (profile_Birth === "") {
-			setInputError(profile_BirthElement, 'Please enter birthday');
-			return;
+		if (profile_Birth != "" && isValidDate(profile_Birth)) {
+			prev_values.birth = profile_Birth;
 		}
-		else if (!isValidDate(profile_Birth)){
+		else if (profile_Birth != "" && !isValidDate(profile_Birth)){
 			setInputError(profile_BirthElement, "Date must be valid and in yyyy-mm-dd format");
 			return;
 		}
@@ -207,10 +206,10 @@ async function postDetails(event){
 		}
 
 	    const data = new URLSearchParams();
-	    data.append('first_name', profile_Fname.replace(/'/g, "\\'"));
-	    data.append('surname', profile_Lname.replace(/'/g, "\\'"));
-	    data.append('email', profile_Email.replace(/'/g, "\\'"));
-	    data.append('date_of_birth', profile_Birth.replace(/'/g, "\\'"));
+	    data.append('first_name', prev_values.first_name.replace(/'/g, "\\'"));
+	    data.append('surname', prev_values.surname.replace(/'/g, "\\'"));
+	    data.append('email', prev_values.email.replace(/'/g, "\\'"));
+	    data.append('date_of_birth', prev_values.birth.replace(/'/g, "\\'"));
 
 	    const response = await fetch(url, {
 	                    method: 'POST',
@@ -230,11 +229,14 @@ async function postDetails(event){
 
 			profile_passwordElement.remove();
 			profile_confirmPasswordElement.remove();
+			cancel_button.remove();
 
-			profile_FnameElement.setAttribute("placeholder", "First Name: " + profile_FnameElement.value);
-			profile_LnameElement.setAttribute("placeholder", "Last Name: " + profile_LnameElement.value);
-			profile_EmailElement.setAttribute("placeholder", "Email Address: " + profile_EmailElement.value);
-			profile_BirthElement.setAttribute("placeholder", "Date of Birth: " + profile_BirthElement.value);
+			form.querySelector(".form__title").innerText = "Your Details";
+
+			profile_FnameElement.setAttribute("placeholder", "First Name: " + prev_values.first_name);
+			profile_LnameElement.setAttribute("placeholder", "Last Name: " + prev_values.surname);
+			profile_EmailElement.setAttribute("placeholder", "Email Address: " + prev_values.email);
+			profile_BirthElement.setAttribute("placeholder", "Date of Birth: " + prev_values.birth);
 
 			profile_FnameElement.value = "";
 			profile_LnameElement.value = "";
