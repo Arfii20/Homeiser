@@ -29,34 +29,42 @@ logged_in_hrefs.style.display = "";
 getDetails(user_id);
 
 async function getDetails(user_id){
-
 	try{
-		const response = await fetch(BASE + "user_profile/" + user_id);
+		const response = await fetch(BASE + "group_details/" + house_id);
 		
 		if (response.ok) {
 			console.log({message: "Profile Received"});
 			const obj = await response.json();
-			container.innerHTML = `<form class="form">
-							        <h1 class="form__title" style="color:#a220a4;">Your Details</h1>
+			let stringToBeAdded = "";
+			stringToBeAdded += `<form class="form">
+							        <h1 class="form__title" style="color:#a220a4;">Group Details</h1>
 							        <div class="form__message form__message--error"></div>
 							        <div class="form__input-group">
-							            <input type="text" id="first_name" class="form__input" placeholder="First Name: ${obj.first_name}" readonly>
+							            <input type="text" id="first_name" class="form__input" placeholder="Group Name: ${obj.house_name}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="surname" class="form__input" placeholder="Last Name: ${obj.surname}" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="email" class="form__input" placeholder="Email Address: ${obj.email}" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="date_of_birth" class="form__input" placeholder="Date of Birth: ${obj.date_of_birth}" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <button class="form__button" type="submit" onclick=postDetails(event)>Edit Details</button>
-							    </form>`;
+							        <div class="detailsTable">
+										      <table class="main-table" style="width:100%">
+										      		<thead class="fixed">
+					                				<th class="header">
+					                  					Members
+					                				</th>
+					                		</thead>`
+
+			for (let i = 0; i < obj.users.length; i++){
+				await Promise.resolve(); 
+				stringToBeAdded += `<tbody id="data-output">
+										          	<tr>
+											              <td class="table-data"> ${obj.users[i]} </td>
+											         	<tr>
+										        </tbody>`;
+			}
+
+			stringToBeAdded += `</table>
+											      </div>
+											      <button class="form__button" type="submit" onclick=leaveGroup(event) style="margin-top:1rem;">Leave Group</button>
+											    </form>`;
+			container.innerHTML = stringToBeAdded;
 		}
 		else {
 	    	throw new Error('Error retrieving ledger.');
@@ -71,7 +79,7 @@ async function getDetails(user_id){
   }
 }
 
-async function postDetails(event){
+async function leaveGroup(event){
 	event.preventDefault();
 	const form = event.target.closest('form');
 	const profile_FnameElement = form.querySelector('input[placeholder*="First Name"]');
@@ -248,27 +256,39 @@ async function postDetails(event){
 }
 
 function createMockUpHTMLofProfile(){
-	container.innerHTML = `<form class="form" id="createAccount">
-							        <h1 class="form__title" style="color:#a220a4;">Your Details</h1>
+	container.innerHTML = `<form class="form">
+							        <h1 class="form__title" style="color:#a220a4;">Group Details</h1>
 							        <div class="form__message form__message--error"></div>
 							        <div class="form__input-group">
-							            <input type="text" id="first_name" class="form__input" autofocus placeholder="First Name: Mock First Name" readonly>
+							            <input type="text" id="first_name" class="form__input" placeholder="Group Name: Mockup Group" readonly="">
 							            <div class="form__input-error-message"></div>
 							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="surname" class="form__input" autofocus placeholder="Last Name: Mock Surame" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="email" class="form__input" autofocus placeholder="Email Address: mock.email@gmail.com" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <div class="form__input-group">
-							            <input type="text" id="date_of_birth" class="form__input" autofocus placeholder="Date of Birth: 2000-03-22" readonly>
-							            <div class="form__input-error-message"></div>
-							        </div>
-							        <button class="form__button" onclick=createMockUpHTMLofEditProfile()>Edit Details</button>
-							    </form>`;
+							        <div class="detailsTable">
+										      <table class="main-table" style="width:100%">
+										      		<thead class="fixed">
+					                				<tr><th class="header">
+					                  					Members
+					                				</th>
+					                		</tr></thead><tbody id="data-output">
+										          	<tr>
+											              <td class="table-data"> Mockup User 1 </td>
+											         	</tr><tr>
+										        </tr></tbody><tbody id="data-output">
+										          	<tr>
+											              <td class="table-data"> Mockup User 2 </td>
+											         	</tr><tr>
+										        </tr></tbody><tbody id="data-output">
+										          	<tr>
+											              <td class="table-data"> Mockup User 3 </td>
+											         	</tr><tr>
+										        </tr></tbody><tbody id="data-output">
+										          	<tr>
+											              <td class="table-data"> Mockup User 4 </td>
+											         	</tr><tr>
+										        </tr></tbody></table>
+											      </div>
+											      <button class="form__button" type="submit" onclick="leaveGroup(event)">Leave Group</button>
+											    </form>`;
 }
 
 function createMockUpHTMLofEditProfile(){
@@ -304,39 +324,6 @@ function createMockUpHTMLofEditProfile(){
 				    </form>`;
 }
 
-function isValidDate(register_Birth) {
-	const regex = /^(?:(?:19|20)[0-9]{2})-(?:(?:0[1-9])|(?:1[0-2]))-(?:(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$/;
-	if (!regex.test(register_Birth)) {
-		return false;
-	}
-	const date = new Date(register_Birth);
-	if (isValidDate(date.getTime())) {
-		return false;
-	}
-	return true;
-}
-
-function isValidEmail(register_Email) {
-	const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	if (!regex.test(register_Email)) {
-		return false;
-	}
-	return true;
-}
-
-function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
-	const inputGroupElement = inputElement.closest(inputGroupSelector);
-	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
-	inputGroupElement.classList.add('form__input-group--error');
-	errorElement.innerText = errorMessage;
-}
-
-function clearInputError(inputElement, inputGroupSelector = '.form__input-group') {
-	const inputGroupElement = inputElement.closest(inputGroupSelector);
-	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
-	inputGroupElement.classList.remove('form__input-group--error');
-	errorElement.innerText = '';
-}
 
 function logout(){
   // Get all cookies and split them into an array
@@ -353,4 +340,13 @@ function logout(){
   console.log("Cookies cleared");
 
   window.location.href = "../login.html";
+}
+
+function toggleDropdown() {
+  var dropdownContent = document.getElementById("dropdown-content");
+  if (dropdownContent.style.display === "block") {
+    dropdownContent.style.display = "none";
+  } else {
+    dropdownContent.style.display = "block";
+  }
 }

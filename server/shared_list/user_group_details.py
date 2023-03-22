@@ -31,8 +31,7 @@ class UserProfile(Resource):
 
     def post(self, user_id):
         """
-        Sends the colours assigned to individual users to the website
-        How get requests for user_colours should be like:
+        Sends the new data to the database
         requests.post(BASE + "user_profile/<int:user_id>", {first_name: first_name,
                                                         surname: surname,
                                                         email: email,
@@ -132,3 +131,38 @@ class UserProfile(Resource):
             return {"message": "User Updated"}
         else:
             abort(404, error="User not found")
+
+class GroupDetails(Resource):
+    def get(self, house_id):
+        """
+        Sends the group details to the website
+        requests.get(BASE + "group_details/<int:house_id>")
+
+        :returns:
+        The server will return a json object of user
+        """
+        cursor = get_db()
+        obj = {}
+        users = []
+
+        query_for_house_name = "SELECT name FROM household WHERE id = %s;"
+        cursor.execute(query_for_house_name % house_id)
+
+        result_house = cursor.fetchall()
+
+        if result_house:
+            for x in result_house:
+                obj["house_name"] = x[0]
+
+            query_for_users = "SELECT first_name, surname FROM user WHERE household_id = %s;"
+            cursor.execute(query_for_users % house_id)
+            result = cursor.fetchall()
+
+            for x in result:
+                users.append(x[0] + " " + x[1])
+
+            obj["users"] = users
+
+            return obj, 200
+        else:
+            abort(404, error="Household id not found")

@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="" />
+    <list default="true" id="b05db998-aca9-4a0f-ae81-99aa15fed812" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Frontend/Profile/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/Profile/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/Profile/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/Profile/profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.css" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/money_settling/money_tracker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/endpoints.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/host.py" beforeDir="false" afterPath="$PROJECT_DIR$/host.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared_list/user_profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/shared_list/user_group_details.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,7 +52,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PythonContentEntriesConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -72,6 +81,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="D:/Languages/Pycharm/Encrypt or Decrypt.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="user_group_details" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/shared_list" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\arefi\GitRepos\x5\server\shared_list\user_group_details.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -141,36 +172,21 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_shared_calendar.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="server" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../test/test_calendar" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/../test/test_calendar/test_shared_calendar.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Flask server.Flask" />
+      <item itemvalue="Python.user_group_details" />
       <item itemvalue="Python.Encrypt or Decrypt" />
       <item itemvalue="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post" />
       <item itemvalue="Python tests.Python tests for test_shared_calendar.UserColour" />
       <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
-      <item itemvalue="Python tests.Python tests in test_shared_calendar.py" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.user_group_details" />
         <item itemvalue="Python.Encrypt or Decrypt" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.UserColour" />
-        <item itemvalue="Python tests.Python tests in test_shared_calendar.py" />
       </list>
     </recent_temporary>
   </component>
@@ -191,7 +207,8 @@
       <workItem from="1679186568613" duration="7064000" />
       <workItem from="1679284044862" duration="8462000" />
       <workItem from="1679393271716" duration="5831000" />
-      <workItem from="1679432328258" duration="6526000" />
+      <workItem from="1679432328258" duration="9103000" />
+      <workItem from="1679487941456" duration="4826000" />
     </task>
     <servers />
   </component>
@@ -210,8 +227,9 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/host_py$user_profile.coverage" NAME="user_profile Coverage Results" MODIFIED="1679461077544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/shared_list" />
     <SUITE FILE_PATH="coverage/host_py$.coverage" NAME=" Coverage Results" MODIFIED="1679004491671" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../test/test_calendar" />
-    <SUITE FILE_PATH="coverage/host_py$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1679456949881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/host_py$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1679487950716" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/host_py$Flask__host_py_.coverage" NAME="Flask (host.py) Coverage Results" MODIFIED="1678880953701" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/host_py$host.coverage" NAME="host Coverage Results" MODIFIED="1678884431952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/host_py$Encrypt_or_Decrypt.coverage" NAME="Encrypt or Decrypt Coverage Results" MODIFIED="1679266302968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="D:/Languages/Pycharm" />
