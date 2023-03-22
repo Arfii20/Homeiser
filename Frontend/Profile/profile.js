@@ -2,6 +2,7 @@ const BASE = "http://127.0.0.1:5000/";
 const container = document.querySelector(".container");
 const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
+const hamburger = document.querySelector(".hamburger");
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -18,6 +19,7 @@ let prev_values = {};
 if (user_id === null || user_id === undefined) {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
+  hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
 if (house_id === null || house_id === undefined) {
@@ -26,6 +28,8 @@ if (house_id === null || house_id === undefined) {
 
 not_logged_in_hrefs.style.display = "none";
 logged_in_hrefs.style.display = "";
+hamburger.style.display = "";
+
 getDetails(user_id);
 
 async function getDetails(user_id){
