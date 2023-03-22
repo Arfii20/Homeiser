@@ -15,6 +15,12 @@ class HouseConstructionError(Exception):
     ...
 
 
+class HouseInsertionError(Exception): ...
+
+class HouseDeletionError(Exception):
+    ...
+
+
 @dataclass
 class House:
 
@@ -90,6 +96,13 @@ class House:
 
         cur: MySQLCursor = conn.cursor()
 
+        # if id is provided and already exists raise an error
+        if self.h_id:
+            cur.execute(f"""SELECT count(id) FROM household WHERE id = %s""", [self.h_id])
+            if cur.fetchone()[0]:
+                raise HouseInsertionError(f"House with id {self.h_id} already exists")
+
+
         # deal with insertions to postcode
 
         # see if postcode already in database
@@ -132,5 +145,25 @@ class House:
         cur: MySQLCursor = conn.cursor()
 
         # check how many people in the house
+        cur.execute("""SELECT count(household_id) FROM user WHERE household_id = %s""", [self.h_id])
+        usr_count_row: tuple[int] = cur.fetchone()  # type: ignore
+
+        if usr_count_row is None:
+            # allow empty houses to be deleted for debugging
+            usr_count: int = 0
+        else:
+            usr_count = usr_count_row[0]
+
+        if usr_count > 1:
+            raise HouseDeletionError(f"House has {usr_count} residents, and thus cannot be deleted")
+
+        # remove foreign key reference from remaining user
+        cur.execute("""UPDATE user SET household_id = null WHERE household_id = %s""", [self.h_id])
+
+        # delete household
+        cur.execute("""DELETE FROM household WHERE id = %s""", [self.h_id])
+
+        # commit changes
+        conn.commit()
 
 
