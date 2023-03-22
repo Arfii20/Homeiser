@@ -10,29 +10,34 @@
 </head>
 
 <body>
-  <header id="header1">
-  </header>
+  <header id="header1"></header>
   <header id="header2">
-    <div class="dropdown2">
-      <button class="dropbtn2"><a href="welcome.html" style="color: black !important; text-decoration: none;">HOMEISER<a></button>
-      <div class="dropdown-content2">
-      <a href="shared lists.html">Shared List</a>
-      <a href="shared calendar.html">Canlendar</a>
-      <a href="money tracker.html">Money Tracker</a>
+    <div class="dropdown2 hamburger" style="display: none;">
+      <button class="dropbtn2" onclick="toggleDropdown()"><img src="../Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
+      <div class="dropdown-content2" id="dropdown-content">
+        <a href="./shared_list/shared_list.html">Shared List</a>
+        <a href="./shared_calendar/calendar.html">Shared Calendar</a>
+        <a href="./money_settling/money_tracker.html">Money Tracker</a>
       </div>
     </div>
+    <div class="dropdown2">
+      <button class="dropbtn2"><a href="../welcome.html" style="color: black !important; text-decoration: none;">HOMEISER<a></button>
+    </div>
 
-    <ul>
-      <li><a href="about.html">About</a></li>
-      <li><a href="group.html">Group</a></li>
-      <li><a href="register.html">Register</a></li>  
-      <li class="dropdown">
-        <a href="login.html" class="dropbtn">Log in</a>
-        <div class="dropdown-content">
-          <a href="login.html">Log out</a>
-        </div>
-      </li>
+    <ul class="if-not-logged-in" style="display: none;">
+      <li><a href="./about.html">About</a></li>
+      <li><a href="./group.html">Group</a></li>
+      <li><a href="./register.html">Register</a></li>  
+      <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./login.html" class="dropbtn">Log in</a></li>
     </ul>
+    <ul class="if-logged-in" style="display: none;">
+      <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./group_details/group_details.html">Group</a></li>
+      <li><a href="./about.html">About</a></li>
+      <li><a href="./login.html" onclick="logout()">Log out</a></li>
+    </ul>
+    </div>
   </header>
   
   <style>
