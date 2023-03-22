@@ -60,9 +60,9 @@ async function postLogin(event){
     	console.log({message: "Login successful"});
     	const obj = await JSON.parse(await response.json());
 
-    	setCookies(obj.id, obj.household_id, obj.email);
-    	window.location.href = "./welcome"
+    	setCookies(obj.u_id, obj.household, obj.email);
     	clearInputError(login_PasswordElement);
+    	window.location.href = "./welcome.html";
 	}
 	else {
 		setInputError(login_PasswordElement, 'Incorrect Email or Password');
