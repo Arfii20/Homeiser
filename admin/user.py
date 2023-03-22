@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 from dataclasses import dataclass
 
@@ -183,7 +184,21 @@ class User:
         else:
             r = request
 
-        return User(*r.values())
+        # initialise hasher
+        hasher = hashlib.sha3_256()
+
+        try:
+            passwd = r["password"]
+        except KeyError as ke:
+            raise UserError(ke)
+
+        print(passwd)
+        hasher.update(bytes(passwd, encoding = 'utf-8'))
+        user = User(*r.values())
+        user.password = hasher.digest()
+        print(user.password)
+
+        return user
 
     @property
     def json(self):
@@ -193,7 +208,7 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": str(self.password, encoding="utf-8")
+                "password": str(self.password)
                 if type(self.password) is bytes
                 else self.password,
                 "dob": self.dob.isoformat()

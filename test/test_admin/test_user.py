@@ -16,7 +16,7 @@ def setUpModule():
         host="localhost", user="root", password="I_love_stew!12", database="x5db"
     )
 
-    db = conn.cursor()
+    db = conn.cursor(buffered=True)
 
     db.execute("""SELECT * FROM user;""")
 
