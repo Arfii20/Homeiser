@@ -15,7 +15,9 @@ class HouseConstructionError(Exception):
     ...
 
 
-class HouseInsertionError(Exception): ...
+class HouseInsertionError(Exception):
+    ...
+
 
 class HouseDeletionError(Exception):
     ...
@@ -89,7 +91,21 @@ class House:
 
     @staticmethod
     def build_from_id(h_id: int, conn: MySQLConnection) -> House:
-        ...
+        """Build a house object from database given an id"""
+        cur = conn.cursor()
+
+        cur.execute(
+            """SELECT household.id, name, password, max_residents, road_name, code FROM household
+        JOIN postcode p on household.postcode_id = p.id WHERE household.id = %s""",
+            [h_id],
+        )
+
+        house_params = cur.fetchone()
+
+        if house_params is None:
+            raise HouseConstructionError(f"No house with id {h_id} exists")
+
+        return House(*house_params)
 
     def insert_to_db(self, conn: MySQLConnection):
         """Inserts the house into the database"""
@@ -98,10 +114,11 @@ class House:
 
         # if id is provided and already exists raise an error
         if self.h_id:
-            cur.execute(f"""SELECT count(id) FROM household WHERE id = %s""", [self.h_id])
+            cur.execute(
+                f"""SELECT count(id) FROM household WHERE id = %s""", [self.h_id]
+            )
             if cur.fetchone()[0]:
                 raise HouseInsertionError(f"House with id {self.h_id} already exists")
-
 
         # deal with insertions to postcode
 
@@ -145,7 +162,10 @@ class House:
         cur: MySQLCursor = conn.cursor()
 
         # check how many people in the house
-        cur.execute("""SELECT count(household_id) FROM user WHERE household_id = %s""", [self.h_id])
+        cur.execute(
+            """SELECT count(household_id) FROM user WHERE household_id = %s""",
+            [self.h_id],
+        )
         usr_count_row: tuple[int] = cur.fetchone()  # type: ignore
 
         if usr_count_row is None:
@@ -155,15 +175,18 @@ class House:
             usr_count = usr_count_row[0]
 
         if usr_count > 1:
-            raise HouseDeletionError(f"House has {usr_count} residents, and thus cannot be deleted")
+            raise HouseDeletionError(
+                f"House has {usr_count} residents, and thus cannot be deleted"
+            )
 
         # remove foreign key reference from remaining user
-        cur.execute("""UPDATE user SET household_id = null WHERE household_id = %s""", [self.h_id])
+        cur.execute(
+            """UPDATE user SET household_id = null WHERE household_id = %s""",
+            [self.h_id],
+        )
 
         # delete household
         cur.execute("""DELETE FROM household WHERE id = %s""", [self.h_id])
 
         # commit changes
         conn.commit()
-
-
