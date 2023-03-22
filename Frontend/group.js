@@ -24,14 +24,17 @@ async function postGroup(event){
 	const CGbutton = event.target;
 
 	const form = CGbutton.closest('form');
-	const group_CGElement = form.querySelector('input[placeholder*="Group name"]');
-	const group_CGPassElement = form.querySelector('input[placeholder*="Group password"]');
-	const group_MaxuserElement = form.querySelector('input[placeholder*="Max users"]');
-
+	const group_CGElement = form.querySelector('input[placeholder*="Group Name"]');
+	const group_CGPassElement = form.querySelector('input[placeholder*="Group Password"]');
+	const group_MaxuserElement = form.querySelector('input[placeholder*="Max Users"]');
+	const group_roadElement = form.querySelector('input[placeholder*="Road Name"]');
+	const group_postCodeElement = form.querySelector('input[placeholder*="Post Code"]');
 
 	const group_CG = group_CGElement.value;
 	const group_CGPass = group_CGPassElement.value;
 	const group_Maxuser = group_MaxuserElement.value;
+	const group_road = group_roadElement.value;
+	const group_postCode = group_postCodeElement.value;
 
 
 	if (group_CG === "") {
@@ -61,6 +64,32 @@ async function postGroup(event){
         clearInputError(group_MaxuserElement);
     }
 
+    if (group_road === "") {
+		setInputError(group_roadElement, 'Please enter road name');
+		return;
+	}
+	else{
+		clearInputError(group_roadElement);
+	}
+
+	if (group_postCode === "") {
+		setInputError(group_postCodeElement, 'Please enter a post code');
+		return;
+	}
+	else if (group_postCode.length>7) {
+		setInputError(group_postCodeElement, 'Invalid Post Code');
+		return;
+	}
+	else{
+		clearInputError(group_postCodeElement);
+	}
+
+	console.log(group_CG);
+	console.log(group_CGPass);
+	console.log(group_Maxuser);
+	console.log(group_road);
+	console.log(group_postCode);
+
 
 	const response = await fetch(BASE + "house", {
 												  	method: 'POST',
@@ -68,14 +97,12 @@ async function postGroup(event){
 												    	'Content-Type': 'application/json'
 												  	},
 												  	body: JSON.stringify({
-														user_id: null,
-												    	first_name: register_Fname,
-												    	surname: register_Lname,
-														email: register_Email,
-														password: register_Password,
-														dob: register_Birth,
-														household_id: null,
-														colour: null,
+														h_id: null,
+												    	name: group_CG,
+														password: group_CGPass,
+														max_residents: group_Maxuser,
+														road_name: group_road,
+														postcode: group_postCode,
 												  	})
 												})
   	if (response.ok) {
