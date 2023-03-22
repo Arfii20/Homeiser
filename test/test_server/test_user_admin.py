@@ -168,5 +168,24 @@ class TestHouseResource(TestCase):
         self.assertGreater(h_id, 3, msg="New household inserted")
 
 
+
     def test_delete(self):
-        ...
+        # create house
+        r = requests.post(
+            target + "/house",
+            headers={"Content-Type": "application/json"},
+            json=self.house.json,
+        )
+
+
+        # delete house
+        h_id =  json.loads(r.json())['h_id']
+
+        requests.delete(target + f'/house/{h_id}')
+
+        # make sure it no longer exists
+        cur = self.conn.cursor()
+        cur.execute("""SELECT id FROM household ORDER BY id DESC LIMIT 1""")
+        max_id = cur.fetchone()[0]
+
+        self.assertLess(max_id, h_id)
