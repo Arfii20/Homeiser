@@ -72,6 +72,20 @@ class UserResource(Resource):
 
 
 class HouseResource(Resource):
+
+    def get(self, household_id: int):
+        """Get group info"""
+
+        conn, _ = get_conn()
+
+        try:
+            house = House.build_from_id(household_id, conn)
+        except HouseConstructionError as hce:
+            # error means that id wasn't found in server
+            return str(hce), 404
+
+        return house.json, 200
+
     def post(self):
         """Used to create a household"""
 
