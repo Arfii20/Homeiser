@@ -95,7 +95,19 @@ class TestUserResource(TestCase):
         self.conn.commit()
 
 
-    def test_delete(self): ...
+    def test_delete(self):
+        # insert user
+        requests.post(target + '/user', headers={"Content-Type": "application/json"}, json=self.user.json)
+
+        # delete user
+        requests.delete(target + f'/user/{self.user.email}')
+
+        # check delete has happened
+        cur = self.conn.cursor()
+        cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.user.email])
+
+        self.assertEqual(cur.fetchone(), (None,))
+
 
 
 class TestHouseResource(TestCase):
