@@ -207,7 +207,7 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": self.password,
+                "password": self.password if type(self.password) is str else '',
                 "dob": self.dob.isoformat()
                 if type(self.dob) is datetime.date
                 else self.dob,

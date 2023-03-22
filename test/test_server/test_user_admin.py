@@ -69,13 +69,30 @@ class TestUserResource(TestCase):
 
     def test_patch(self):
         # insert new user
-        r = requests.patch(target + "/user/1/test@user.com")
+        requests.post(target + '/user', headers={"Content-Type": "application/json"}, json=self.user.json)
+
+        # make user join household
+        requests.patch(target + "/user/1/test@user.com/1")
 
         # check that user has joined household 1
-        cur = self.conn.cursor()
+        cur = self.conn.cursor(buffered=True)
         cur.execute("""SELECT household_id FROM user WHERE email = %s""", [self.user.email])
 
-        self.assertEqual()
+        with self.subTest("Joined household"):
+            self.assertEqual((1,), cur.fetchone())
+
+        # leave household
+        requests.patch(target + "/user/1/test@user.com/0")
+
+        cur2 = self.conn.cursor(buffered=True)
+
+        cur2.execute("""SELECT household_id FROM user WHERE email = %s""", [self.user.email])
+        with self.subTest("Joined household"):
+            self.assertEqual(None, cur.fetchone())
+
+        # cleanup
+        cur2.execute("""DELETE FROM user ORDER BY id DESC LIMIT 1""")
+        self.conn.commit()
 
 
     def test_delete(self): ...

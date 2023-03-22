@@ -34,6 +34,6 @@ def attach(api: flask_restful.Api):
         usr.UserResource,
         "/user",
         "/user/<string:email>",
-        "/user/<int:household_id>/<string:email>",
+        "/user/<int:household_id>/<string:email>/<int:joining>",
     )
-    api.add_resource(usr.HouseResource, "/house", "/house/<int:household_id>/<int:joining>")
+    api.add_resource(usr.HouseResource, "/house", "/house/<int:household_id>")
