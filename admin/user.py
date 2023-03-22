@@ -193,7 +193,7 @@ class User:
             raise UserError(ke)
 
         print(passwd)
-        hasher.update(bytes(passwd, encoding = 'utf-8'))
+        hasher.update(bytes(passwd, encoding="utf-8"))
         user = User(*r.values())
         user.password = str(hasher.digest())
 
@@ -207,7 +207,7 @@ class User:
                 "first_name": self.first_name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": self.password if type(self.password) is str else '',
+                "password": self.password if type(self.password) is str else "",
                 "dob": self.dob.isoformat()
                 if type(self.dob) is datetime.date
                 else self.dob,

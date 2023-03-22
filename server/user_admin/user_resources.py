@@ -8,7 +8,12 @@ from flask_restful import Resource
 from flask import request
 import json
 
-from admin.house import House, HouseConstructionError, HouseInsertionError, HouseDeletionError
+from admin.house import (
+    House,
+    HouseConstructionError,
+    HouseInsertionError,
+    HouseDeletionError,
+)
 from admin.user import User, UserError
 from server.db_handler import get_conn
 
@@ -74,7 +79,6 @@ class UserResource(Resource):
 
 
 class HouseResource(Resource):
-
     def get(self, household_id: int):
         """Get group info"""
 

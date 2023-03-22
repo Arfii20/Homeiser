@@ -1,6 +1,11 @@
 import json
 from unittest import TestCase
-from admin.house import House, HouseConstructionError, HouseDeletionError, HouseInsertionError
+from admin.house import (
+    House,
+    HouseConstructionError,
+    HouseDeletionError,
+    HouseInsertionError,
+)
 import mysql.connector
 
 
@@ -22,7 +27,6 @@ class TestHouse(TestCase):
         ...
 
     def test_build_from_id(self):
-
         with self.subTest("Successful build"):
             self.assertEqual(
                 json.loads(House.build_from_id(3, self.conn).json),
@@ -84,7 +88,7 @@ class TestHouse(TestCase):
 
         # try to delete a house with users that exist
         with self.subTest("Fail as there are >1 users in the house"), self.assertRaises(
-                HouseDeletionError
+            HouseDeletionError
         ):
             self.h3.delete(self.conn)
 
