@@ -127,4 +127,10 @@ class House:
         self.h_id = cur.lastrowid
 
     def delete(self, conn: MySQLConnection):
-        ...
+        """Deletes house from the database given there is only one person in the house"""
+
+        cur: MySQLCursor = conn.cursor()
+
+        # check how many people in the house
+
+

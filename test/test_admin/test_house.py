@@ -20,8 +20,22 @@ class TestHouse(TestCase):
         )
 
         db = conn.cursor()
-
         self.house.insert_to_db(conn)
+
+        db.execute("""SELECT household.id, name, password, max_residents, road_name, code FROM household
+        JOIN postcode p on p.id = household.postcode_id
+        WHERE household.id = %s""", [self.house.h_id])
+
+        row = db.fetchone()
+
+        exp = self.house.__dict__
+        exp["password"] = str(exp["password"], encoding='utf8')
+
+        self.assertEqual(self.house.__dict__, {k: v for k, v in zip(self.house.__dict__.keys(), row)})
+
+        # cleanup
+        db.execute("""DELETE FROM household WHERE id = %s""", [self.house.h_id])
+        conn.commit()
 
     def test_delete(self):
         ...
