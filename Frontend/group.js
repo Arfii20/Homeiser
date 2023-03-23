@@ -85,13 +85,6 @@ async function postGroup(event){
 		clearInputError(group_postCodeElement);
 	}
 
-	console.log(group_CG);
-	console.log(group_CGPass);
-	console.log(group_Maxuser);
-	console.log(group_road);
-	console.log(group_postCode);
-
-
 	const response = await fetch(BASE + "house", {
 												  	method: 'POST',
 												  	headers: {
@@ -109,7 +102,9 @@ async function postGroup(event){
   	if (response.ok) {
     	console.log({message: "House creation successful"});
     	const obj = await JSON.parse(await response.json());
-    	alert("Group Created Successfully. Please Join the group now.")
+    	localStorage.setItem("house_id", obj.h_id);
+    	alert("Group Created Successfully")
+    	window.location.href = "./welcome.html";
   	} else {
     	throw new Error('Request failed.');
   	}
@@ -122,18 +117,34 @@ async function patchGroup(event){
 	const JGbutton = event.target;
 
     const form = JGbutton.closest('form');
-    const group_JGElement = form.querySelector('input[placeholder*="Group name"]');
-    const group_JGPassElement = form.querySelector('input[placeholder*="Group password"]');
+    const group_JoinIDElement = form.querySelector('input[placeholder*="Group ID"]');
+    const group_emailElement = form.querySelector('input[placeholder*="Your Email"]');
+    const group_JGPassElement = form.querySelector('input[placeholder*="Group Password"]');
 
-    const group_JG = group_JGElement.value;
+    const group_JoinID = group_JoinIDElement.value;
+    const group_email = group_emailElement.value;
     const group_JGPass = group_JGPassElement.value;
 
-    if (group_JG === "") {
-		setInputError(group_JGElement, 'Please enter Group Name');
+	if (group_JoinID === 0) {
+        setInputError(group_JoinIDElement, 'Please enter max users');
+        return;
+    } else if (!Number.isInteger(Number(group_JoinID)) || (Number(group_JoinID) <= 0)) {
+        setInputError(group_JoinIDElement, 'Invalid ID');
+        return;
+    } else {
+        clearInputError(group_JoinIDElement);
+    }
+
+	if (group_email === "") {
+		setInputError(group_emailElement, 'Please enter email');
+		return;
+	}
+	else if (!isValidEmail(group_email)) {
+		setInputError(group_emailElement, 'The Email address is invalid');
 		return;
 	}
 	else{
-		clearInputError(group_JGElement);
+		clearInputError(group_emailElement);
 	}
 
     if (group_JGPass === "") {
@@ -144,32 +155,32 @@ async function patchGroup(event){
 		clearInputError(group_JGPassElement);
 	}
 
-	const response = await fetch(BASE + "user", {
-												  	method: 'PATCH',
-												  	headers: {
-												    	'Content-Type': 'application/json'
-												  	},
-												  	body: JSON.stringify({
-														h_id: null,
-												    	name: group_CG,
-														password: group_CGPass,
-														max_residents: group_Maxuser,
-														road_name: group_road,
-														postcode: group_postCode,
-												  	})
-												})
+
+    if (group_JGPass === "") {
+		setInputError(group_JGPassElement, 'Please enter Group Password');
+		return;
+	}
+	else{
+		clearInputError(group_JGPassElement);
+	}
+
+	const response = await fetch(`${BASE}user/${group_JoinID}/${group_email}/1`, {
+							  	method: 'PATCH',
+							  	headers: {
+							    	'Content-Type': 'application/json'
+							  	},
+							  	body: {}
+								});
   	if (response.ok) {
-    	console.log({message: "House creation successful"});
+    	console.log({message: "Joining successful"});
     	const obj = await JSON.parse(await response.json());
-
-    	alert("Group Created Successfully. Please Join the group now.")
-  	} else {
-    	throw new Error('Request failed.');
+		localStorage.setItem("house_id", obj.household_id);
+    	alert("Joined Successfully");
+    	window.location.href = "./welcome.html";
+  	} 
+  	else {
+    	console.log({message: await response.json()});
   	}
-
-
-
-
 }
 
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
@@ -210,6 +221,11 @@ function setCookies(user_id, house_id, email_id) {
 	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
 	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
 	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
+}
+
+function isValidEmail(login_Email) {
+    const email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return email.test(login_Email);
 }
 
 function logout(){

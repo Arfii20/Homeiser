@@ -271,6 +271,7 @@ class ListEvents(Resource):
             # Query to insert to database
             query = "INSERT INTO list_event (task, description, added_by_user, list) VALUES ('%s', '%s', %s, %s);"
             data = (task_name, description_of_task, added_user_id, list_id)
+            print(data)
             cursor.execute(query % data)
             connection.commit()
             return {"message": "List Event Created"}, 201

@@ -133,9 +133,10 @@ async function postRegister(event){
   	if (response.ok) {
     	console.log({message: "Registration successful"});
     	const obj = await JSON.parse(await response.json());
-
-    	setCookies(obj.u_id, obj.household, obj.email);
-    	window.location.href = "./welcome.html";
+    	console.log(obj);
+    	await setLocalStorage(obj.user_id, obj.household_id, obj.email);
+    	alert("Register Successful. Please log in now.");
+    	window.location.href = "./login.html";
   	} else {
     	throw new Error('Request failed.');
   	}
@@ -172,30 +173,10 @@ function isValidEmail(login_Email) {
     return email.test(login_Email);
 }
 
-function setCookies(user_id, house_id, email_id) {
-	// Get the current date
-	const currentDate = new Date();
-
-	// Add one day to the current date
-	const tomorrowDate = new Date(currentDate);
-	tomorrowDate.setDate(currentDate.getDate() + 2);
-
-	// Set the time to 12:00:00
-	tomorrowDate.setHours(12);
-	tomorrowDate.setMinutes(0);
-	tomorrowDate.setSeconds(0);
-	tomorrowDate.setMilliseconds(0);
-
-	// Convert the date to a UTC string
-	const expires = tomorrowDate.toUTCString();
-
-	// Set the path of the cookie
-	const path = "/"; 
-
-	// Set the cookie with a name, value, expiration date, and path
-	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
+function setLocalStorage(user_id, house_id, email_id) {
+  localStorage.setItem("user_id", user_id);
+  localStorage.setItem("house_id", house_id);
+  localStorage.setItem("email_id", email_id);
 }
 
 function logout(){

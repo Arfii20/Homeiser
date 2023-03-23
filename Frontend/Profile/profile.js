@@ -21,9 +21,9 @@ not_logged_in_hrefs.style.display = "none";
 logged_in_hrefs.style.display = "";
 hamburger.style.display = "";
 
-getDetails(user_id);
+getDetails();
 
-async function getDetails(user_id){
+async function getDetails(){
 
 	try{
 		const response = await fetch(BASE + "user_profile/" + user_id);

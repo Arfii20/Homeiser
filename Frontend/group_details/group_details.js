@@ -12,9 +12,11 @@ function getCookie(name) {
 
 const user_id = localStorage.getItem("user_id");
 const house_id = localStorage.getItem("house_id");
+const email_id = localStorage.getItem("email_id");
 // const user_id = 630;
 // const house_id = 620;
 let prev_values = {};
+let group_id = 0;
 
 if (user_id === null || user_id === undefined || user_id === "undefined") {
   not_logged_in_hrefs.style.display = "";
@@ -39,12 +41,17 @@ async function getDetails(user_id){
 		if (response.ok) {
 			console.log({message: "Profile Received"});
 			const obj = await response.json();
+			group_id = obj.id;
 			let stringToBeAdded = "";
 			stringToBeAdded += `<form class="form">
 							        <h1 class="form__title" style="color:#a220a4;">Details</h1>
 							        <div class="form__message form__message--error"></div>
 							        <div class="form__input-group">
-							            <input type="text" id="first_name" class="form__input" value="Group Name: ${obj.house_name}" readonly>
+							            <input type="text" id="group_name" class="form__input" value="Group Name: ${obj.house_name}" readonly>
+							            <div class="form__input-error-message"></div>
+							        </div>
+											<div class="form__input-group">
+							            <input type="text" id="first_name" class="form__input" value="Group ID: ${obj.id}" readonly>
 							            <div class="form__input-error-message"></div>
 							        </div>
 							        <div class="detailsTable">
@@ -86,15 +93,16 @@ async function getDetails(user_id){
 async function leaveGroup(event){
 	event.preventDefault();
 
-	fetch(BASE + "transaction/" + user_id, {
-	method: 'DELETE',
-	headers: {
-		'Content-Type': 'application/json'
-		}
+	await fetch(`${BASE}user/${group_id}/${email_id}/0`, {
+							  	method: 'PATCH',
+							  	headers: {
+							    	'Content-Type': 'application/json'
+							  	},
+							  	body: {}
 	})
 	.then(response => {
 		if (response.ok) {
-			document.cookie = "house_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=../";
+			localStorage.removeItem("house_id");
 			window.location.href = "../group.html"
 		} else {
 			throw new Error('Request failed.');

@@ -405,7 +405,7 @@ async function post_list_event(event) {
 	const inputValue = closestForm.querySelector('#new-task-input-' + headerId).value;
 	const inputDescriptionValue = closestForm.querySelector('#new-task-description-' + headerId).value;
 
-	const added_user = 630;
+	const added_user = user_id;
 
 	if (!inputValue && !inputDescriptionValue){
 		alert("NAME and DESCRIPTION cannot be empty!")
@@ -470,7 +470,7 @@ async function patch_list_event(event){
 
   	const checkboxElement = event.target;
 
-	const userID = 630;
+	const userID = user_id;
 
   	const url = BASE + "list_event_details/" + listEventID;
 	const data = new URLSearchParams();

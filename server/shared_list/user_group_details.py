@@ -153,14 +153,15 @@ class GroupDetails(Resource):
         obj = {}
         users = []
 
-        query_for_house_name = "SELECT name FROM household WHERE id = %s;"
+        query_for_house_name = "SELECT id, name FROM household WHERE id = %s;"
         cursor.execute(query_for_house_name % house_id)
 
         result_house = cursor.fetchall()
 
         if result_house:
             for x in result_house:
-                obj["house_name"] = x[0]
+                obj["id"] = x[0]
+                obj["house_name"] = x[1]
 
             query_for_users = "SELECT first_name, surname FROM user WHERE household_id = %s;"
             cursor.execute(query_for_users % house_id)

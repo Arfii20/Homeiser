@@ -54,7 +54,8 @@ async function postLogin(event){
     	console.log({message: "Login successful"});
     	const obj = await JSON.parse(await response.json());
 
-    	await setLocalStorage(obj.user_id, obj.household, obj.email);
+    	await setLocalStorage(obj.user_id, obj.household_id, obj.email);
+    	alert("Login Successful.");
     	window.location.href = "./welcome.html";
     }
 	else {

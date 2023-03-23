@@ -95,6 +95,7 @@ class UserResource(Resource):
         except UserError as ue:
             return str(ue), 500
 
+        usr = User.build_from_email(email, cur)
         return usr.json, 200
 
     def delete(self, email: str):

@@ -58,7 +58,12 @@
       <recent name="C:\Users\arefi\GitRepos\x5\server\shared_list" />
     </key>
   </component>
-  <component name="RunManager" selected="Flask server.Flask">
+  <component name="RunManager" selected="Database Script.shared_calendar_test_queries.sql">
+    <configuration name="shared_calendar_test_queries.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/shared_calendar/shared_calendar_test_queries.sql" />
+      <script-mode>FILE</script-mode>
+      <method v="2" />
+    </configuration>
     <configuration name="Encrypt or Decrypt" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -149,36 +154,21 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_shared_calendar.UserColour" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="server" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../test/test_calendar" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_shared_calendar.UserColour&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
+      <item itemvalue="Database Script.shared_calendar_test_queries.sql" />
       <item itemvalue="Flask server.Flask" />
       <item itemvalue="Python.user_group_details" />
       <item itemvalue="Python.Encrypt or Decrypt" />
       <item itemvalue="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post" />
-      <item itemvalue="Python tests.Python tests for test_shared_calendar.UserColour" />
       <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.shared_calendar_test_queries.sql" />
         <item itemvalue="Python.user_group_details" />
         <item itemvalue="Python.Encrypt or Decrypt" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.TestGetSharedCalendar" />
         <item itemvalue="Python tests.Python tests for test_shared_calendar.UserAttributes.test_user_id_post" />
-        <item itemvalue="Python tests.Python tests for test_shared_calendar.UserColour" />
       </list>
     </recent_temporary>
   </component>
@@ -201,7 +191,7 @@
       <workItem from="1679393271716" duration="5831000" />
       <workItem from="1679432328258" duration="9103000" />
       <workItem from="1679487941456" duration="10967000" />
-      <workItem from="1679512865695" duration="10528000" />
+      <workItem from="1679512865695" duration="15489000" />
     </task>
     <servers />
   </component>
