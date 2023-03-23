@@ -112,6 +112,7 @@ async function postGroup(event){
 						  	body: {}
 							});
 		if (responsejoin.ok) {
+			await addBirthdays();
     		alert("Group Created Successfully. You have been already added to the group.");
 		}
 		else {
@@ -174,12 +175,63 @@ async function patchGroup(event){
     	console.log({message: "Joining successful"});
     	const obj = await JSON.parse(await response.json());
 		localStorage.setItem("house_id", obj.household_id);
+		await addBirthdays();
     	alert("Joined Successfully");
     	window.location.href = "./welcome.html";
   	} 
   	else {
     	console.log({message: await response.json()});
   	}
+}
+
+async function addBirthdays(){
+	const local_house = localStorage.getItem("house_id");
+	const response_user = await fetch(`${BASE}user/${email_id}`);
+
+	if (response_user.ok) {
+		{message: "User received"}
+	}
+	else {
+		{message: "Error receiving user"}
+	}
+
+    const user_obj = await JSON.parse(await response_user.json());
+
+    console.log(user_obj)
+    console.log(user_obj.dob)
+
+    const month_day = user_obj.dob.substring(5);
+
+    for (let i = 2023; i < 2030; i++){
+		const eventTimeFromConverted = `${i}-${month_day} 00:00:00`;
+		const eventTimeToConverted = `${i}-${month_day} 23:59:00`;
+
+		const url = BASE + "shared_calendar/" + local_house;
+		const data = new URLSearchParams();
+
+		data.append('title_of_event', `Birthday of ${user_obj.first_name} ${user_obj.surname}`);
+		data.append('starting_time', eventTimeFromConverted);
+		data.append('ending_time', eventTimeToConverted);
+		data.append('additional_notes', "Might have a party");
+		data.append('location_of_event', "Common Area");
+		data.append('tagged_users', `${user_id}`);   
+		data.append('added_by', parseInt(user_id));
+
+		const response = await fetch(url, {
+		              method: 'POST',
+		              body: data,
+		              headers: {
+		                'Content-Type': 'application/x-www-form-urlencoded'
+		              }
+		            });
+
+		if (response.ok){
+			console.log({message: "Birthday Added"});
+		}
+		else {
+			console.log({message: "Error Adding Birthday"});
+		}
+	}
 }
 
 function setInputError(inputElement, errorMessage, inputGroupSelector = '.form__input-group') {
@@ -194,32 +246,6 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 	const errorElement = inputGroupElement.querySelector('.form__input-error-message');
 	inputGroupElement.classList.remove('form__input-group--error');
 	errorElement.innerText = '';
-}
-
-function setCookies(user_id, house_id, email_id) {
-	// Get the current date
-	const currentDate = new Date();
-
-	// Add one day to the current date
-	const tomorrowDate = new Date(currentDate);
-	tomorrowDate.setDate(currentDate.getDate() + 2);
-
-	// Set the time to 12:00:00
-	tomorrowDate.setHours(12);
-	tomorrowDate.setMinutes(0);
-	tomorrowDate.setSeconds(0);
-	tomorrowDate.setMilliseconds(0);
-
-	// Convert the date to a UTC string
-	const expires = tomorrowDate.toUTCString();
-
-	// Set the path of the cookie
-	const path = "/"; 
-
-	// Set the cookie with a name, value, expiration date, and path
-	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
 }
 
 function isValidEmail(login_Email) {
