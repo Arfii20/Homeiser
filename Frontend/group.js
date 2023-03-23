@@ -103,7 +103,6 @@ async function postGroup(event){
   	if (response.ok) {
     	console.log({message: "House creation successful"});
     	const obj = await JSON.parse(await response.json());
-    	console.log(obj);
     	localStorage.setItem("house_id", obj.h_id);
 		const responsejoin = await fetch(`${BASE}user/${obj.h_id}/${email_id}/1`, {
 						  	method: 'PATCH',
@@ -128,7 +127,6 @@ async function postGroup(event){
 
 async function patchGroup(event){
 	event.preventDefault();
-    // console.log("sis");
 	const JGbutton = event.target;
 
     const form = JGbutton.closest('form');

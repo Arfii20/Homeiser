@@ -109,7 +109,7 @@ async function leaveGroup(event){
 		}
 	})
 	.then(data => {
-		console.log(data);
+		console.log({message: "Left Group"});
 	})
 	.catch(error => {
 		console.log(error);

@@ -128,14 +128,12 @@ class UserProfile(Resource):
         hasher = hashlib.sha3_256()
         hasher.update(bytes(password, encoding='utf8'))
         exp_password = str(hasher.digest())
-        print(exp_password)
-        data = (user_id, exp_password)
 
-        query_for_id = """SELECT id FROM user WHERE id = %s AND password = '%s'"""
-        cursor.execute(query_for_id % data)
+        query_for_id = """SELECT password FROM user WHERE id = %s"""
+        cursor.execute(query_for_id % user_id)
+        real_password = cursor.fetchall()
 
-        id_exists = cursor.fetchall()
-        if id_exists:
+        if exp_password == real_password[0][0]:
             return {"message": "User Updated"}
         else:
             abort(404, error="User not found")
