@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 from server import db_handler as db
-from transactions.ledger import Ledger, LedgerConstructionError, SimplificationError
+from transactions.ledger import Ledger, LedgerConstructionError, SimplificationError, EmptyLedger
 
 
 class LedgerResource(Resource):
@@ -17,6 +17,9 @@ class LedgerResource(Resource):
 
         except LedgerConstructionError:
             return "Could not return given user's transaction_resources", 404
+
+        except EmptyLedger:
+            return "The ledger was empty", 404
 
     def post(self, house_id: int):
         """Simplifies ledger"""

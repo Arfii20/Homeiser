@@ -5,6 +5,7 @@ const hamburger = document.querySelector(".hamburger");
 
 const user_id = localStorage.getItem("user_id");
 const house_id = localStorage.getItem("house_id");
+const email_id = localStorage.getItem("email_id");
 // const user_id = 630;
 // const house_id = 620;
 
@@ -118,11 +119,9 @@ async function patchGroup(event){
 
     const form = JGbutton.closest('form');
     const group_JoinIDElement = form.querySelector('input[placeholder*="Group ID"]');
-    const group_emailElement = form.querySelector('input[placeholder*="Your Email"]');
     const group_JGPassElement = form.querySelector('input[placeholder*="Group Password"]');
 
     const group_JoinID = group_JoinIDElement.value;
-    const group_email = group_emailElement.value;
     const group_JGPass = group_JGPassElement.value;
 
 	if (group_JoinID === 0) {
@@ -135,18 +134,6 @@ async function patchGroup(event){
         clearInputError(group_JoinIDElement);
     }
 
-	if (group_email === "") {
-		setInputError(group_emailElement, 'Please enter email');
-		return;
-	}
-	else if (!isValidEmail(group_email)) {
-		setInputError(group_emailElement, 'The Email address is invalid');
-		return;
-	}
-	else{
-		clearInputError(group_emailElement);
-	}
-
     if (group_JGPass === "") {
 		setInputError(group_JGPassElement, 'Please enter Group Password');
 		return;
@@ -164,7 +151,7 @@ async function patchGroup(event){
 		clearInputError(group_JGPassElement);
 	}
 
-	const response = await fetch(`${BASE}user/${group_JoinID}/${group_email}/1`, {
+	const response = await fetch(`${BASE}user/${group_JoinID}/${email_id}/1`, {
 							  	method: 'PATCH',
 							  	headers: {
 							    	'Content-Type': 'application/json'
