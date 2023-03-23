@@ -442,7 +442,7 @@ addEventSubmit.addEventListener("click", async () => {
   const eventTaggedUsers = addEventTaggedUsers.value;
   const eventAddedBy = user_id;
 
-  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === "" || eventTaggedUsers === ""){
+  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === ""){
     alert("Please fill all the fields");
     return;
   }
@@ -461,34 +461,39 @@ addEventSubmit.addEventListener("click", async () => {
     alert("Invalid Time Format");
     return;
   }
-  if (!((eventTaggedUsers).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
-    alert("Please add first or last names with spaces in between");
-    return;
-  }
 
-  const url_userid = BASE + "user_attributes/" + house_id;
-  const data_userid = new URLSearchParams();
-
-  data_userid.append('names', eventTaggedUsers);
-  const response_userid = await fetch(url_userid, {
-                          method: 'POST',
-                          body: data_userid,
-                          headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                          }
-                        })
   var names = ""
-  if (response_userid.ok){
-    const response_userid_array = JSON.parse(await response_userid.json());
-
-    for (let i = 0; i < response_userid_array.length; i++) {
-      names += response_userid_array[i] + " ";
+  if (eventTaggedUsers != "") {
+    if (!((eventTaggedUsers).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+      alert("Please add first or last names with spaces in between");
+      return;
     }
-    names = names.trim();
+    const url_userid = BASE + "user_attributes/" + house_id;
+    const data_userid = new URLSearchParams();
+
+    data_userid.append('names', eventTaggedUsers);
+    const response_userid = await fetch(url_userid, {
+                            method: 'POST',
+                            body: data_userid,
+                            headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                          })
+    if (response_userid.ok){
+      const response_userid_array = JSON.parse(await response_userid.json());
+
+      for (let i = 0; i < response_userid_array.length; i++) {
+        names += response_userid_array[i] + " ";
+      }
+      names = names.trim();
+    }
+    else {
+      alert("Please enter correct names. This user does not exist");
+      return;
+    }
   }
   else {
-    alert("Please enter correct names. This user does not exist");
-    return;
+    names = "None";
   }
 
   const timeFrom = convertTime(eventTimeFrom);
@@ -524,7 +529,13 @@ addEventSubmit.addEventListener("click", async () => {
   data.append('ending_time', eventTimeToConverted);
   data.append('additional_notes', eventNotes.replace(/'/g, "\\'"));
   data.append('location_of_event', eventLocation.replace(/'/g, "\\'"));
-  data.append('tagged_users', names.replace(/'/g, "\\'"));
+  if (names === "None"){
+    data.append('tagged_users', `${user_id}`);   
+  }
+  else{
+    data.append('tagged_users', names.replace(/'/g, "\\'"));   
+  } 
+
   data.append('added_by', parseInt(user_id));
 
   const response = await fetch(url, {
@@ -669,7 +680,7 @@ async function editEvent(event){
 
   }
   else { 
-    if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === "" || evUsersTagged.value === ""){
+    if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === ""){
       alert("Please fill all the fields");
       return;
       }
@@ -678,34 +689,39 @@ async function editEvent(event){
       return;
     }
 
-    if (!((evUsersTagged.value).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
-      alert("Please add first or last names with spaces in between");
-      return;
-    }
-
-    const url_userid = BASE + "user_attributes/" + house_id;
-    const data_userid = new URLSearchParams();
-
-    data_userid.append('names', evUsersTagged.value);
-    const response_userid = await fetch(url_userid, {
-                            method: 'POST',
-                            body: data_userid,
-                            headers: {
-                              'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                          })
     var names = ""
-    if (response_userid.ok){
-      const response_userid_array = JSON.parse(await response_userid.json());
-
-      for (let i = 0; i < response_userid_array.length; i++) {
-        names += response_userid_array[i] + " ";
+    if (eventTaggedUsers.value != ""){
+      if (!((evUsersTagged.value).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+        alert("Please add first or last names with spaces in between");
+        return;
       }
-      names = names.trim();
+
+      const url_userid = BASE + "user_attributes/" + house_id;
+      const data_userid = new URLSearchParams();
+
+      data_userid.append('names', evUsersTagged.value);
+      const response_userid = await fetch(url_userid, {
+                              method: 'POST',
+                              body: data_userid,
+                              headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                              }
+                            })
+      if (response_userid.ok){
+        const response_userid_array = JSON.parse(await response_userid.json());
+
+        for (let i = 0; i < response_userid_array.length; i++) {
+          names += response_userid_array[i] + " ";
+        }
+        names = names.trim();
+      }
+      else {
+        alert("Please enter correct names. This user does not exist");
+        return;
+      }
     }
     else {
-      alert("Please enter correct names. This user does not exist");
-      return;
+      names = "None"
     }
 
     const timeRange = evtime.value;
@@ -740,7 +756,12 @@ async function editEvent(event){
     data.append('ending_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
     data.append('additional_notes', evDescription.value.replace(/'/g, "\\'"));
     data.append('location_of_event', evLocation.value.replace(/'/g, "\\'"));
-    data.append('tagged_users', names.replace(/'/g, "\\'"));
+    if (names === "None"){
+      data.append('tagged_users', `${user_id}`);   
+    }
+    else{
+      data.append('tagged_users', names.replace(/'/g, "\\'"));   
+    } 
     data.append('added_by', parseInt(user_id));
 
     const response = await fetch(url, {
