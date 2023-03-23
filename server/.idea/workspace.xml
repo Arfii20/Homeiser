@@ -10,6 +10,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
     <envs>
       <env key="FLASK_APP" value="app" />
@@ -58,10 +65,11 @@
       <recent name="C:\Users\arefi\GitRepos\x5\server\shared_list" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\arefi\GitRepos\x5\server" />
       <recent name="C:\Users\arefi\GitRepos\x5\server\user_admin" />
-      <recent name="C:\Users\arefi\GitRepos\x5\test\test_shared_list" />
       <recent name="C:\Users\arefi\GitRepos\x5\db" />
+      <recent name="C:\Users\arefi\GitRepos\x5\server\transactions" />
+      <recent name="C:\Users\arefi\GitRepos\x5\Frontend" />
+      <recent name="C:\Users\arefi\GitRepos\x5\server" />
     </key>
   </component>
   <component name="RunManager" selected="Flask server.Flask">
@@ -198,7 +206,7 @@
       <workItem from="1679432328258" duration="9103000" />
       <workItem from="1679487941456" duration="10967000" />
       <workItem from="1679512865695" duration="17131000" />
-      <workItem from="1679565955744" duration="6873000" />
+      <workItem from="1679565955744" duration="7405000" />
     </task>
     <servers />
   </component>
