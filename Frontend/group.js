@@ -9,7 +9,7 @@ const email_id = localStorage.getItem("email_id");
 // const user_id = 630;
 // const house_id = 620;
 
-if (user_id === null || user_id === undefined || user_id === "undefined") {
+if (user_id === null || user_id === undefined || user_id === "undefined" || user_id === "null") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
@@ -103,8 +103,22 @@ async function postGroup(event){
   	if (response.ok) {
     	console.log({message: "House creation successful"});
     	const obj = await JSON.parse(await response.json());
+    	console.log(obj);
     	localStorage.setItem("house_id", obj.h_id);
-    	alert("Group Created Successfully")
+		const responsejoin = await fetch(`${BASE}user/${obj.h_id}/${email_id}/1`, {
+						  	method: 'PATCH',
+						  	headers: {
+						    	'Content-Type': 'application/json'
+						  	},
+						  	body: {}
+							});
+		if (responsejoin.ok) {
+    		alert("Group Created Successfully. You have been already added to the group.");
+		}
+		else {
+			alert("Group Created Successfully. Please join the group with GROUP ID: " + obj.h_id + ".");
+		}
+
     	window.location.href = "./welcome.html";
   	} else {
     	throw new Error('Request failed.');

@@ -18,13 +18,13 @@ const email_id = localStorage.getItem("email_id");
 let prev_values = {};
 let group_id = 0;
 
-if (user_id === null || user_id === undefined || user_id === "undefined") {
+if (user_id === null || user_id === undefined || user_id === "undefined" || user_id === "null") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
-if (house_id === null || house_id === "undefined" || house_id === "undefined") {
+if (house_id === null || house_id === "undefined" || house_id === "undefined" || house_id === "null") {
   window.location.href = "../group.html";
 }
 

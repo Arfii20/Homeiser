@@ -10,7 +10,7 @@ const house_id = localStorage.getItem("house_id");
 // const house_id = 620;
 let prev_values = {};
 
-if (user_id === null || user_id === undefined) {
+if (user_id === null || user_id === undefined || user_id === "null" || user_id === "undefined") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
