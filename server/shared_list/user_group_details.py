@@ -2,7 +2,6 @@ import hashlib
 
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
-import re
 
 class UserProfile(Resource):
     def get(self, user_id):
@@ -137,6 +136,43 @@ class UserProfile(Resource):
             return {"message": "User Updated"}
         else:
             abort(404, error="User not found")
+
+    def delete(self, user_id):
+        """
+        Delete user activies if someone leaves the house
+        :return:
+        """
+        connection, cursor = get_conn()
+        try:
+            # Get all calendar events the user was involved in
+            cursor.execute(
+                """SELECT calendar_event_id FROM user_doing_calendar_event WHERE added_by_user = %s""", [user_id]
+            )
+            calendar_ids = cursor.fetchall()
+
+            if calendar_ids:
+                cursor.execute("""DELETE FROM user_doing_calendar_event WHERE user_id = %s OR added_by_user = %s""", 2 * [user_id])
+                connection.commit()
+
+                for ids in calendar_ids:
+                    cursor.execute("""DELETE FROM calendar_event WHERE id = %s""", [ids[0]])
+                    connection.commit()
+
+            # Get all list events the user was involved in
+            cursor.execute(
+                """SELECT id, list FROM list_event WHERE added_by_user = %s""", [user_id]
+            )
+            list_ids = cursor.fetchall()
+
+            # Delete list events
+            if list_ids:
+                for idl in list_ids:
+                    cursor.execute("""DELETE FROM list_event WHERE id = %s""", [idl[0]])
+                    connection.commit()
+
+            return {"message": "Everything Deleted"}, 201
+        except:
+            return {"message": "Error deleting stuff"}, 500
 
 class GroupDetails(Resource):
     def get(self, house_id):

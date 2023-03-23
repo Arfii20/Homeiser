@@ -92,29 +92,34 @@ async function getDetails(user_id){
 
 async function leaveGroup(event){
 	event.preventDefault();
-
-	await fetch(`${BASE}user/${group_id}/${email_id}/0`, {
-							  	method: 'PATCH',
-							  	headers: {
-							    	'Content-Type': 'application/json'
-							  	},
-							  	body: {}
-	})
-	.then(response => {
-		if (response.ok) {
-			localStorage.removeItem("house_id");
-			window.location.href = "../group.html"
-		} else {
-			throw new Error('Request failed.');
-		}
-	})
-	.then(data => {
-		console.log({message: "Left Group"});
-	})
-	.catch(error => {
-		console.log(error);
+	const response_delete = await fetch(BASE + "user_profile/" + user_id, {
+																	  	method: 'DELETE',
+																	  	headers: {
+																	    	'Content-Type': 'application/json'
+																	  	},
+																	  	body: {}
 	});
-	
+	if (response_delete.ok) {
+		console.log("Details deleted")
+		const response = await fetch(`${BASE}user/${group_id}/${email_id}/0`, {
+										  	method: 'PATCH',
+										  	headers: {
+										    	'Content-Type': 'application/json'
+										  	},
+										  	body: {}
+			});
+			if (response.ok){
+				localStorage.removeItem("house_id");
+				console.log({message: "Details Deleted"});
+				window.location.href = "../group.html";
+			}
+			else {
+				console.error('Request failed.');				
+			}
+	} 
+	else {
+		console.error("There was an error deleting stuff");
+	}
 }
 
 function createMockUpHTMLofGroup(){
