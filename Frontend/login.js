@@ -3,12 +3,6 @@ const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 const hamburger = document.querySelector(".hamburger");
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 not_logged_in_hrefs.style.display = "";
 logged_in_hrefs.style.display = "none";
 hamburger.style.display = "none";
@@ -60,10 +54,9 @@ async function postLogin(event){
     	console.log({message: "Login successful"});
     	const obj = await JSON.parse(await response.json());
 
-    	setCookies(obj.u_id, obj.household, obj.email);
-    	clearInputError(login_PasswordElement);
-    	window.location.href = "./welcome.html";
-	}
+    	await setLocalStorage(obj.user_id, obj.household, obj.email);
+    	// window.location.href = "./welcome.html";
+    }
 	else {
 		setInputError(login_PasswordElement, 'Incorrect Email or Password');
 	}
@@ -89,30 +82,10 @@ function isValidEmail(login_Email) {
     return email.test(login_Email);
 }
 
-function setCookies(user_id, house_id, email_id) {
-	// Get the current date
-	const currentDate = new Date();
-
-	// Add one day to the current date
-	const tomorrowDate = new Date(currentDate);
-	tomorrowDate.setDate(currentDate.getDate() + 2);
-
-	// Set the time to 12:00:00
-	tomorrowDate.setHours(12);
-	tomorrowDate.setMinutes(0);
-	tomorrowDate.setSeconds(0);
-	tomorrowDate.setMilliseconds(0);
-
-	// Convert the date to a UTC string
-	const expires = tomorrowDate.toUTCString();
-
-	// Set the path of the cookie
-	const path = "/"; 
-
-	// Set the cookie with a name, value, expiration date, and path
-	document.cookie = "user_id=" + user_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "house_id=" + house_id + "; expires=" + expires + "; path=" + path;
-	document.cookie = "email_id=" + email_id + "; expires=" + expires + "; path=" + path;
+function setLocalStorage(user_id, house_id, email_id) {
+  localStorage.setItem("user_id", user_id);
+  localStorage.setItem("house_id", house_id);
+  localStorage.setItem("email_id", email_id);
 }
 
 function logout(){

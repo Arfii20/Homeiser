@@ -8,9 +8,10 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// const user_id = getCookie("user_id");
+const user_id = getCookie("user_id");
 // const house_id = getCookie("household_id");
-const user_id = 630;
+// const user_id = 630;
+console.log(user_id);
 const house_id = 620;
 
 if (user_id === null || user_id === undefined) {

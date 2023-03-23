@@ -108,14 +108,11 @@ async function postGroup(event){
   	if (response.ok) {
     	console.log({message: "House creation successful"});
     	const obj = await JSON.parse(await response.json());
-
-    	setCookies(obj.u_id, obj.household, obj.email);
-    	window.location.href = "./welcome.html";
+    	alert("Group Created Successfully. Please Join the group now.")
   	} else {
     	throw new Error('Request failed.');
   	}
 }
-
 
 
 async function patchGroup(event){
@@ -146,7 +143,27 @@ async function patchGroup(event){
 		clearInputError(group_JGPassElement);
 	}
 
-
+	const response = await fetch(BASE + "user", {
+												  	method: 'PATCH',
+												  	headers: {
+												    	'Content-Type': 'application/json'
+												  	},
+												  	body: JSON.stringify({
+														h_id: null,
+												    	name: group_CG,
+														password: group_CGPass,
+														max_residents: group_Maxuser,
+														road_name: group_road,
+														postcode: group_postCode,
+												  	})
+												})
+  	if (response.ok) {
+    	console.log({message: "House creation successful"});
+    	const obj = await JSON.parse(await response.json());
+    	alert("Group Created Successfully. Please Join the group now.")
+  	} else {
+    	throw new Error('Request failed.');
+  	}
 
 
 

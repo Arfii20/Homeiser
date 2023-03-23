@@ -9,22 +9,20 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
+const user_id = getCookie("user_id");
+const house_id = getCookie("household_id");
 let prev_values = {};
 
 if (user_id === null || user_id === undefined) {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
-  window.location.href = "../login.html";
 }
-
-not_logged_in_hrefs.style.display = "none";
-logged_in_hrefs.style.display = "";
-hamburger.style.display = "";
+else {
+  not_logged_in_hrefs.style.display = "none";
+  logged_in_hrefs.style.display = "";
+  hamburger.style.display = "";
+}
 
 function logout(){
   // Get all cookies and split them into an array
