@@ -8,25 +8,19 @@ const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 const hamburger = document.querySelector(".hamburger");
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
+const user_id = localStorage.getItem("user_id");
+const house_id = localStorage.getItem("house_id");
+// const user_id = 630;
+// const house_id = 620;
 
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
-
-if (user_id === null || user_id === undefined) {
+if (user_id === null || user_id === undefined || user_id === "undefined" || user_id === "null") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
-if (house_id === null || house_id === undefined) {
-  window.location.href = "../group";
+if (house_id === null || house_id === "undefined" || house_id === "undefined" || house_id === "null") {
+  window.location.href = "../group.html";
 }
 
 not_logged_in_hrefs.style.display = "none";
@@ -126,7 +120,7 @@ async function getTransaction(event) {
 			}
 			rightContainer.innerHTML =  `<div class="container2">
 										  <form class="text" id="transactions">
-										    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
+										    <h1 class="form__title" style="color:#a220a4; margin-top:0.5rem; margin-bottom:2rem">Transaction</h1>
 										    <div class="form__input-error-message"></div>
 										    <div class="form__input-group">
 										      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
@@ -173,13 +167,14 @@ async function createcloseRightContainer(event){
 		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
 							<h1 class="form__title" style="color:#a220a4">New Transaction</h1>
+							<h5 class="form__title" style="margin-bottom: 1.7rem">You can find ID in Group Tab</h5>
 						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
+						      <input type="number" class="form__input" placeholder="ID of User who owes you: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" placeholder="Full Name of Destination User: ">
+						      <input type="text" class="form__input" placeholder="Name of the User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
@@ -219,14 +214,15 @@ async function patchTransaction(event){
 	})
 	.then(response => {
 		if (response.ok) {
-			console.log(response.json());
 			if (event.target.innerText === "Mark as Paid"){
 				event.target.innerText = "Mark as Unpaid";
+				console.log({message: "Marked as Paid"});
 			}
 			else{
 				event.target.innerText = "Mark as Paid";
-			getLedgerResources(user_id);
+				console.log({message: "Marked as Unpaid"});
 			}
+			getLedgerResources(user_id);
 		} else {
 			throw new Error('Request failed.');
 		}
@@ -258,7 +254,6 @@ async function deleteTransaction(event){
 		}
 	})
 	.then(data => {
-		console.log(data);
 	})
 	.catch(error => {
 		console.log(error);
@@ -270,24 +265,21 @@ async function postTransaction(event){
 	const button = event.target;
 
 	const form = button.closest('form');
-	const transaction_SrcElement = form.querySelector('input[placeholder*="Full Name of Source User"]');
-	const transaction_DestElement = form.querySelector('input[placeholder*="Full Name of Destination User"]');
+	const transaction_SrcElement = form.querySelector('input[placeholder*="ID of User who owes you"]');
+	const transaction_DestElement = form.querySelector('input[placeholder*="Name of the User"]');
 	const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
 	
-	const transaction_SrcID = 0;
-	const transaction_DestID = 0;
 	const transaction_Src = transaction_SrcElement.value;
 	const transaction_Dest = transaction_DestElement.value;
 	const transaction_Amount = parseInt(transaction_AmountElement.value*100);
 	const transaction_Description = transaction_DescriptionElement.value;
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
-	const transaction_HouseId = house_id;
 
-	if (transaction_Src === "") {
-		setInputError(transaction_SrcElement, 'Please enter source user');
+	if (!Number.isInteger(Number(transaction_Src)) || (Number(transaction_Src) <= 0)) {
+		setInputError(transaction_SrcElement, 'Invalid source user');
 		return;
 	}
 	else{
@@ -340,15 +332,16 @@ async function postTransaction(event){
 	    	'Content-Type': 'application/json'
 	  	},
 	  	body: JSON.stringify({
-	    	src_id: transaction_SrcID,
-	    	dest_id: transaction_DestID,
-	    	src: transaction_Src.replace(/'/g, "\\'"),
-	    	dest: transaction_Dest.replace(/'/g, "\\'"),
+	  		transaction_id: 0,
+	    	src_id: transaction_Src,
+	    	dest_id: user_id,
+	    	src: "Does not Matter",
+	    	dest: "Does not Matter",
 	    	amount: parseInt(transaction_Amount),
 	    	description: transaction_Description.replace(/'/g, "\\'"),
 	    	due_date: transaction_DueDate,
 	    	paid: transaction_Paid,
-	    	house_id: transaction_HouseId
+	    	house_id: 0
 	  	})
 	})
 	.then(response => {
@@ -363,22 +356,25 @@ async function postTransaction(event){
 	  	}
 	})
 	.then(data => {
-	  	console.log(data);
+
 	})
 	.catch(error => {
-	  	console.log(error);
+	  	if (error.message === 'Failed to fetch') {
+        	setInputError(transaction_SrcElement, 'Invalid source user');
+			return;
+    	}
 	});
 }
 
 async function simplifyDebts(event){
-	const url = `${BASE}${house_id}/simplify`;
-	const options = 
+	const url = `${BASE}simplify/${house_id}`;
 
-	fetch(url, {
+	await fetch(url, {
 	  method: 'POST',
 	  headers: {
 	    'Content-Type': 'application/json'
-	  }
+	  },
+	  body: {}
 	})
 	.then(response => {
 		if (response.ok) {
@@ -606,18 +602,9 @@ function createMockUpHTMLofTransaction(){
 }
 
 function logout(){
-  // Get all cookies and split them into an array
-  const cookies = document.cookie.split(";");
-
-  // Loop through all cookies and delete them by setting their expiration date to a date in the past
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  console.log("Cookies cleared");
-
-  window.location.href = "../login.html";
+	// Get all cookies and split them into an array
+	localStorage.clear();
+  
+	console.log("Local Storage cleared");
+	window.location.href = "login.html";
 }

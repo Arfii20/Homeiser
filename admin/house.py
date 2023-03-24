@@ -60,10 +60,10 @@ class House:
         hasher = hashlib.sha3_256()
 
         # load json representation of Transaction into a dict if it is not already a dict
-        if type(request) != dict:
+        if type(request.get_json()) != dict:
             r: dict = json.loads(request.get_json())  # type: ignore
         else:
-            r = request
+            r = request.get_json()
 
         try:
             # clean data, convert into format from request s.th. we can build into a House

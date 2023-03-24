@@ -31,7 +31,7 @@ class TestSharedList(unittest.TestCase):
         self.assertEqual(response.json(), {"error": "List Name Must Be Unique"})
 
     def test_shared_list_id_post_bad(self):
-        file = open("../../server/shared_list/words.txt")
+        file = open("words.txt")
         words = file.readlines()
         file_length = len(words) - 1
         while True:
@@ -50,7 +50,7 @@ class TestSharedList(unittest.TestCase):
         self.assertEqual(response.json(), {"error": "ID Must Be Unique"})
 
     def test_shared_list_post_good(self):
-        file = open("../../server/shared_list/words.txt")
+        file = open("words.txt")
         words = file.readlines()
         file_length = len(words) - 1
         while True:
@@ -73,7 +73,7 @@ class TestSharedList(unittest.TestCase):
 
 class TestListDetails(unittest.TestCase):
     def test_list_delete(self):
-        file = open("../../server/shared_list/words.txt")
+        file = open("words.txt")
         words = file.readlines()
         file_length = len(words) - 1
         while True:

@@ -1,3 +1,12 @@
+const BASE = "http://127.0.0.1:5000/";
+const logged_in_hrefs = document.querySelector(".if-logged-in");
+const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
+const hamburger = document.querySelector(".hamburger");
+
+not_logged_in_hrefs.style.display = "";
+logged_in_hrefs.style.display = "none";
+hamburger.style.display = "none";
+
 async function postLogin(event){
 	event.preventDefault();
     // console.log("sis");
@@ -7,12 +16,8 @@ async function postLogin(event){
 	const login_EmailElement = form.querySelector('input[placeholder*="Email Address"]');
 	const login_PasswordElement = form.querySelector('input[placeholder*="Password"]');
 
-
-
 	const login_Email = login_EmailElement.value;
     const login_Password = login_PasswordElement.value;
-
-
 
 	if (login_Email === "") {
 		setInputError(login_EmailElement, 'Please enter email');
@@ -26,54 +31,36 @@ async function postLogin(event){
 		clearInputError(login_EmailElement);
 	}
 
-
-	// if (login_Password === "") {
-	// 	setInputError(login_PasswordElement, 'Please enter password');
-	// 	return;
-	// }
-	// else if (!isValidDate(login_Password)){
-	// 	setInputError(login_PasswordElement, "The password is invalid");
-	// 	return;
-	// }
-	// else{
-	// 	clearInputError(login_PasswordElement);
-	// }
-
-
     if (login_Password === "") {
         setInputError(login_PasswordElement, 'Please enter password');
         return;
     }
-    clearInputError(login_PasswordElement);
-    
+    else{
+    	clearInputError(login_PasswordElement);
+    }
 
+	const response = await fetch(BASE + "login", {
+											  	method: 'POST',
+											  	headers: {
+											    	'Content-Type': 'application/json'
+											  	},
+											  	body: JSON.stringify({
+											  		email: login_Email,
+											    	password: login_Password
+											  	})
+											})
 
-	fetch(BASE + "login", {
-	  	method: 'POST',
-	  	headers: {
-	    	'Content-Type': 'application/json'
-	  	},
-	  	body: JSON.stringify({
+  	if (response.ok) {
+    	console.log({message: "Login successful"});
+    	const obj = await JSON.parse(await response.json());
 
-	  	})
-	})
-	.then(response => {
-	  	if (response.ok) {
-	    	console.log({message: "Login successful"});
-			// rightContainer.innerHTML = "";
-			// rightContainer.style.display = "none";
-			// ContinueButton.innerText = "login";
-			getLedgerResources(user_id);
-	  	} else {
-	    	throw new Error('Login failed.');
-	  	}
-	})
-	.then(data => {
-	  	console.log(data);
-	})
-	.catch(error => {
-	  	console.log(error);
-	});
+    	await setLocalStorage(obj.user_id, obj.household_id, obj.email);
+    	alert("Login Successful.");
+    	window.location.href = "./welcome.html";
+    }
+	else {
+		setInputError(login_PasswordElement, 'Incorrect Email or Password');
+	}
 }
 
 
@@ -96,43 +83,16 @@ function isValidEmail(login_Email) {
     return email.test(login_Email);
 }
 
-
-// Get the current date
-const currentDate = new Date();
-
-// Add one day to the current date
-const tomorrowDate = new Date(currentDate);
-tomorrowDate.setDate(currentDate.getDate() + 2);
-
-// Set the time to 12:00:00
-tomorrowDate.setHours(12);
-tomorrowDate.setMinutes(0);
-tomorrowDate.setSeconds(0);
-tomorrowDate.setMilliseconds(0);
-
-// Convert the date to a UTC string
-const expires = tomorrowDate.toUTCString();
-
-// Set the path of the cookie
-const path = "/"; 
-
-// Set the cookie with a name, value, expiration date, and path
-document.cookie = "userID=SomeValue; expires=" + expires + "; path=" + path;
-
+function setLocalStorage(user_id, house_id, email_id) {
+  localStorage.setItem("user_id", user_id);
+  localStorage.setItem("house_id", house_id);
+  localStorage.setItem("email_id", email_id);
+}
 
 function logout(){
 	// Get all cookies and split them into an array
-	const cookies = document.cookie.split(";");
+	localStorage.clear();
   
-	// Loop through all cookies and delete them by setting their expiration date to a date in the past
-	for (let i = 0; i < cookies.length; i++) {
-	  const cookie = cookies[i];
-	  const eqPos = cookie.indexOf("=");
-	  const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-	  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-	}
-  
-	console.log("Cookies cleared");
-  
+	console.log("Local Storage cleared");
 	window.location.href = "login.html";
 }

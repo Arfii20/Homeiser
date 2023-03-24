@@ -1,6 +1,7 @@
+import hashlib
+
 from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
-import re
 
 class UserProfile(Resource):
     def get(self, user_id):
@@ -123,14 +124,56 @@ class UserProfile(Resource):
         args = parser.parse_args()
         password = args.get("password")
 
-        query_for_id = """SELECT id FROM user WHERE id = %s AND password = '%s'"""
-        cursor.execute(query_for_id % (user_id, password))
+        hasher = hashlib.sha3_256()
+        hasher.update(bytes(password, encoding='utf8'))
+        exp_password = str(hasher.digest())
 
-        id_exists = cursor.fetchall()
-        if id_exists:
+        query_for_id = """SELECT password FROM user WHERE id = %s"""
+        cursor.execute(query_for_id % user_id)
+        real_password = cursor.fetchall()
+
+        if exp_password == real_password[0][0]:
             return {"message": "User Updated"}
         else:
             abort(404, error="User not found")
+
+    def delete(self, user_id):
+        """
+        Delete user activies if someone leaves the house
+        :return:
+        """
+        connection, cursor = get_conn()
+        try:
+            # Get all calendar events the user was involved in
+            cursor.execute(
+                """SELECT calendar_event_id FROM user_doing_calendar_event WHERE added_by_user = %s""", [user_id]
+            )
+            calendar_ids = cursor.fetchall()
+
+            if calendar_ids:
+                cursor.execute("""DELETE FROM user_doing_calendar_event WHERE user_id = %s OR added_by_user = %s""", 2 * [user_id])
+                connection.commit()
+
+                for ids in calendar_ids:
+                    cursor.execute("""DELETE FROM calendar_event WHERE id = %s""", [ids[0]])
+                    connection.commit()
+
+            # Get all list events the user was involved in
+            cursor.execute(
+                """SELECT id, list FROM list_event WHERE added_by_user = %s""", [user_id]
+            )
+            list_ids = cursor.fetchall()
+
+            # Delete list events
+            if list_ids:
+                for idl in list_ids:
+                    cursor.execute("""DELETE FROM list_event WHERE id = %s""", [idl[0]])
+                    connection.commit()
+
+            return {"message": "Everything Deleted"}, 201
+        except:
+            return {"message": "Error deleting stuff"}, 500
+
 
 class GroupDetails(Resource):
     def get(self, house_id):
@@ -145,21 +188,22 @@ class GroupDetails(Resource):
         obj = {}
         users = []
 
-        query_for_house_name = "SELECT name FROM household WHERE id = %s;"
+        query_for_house_name = "SELECT id, name FROM household WHERE id = %s;"
         cursor.execute(query_for_house_name % house_id)
 
         result_house = cursor.fetchall()
 
         if result_house:
             for x in result_house:
-                obj["house_name"] = x[0]
+                obj["id"] = x[0]
+                obj["house_name"] = x[1]
 
-            query_for_users = "SELECT first_name, surname FROM user WHERE household_id = %s;"
+            query_for_users = "SELECT id, first_name, surname FROM user WHERE household_id = %s;"
             cursor.execute(query_for_users % house_id)
             result = cursor.fetchall()
 
             for x in result:
-                users.append(x[0] + " " + x[1])
+                users.append([x[0], x[1] + " " + x[2]])
 
             obj["users"] = users
 

@@ -10,6 +10,7 @@ from flask_restful import Resource, reqparse, abort
 from server.db_handler import get_conn, get_db
 from server.shared_list.Calendar_and_List_Builds import CalendarEventBuild
 
+
 class GetSharedCalendar(Resource):
     def post(self, household_id):
         """
@@ -93,6 +94,7 @@ class GetSharedCalendar(Resource):
             return all_events, 200
         else:
             abort(404, error="No event found")
+
 
 class SharedCalendar(Resource):
     def post(self, household_id):

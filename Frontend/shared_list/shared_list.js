@@ -2,25 +2,19 @@ const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 const hamburger = document.querySelector(".hamburger");
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
+const user_id = localStorage.getItem("user_id");
+const house_id = localStorage.getItem("house_id");
+// const user_id = 630;
+// const house_id = 620;
 
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
-
-if (user_id === null || user_id === undefined) {
+if (user_id === null || user_id === undefined || user_id === "undefined" || user_id === "null") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
-if (house_id === null || house_id === undefined) {
-  window.location.href = "../group";
+if (house_id === null || house_id === "undefined" || house_id === "undefined" || house_id === "null") {
+  window.location.href = "../group.html";
 }
 
 not_logged_in_hrefs.style.display = "none";
@@ -183,7 +177,7 @@ async function get_lists(house_id){
 			}
 		}else{
 			const response_error = await response.json();
-			console.log(response_error.error);
+			console.log({message: response_error.error});
 		}
 	}
 	catch (error) {
@@ -397,7 +391,7 @@ async function get_list_event(list_id){
 		}
 	}else{
 		const response_error = await response.json();
-		console.log(response_error.error);
+		console.log({message: response_error.error});
 	}
 }
 
@@ -411,7 +405,7 @@ async function post_list_event(event) {
 	const inputValue = closestForm.querySelector('#new-task-input-' + headerId).value;
 	const inputDescriptionValue = closestForm.querySelector('#new-task-description-' + headerId).value;
 
-	const added_user = 630;
+	const added_user = user_id;
 
 	if (!inputValue && !inputDescriptionValue){
 		alert("NAME and DESCRIPTION cannot be empty!")
@@ -476,7 +470,7 @@ async function patch_list_event(event){
 
   	const checkboxElement = event.target;
 
-	const userID = 630;
+	const userID = user_id;
 
   	const url = BASE + "list_event_details/" + listEventID;
 	const data = new URLSearchParams();
@@ -1166,18 +1160,9 @@ function createMockupHTMLofListEvent2(){
 }
 
 function logout(){
-  // Get all cookies and split them into an array
-  const cookies = document.cookie.split(";");
-
-  // Loop through all cookies and delete them by setting their expiration date to a date in the past
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  console.log("Cookies cleared");
-
-  window.location.href = "../login.html";
+	// Get all cookies and split them into an array
+	localStorage.clear();
+  
+	console.log("Local Storage cleared");
+	window.location.href = "login.html";
 }

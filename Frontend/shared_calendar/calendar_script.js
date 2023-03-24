@@ -2,25 +2,19 @@ const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 const hamburger = document.querySelector(".hamburger");
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
+const user_id = localStorage.getItem("user_id");
+const house_id = localStorage.getItem("house_id");
+// const user_id = 630;
+// const house_id = 620;
 
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
-
-if (user_id === null || user_id === undefined) {
+if (user_id === null || user_id === undefined || user_id === "undefined" || user_id === "null") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
   window.location.href = "../login.html";
 }
-if (house_id === null || house_id === undefined) {
-  window.location.href = "../group";
+if (house_id === null || house_id === "undefined" || house_id === "undefined" || house_id === "null") {
+  window.location.href = "../group.html";
 }
 
 not_logged_in_hrefs.style.display = "none";
@@ -448,7 +442,7 @@ addEventSubmit.addEventListener("click", async () => {
   const eventTaggedUsers = addEventTaggedUsers.value;
   const eventAddedBy = user_id;
 
-  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === "" || eventTaggedUsers === ""){
+  if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "" || eventNotes === "" || eventLocation === ""){
     alert("Please fill all the fields");
     return;
   }
@@ -467,34 +461,39 @@ addEventSubmit.addEventListener("click", async () => {
     alert("Invalid Time Format");
     return;
   }
-  if (!((eventTaggedUsers).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
-    alert("Please add first or last names with spaces in between");
-    return;
-  }
 
-  const url_userid = BASE + "user_attributes/" + house_id;
-  const data_userid = new URLSearchParams();
-
-  data_userid.append('names', eventTaggedUsers);
-  const response_userid = await fetch(url_userid, {
-                          method: 'POST',
-                          body: data_userid,
-                          headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                          }
-                        })
   var names = ""
-  if (response_userid.ok){
-    const response_userid_array = JSON.parse(await response_userid.json());
-
-    for (let i = 0; i < response_userid_array.length; i++) {
-      names += response_userid_array[i] + " ";
+  if (eventTaggedUsers != "") {
+    if (!((eventTaggedUsers).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+      alert("Please add first or last names with spaces in between");
+      return;
     }
-    names = names.trim();
+    const url_userid = BASE + "user_attributes/" + house_id;
+    const data_userid = new URLSearchParams();
+
+    data_userid.append('names', eventTaggedUsers);
+    const response_userid = await fetch(url_userid, {
+                            method: 'POST',
+                            body: data_userid,
+                            headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                          })
+    if (response_userid.ok){
+      const response_userid_array = JSON.parse(await response_userid.json());
+
+      for (let i = 0; i < response_userid_array.length; i++) {
+        names += response_userid_array[i] + " ";
+      }
+      names = names.trim();
+    }
+    else {
+      alert("Please enter correct names. This user does not exist");
+      return;
+    }
   }
   else {
-    alert("Please enter correct names. This user does not exist");
-    return;
+    names = "None";
   }
 
   const timeFrom = convertTime(eventTimeFrom);
@@ -530,7 +529,13 @@ addEventSubmit.addEventListener("click", async () => {
   data.append('ending_time', eventTimeToConverted);
   data.append('additional_notes', eventNotes.replace(/'/g, "\\'"));
   data.append('location_of_event', eventLocation.replace(/'/g, "\\'"));
-  data.append('tagged_users', names.replace(/'/g, "\\'"));
+  if (names === "None"){
+    data.append('tagged_users', `${user_id}`);   
+  }
+  else{
+    data.append('tagged_users', names.replace(/'/g, "\\'"));   
+  } 
+
   data.append('added_by', parseInt(user_id));
 
   const response = await fetch(url, {
@@ -675,7 +680,7 @@ async function editEvent(event){
 
   }
   else { 
-    if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === "" || evUsersTagged.value === ""){
+    if (evTitle.value === "" || evtime.value === "" || evDescription.value === "" || evLocation.value === ""){
       alert("Please fill all the fields");
       return;
       }
@@ -684,34 +689,39 @@ async function editEvent(event){
       return;
     }
 
-    if (!((evUsersTagged.value).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
-      alert("Please add first or last names with spaces in between");
-      return;
-    }
-
-    const url_userid = BASE + "user_attributes/" + house_id;
-    const data_userid = new URLSearchParams();
-
-    data_userid.append('names', evUsersTagged.value);
-    const response_userid = await fetch(url_userid, {
-                            method: 'POST',
-                            body: data_userid,
-                            headers: {
-                              'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                          })
     var names = ""
-    if (response_userid.ok){
-      const response_userid_array = JSON.parse(await response_userid.json());
-
-      for (let i = 0; i < response_userid_array.length; i++) {
-        names += response_userid_array[i] + " ";
+    if (eventTaggedUsers.value != ""){
+      if (!((evUsersTagged.value).match(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/))) {
+        alert("Please add first or last names with spaces in between");
+        return;
       }
-      names = names.trim();
+
+      const url_userid = BASE + "user_attributes/" + house_id;
+      const data_userid = new URLSearchParams();
+
+      data_userid.append('names', evUsersTagged.value);
+      const response_userid = await fetch(url_userid, {
+                              method: 'POST',
+                              body: data_userid,
+                              headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                              }
+                            })
+      if (response_userid.ok){
+        const response_userid_array = JSON.parse(await response_userid.json());
+
+        for (let i = 0; i < response_userid_array.length; i++) {
+          names += response_userid_array[i] + " ";
+        }
+        names = names.trim();
+      }
+      else {
+        alert("Please enter correct names. This user does not exist");
+        return;
+      }
     }
     else {
-      alert("Please enter correct names. This user does not exist");
-      return;
+      names = "None"
     }
 
     const timeRange = evtime.value;
@@ -746,7 +756,12 @@ async function editEvent(event){
     data.append('ending_time', `${year}-${String(month + 1).padStart(2, '0')}-${String(activeDay).padStart(2, '0')} ${eventTimeToConverted}:00`);
     data.append('additional_notes', evDescription.value.replace(/'/g, "\\'"));
     data.append('location_of_event', evLocation.value.replace(/'/g, "\\'"));
-    data.append('tagged_users', names.replace(/'/g, "\\'"));
+    if (names === "None"){
+      data.append('tagged_users', `${user_id}`);   
+    }
+    else{
+      data.append('tagged_users', names.replace(/'/g, "\\'"));   
+    } 
     data.append('added_by', parseInt(user_id));
 
     const response = await fetch(url, {
@@ -909,17 +924,8 @@ function createMockupHTML(){
 
 function logout(){
   // Get all cookies and split them into an array
-  const cookies = document.cookie.split(";");
-
-  // Loop through all cookies and delete them by setting their expiration date to a date in the past
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  console.log("Cookies cleared");
-
-  window.location.href = "../login.html";
+  localStorage.clear();
+  
+  console.log("Local Storage cleared");
+  window.location.href = "login.html";
 }

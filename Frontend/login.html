@@ -2,10 +2,11 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>HOMEISER</title>
+  <title>Login</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&display=swap');
   </style>
+  <link rel="icon" type="image/png" href="./Images/logo.png">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -13,7 +14,7 @@
   <header id="header1"></header>
   <header id="header2">
     <div class="dropdown2 hamburger" style="display: none;">
-      <button class="dropbtn2" onclick="toggleDropdown()"><img src="../Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
+      <button class="dropbtn2"><img src="./Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
       <div class="dropdown-content2" id="dropdown-content">
         <a href="./shared_list/shared_list.html">Shared List</a>
         <a href="./shared_calendar/calendar.html">Shared Calendar</a>
@@ -21,14 +22,15 @@
       </div>
     </div>
     <div class="dropdown2">
-      <button class="dropbtn2"><a href="../welcome.html" style="color: black !important; text-decoration: none;">HOMEISER<a></button>
+      <button class="dropbtn2"><a href="./welcome.html" style="color: black !important; text-decoration: none;">
+        <img src="./Images/logo.png" alt="logo", style="max-width: 18px;">  HOMEISER<a></button>
     </div>
 
     <ul class="if-not-logged-in" style="display: none;">
       <li><a href="./about.html">About</a></li>
       <li><a href="./group.html">Group</a></li>
-      <li><a href="./register.html">Register</a></li>  
       <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./register.html">Register</a></li>
       <li><a href="./login.html" class="dropbtn">Log in</a></li>
     </ul>
     <ul class="if-logged-in" style="display: none;">
@@ -71,7 +73,7 @@
             <input type="password" class="form__input" autofocus placeholder="Password">
             <div class="form__input-error-message"></div>
         </div>
-        <button class="form__button" type="submit" onclick="postLogin(event)">Continue</button>
+        <button class="form__button" type="submit" onclick="postLogin(event)">Login</button>
         <p class="form__text">
             <a href="#" class="form__link">Forgot your password?</a>
         </p>

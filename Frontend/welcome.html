@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  <title>HOMEISER</title>
+  <title>Welcome</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&display=swap');
   </style>
 
+  <link rel="icon" type="image/png" href="./Images/logo.png">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -15,7 +16,7 @@
   <header id="header1"></header>
   <header id="header2">
     <div class="dropdown2 hamburger" style="display: none;">
-      <button class="dropbtn2" onclick="toggleDropdown()"><img src="../Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
+      <button class="dropbtn2"><img src="./Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
       <div class="dropdown-content2" id="dropdown-content">
         <a href="./shared_list/shared_list.html">Shared List</a>
         <a href="./shared_calendar/calendar.html">Shared Calendar</a>
@@ -23,14 +24,15 @@
       </div>
     </div>
     <div class="dropdown2">
-      <button class="dropbtn2"><a href="../welcome.html" style="color: black !important; text-decoration: none;">HOMEISER<a></button>
+      <button class="dropbtn2"><a href="./welcome.html" style="color: black !important; text-decoration: none;">
+        <img src="./Images/logo.png" alt="logo", style="max-width: 18px;">  HOMEISER<a></button>
     </div>
 
     <ul class="if-not-logged-in" style="display: none;">
       <li><a href="./about.html">About</a></li>
       <li><a href="./group.html">Group</a></li>
-      <li><a href="./register.html">Register</a></li>  
       <li><a href="./profile/profile.html">Profile</a></li>
+      <li><a href="./register.html">Register</a></li>
       <li><a href="./login.html" class="dropbtn">Log in</a></li>
     </ul>
     <ul class="if-logged-in" style="display: none;">
@@ -58,7 +60,7 @@
   
   <div class="outergallery">
     <div class="gallery">
-      <a href="shared lists.html">
+      <a href="./shared_list/shared_list.html">
         <img src="Images/list.png" alt="Shared List" width="600" height="400">
       </a>
       <div class="desc">Shared List</div><br><br>
@@ -66,15 +68,15 @@
     </div>
 
     <div class="gallery">
-      <a href="shared calendar.html">
-        <img src="Images/calendar.jpeg" alt="Canlendar" width="700" height="300">
+      <a href="./shared_calendar/calendar.html">
+        <img src="Images/calendar.jpeg" alt="Calendar" width="700" height="300">
       </a>
-      <div class="desc">Canlendar</div><br><br>
+      <div class="desc">Calendar</div><br><br>
       <a><center>Online Calendar showing all the days, weeks, and months of the year, including public holidays and every roommate's birthday.</center></a>
     </div>
 
     <div class="gallery">
-      <a href="money tracker.html">
+      <a href="./money_settling/money_tracker.html">
         <img src="Images/money.jpeg" alt="Money Tracker" width="600" height="400">
       </a>
       <div class="desc">Money Tracker</div><br><br>
@@ -83,4 +85,5 @@
   </div>
 
 </body>
+<script type="text/javascript" src="./welcome.js"></script>
 </html>

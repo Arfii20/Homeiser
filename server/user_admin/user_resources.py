@@ -49,7 +49,6 @@ class UserLoginResource(Resource):
             return 'Incorrect Password', 401
 
 
-
 class UserResource(Resource):
     def get(self, email: str):
         """return a user given an email"""
@@ -96,6 +95,7 @@ class UserResource(Resource):
         except UserError as ue:
             return str(ue), 500
 
+        usr = User.build_from_email(email, cur)
         return usr.json, 200
 
     def delete(self, email: str):

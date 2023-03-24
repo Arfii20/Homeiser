@@ -4,19 +4,13 @@ const logged_in_hrefs = document.querySelector(".if-logged-in");
 const not_logged_in_hrefs = document.querySelector(".if-not-logged-in");
 const hamburger = document.querySelector(".hamburger");
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-// const user_id = getCookie("user_id");
-// const house_id = getCookie("household_id");
-const user_id = 630;
-const house_id = 620;
+const user_id = localStorage.getItem("user_id");
+const house_id = localStorage.getItem("house_id");
+// const user_id = 630;
+// const house_id = 620;
 let prev_values = {};
 
-if (user_id === null || user_id === undefined) {
+if (user_id === null || user_id === undefined || user_id === "null" || user_id === "undefined") {
   not_logged_in_hrefs.style.display = "";
   logged_in_hrefs.style.display = "none";
   hamburger.style.display = "none";
@@ -27,9 +21,9 @@ not_logged_in_hrefs.style.display = "none";
 logged_in_hrefs.style.display = "";
 hamburger.style.display = "";
 
-getDetails(user_id);
+getDetails();
 
-async function getDetails(user_id){
+async function getDetails(){
 
 	try{
 		const response = await fetch(BASE + "user_profile/" + user_id);
@@ -161,13 +155,11 @@ async function postDetails(event){
 		// Validating dob
 		if (profile_Birth != "" && isValidDate(profile_Birth)) {
 			prev_values.birth = profile_Birth;
+			clearInputError(profile_BirthElement);
 		}
 		else if (profile_Birth != "" && !isValidDate(profile_Birth)){
 			setInputError(profile_BirthElement, "Date must be valid and in yyyy-mm-dd format");
 			return;
-		}
-		else{
-			clearInputError(profile_BirthElement);
 		}
 
 		if (profile_password === "") {
@@ -340,18 +332,9 @@ function clearInputError(inputElement, inputGroupSelector = '.form__input-group'
 }
 
 function logout(){
-  // Get all cookies and split them into an array
-  const cookies = document.cookie.split(";");
-
-  // Loop through all cookies and delete them by setting their expiration date to a date in the past
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  console.log("Cookies cleared");
-
-  window.location.href = "../login.html";
+	// Get all cookies and split them into an array
+	localStorage.clear();
+  
+	console.log("Local Storage cleared");
+	window.location.href = "login.html";
 }
