@@ -75,15 +75,18 @@ class TransactionResource(Resource):
 
         conn, cur = db.get_conn()
 
-        result = cur.execute(
+        cur.execute(
             "UPDATE transaction SET paid = 1 - paid WHERE id = %s", [t_id]
         )
         conn.commit()
 
+        cur.execute("""SELECT count(*) FROM transaction WHERE id = %s""", [t_id])
+
         # SQL query in form of UPDATE transaction SET paid = 1 - paid
         # if paid, 1-1 = 0; if not paid, 1-0 = 1
 
-        if result is not None:
+        result = cur.fetchone()[0]
+        if result:
             return f"Marked {t_id} as paid", 200
         else:
             return f"Transaction {t_id} doesn't exist", 404

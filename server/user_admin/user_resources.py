@@ -2,10 +2,10 @@
     Adding, removing, ~modifying~ users
     Adding and removing houses
     Joining and leaving houses"""
-import time
 
 from flask_restful import Resource
 from flask import request
+import hashlib
 import json
 
 from admin.house import (
@@ -16,6 +16,38 @@ from admin.house import (
 )
 from admin.user import User, UserError
 from server.db_handler import get_conn
+
+
+class UserLoginResource(Resource):
+
+    def post(self):
+        """Return json for a user given an email and password;
+        accept requests in the form
+        {'email': str,
+         'password': str}
+
+         (password in plaintext)
+         """
+
+        details = request.get_json()
+
+        hasher = hashlib.sha3_256()
+        hasher.update(bytes(details['password'], encoding='utf8'))
+
+        exp_password = str(hasher.digest())
+        _, cur = get_conn()
+
+        try:
+            u = User.build_from_email(details['email'], cur)
+        except UserError as ue:
+            # if we fail to build from email, return a 404
+            return str(ue), 404
+
+        if bytes(exp_password, encoding='utf8') == u.password:
+            return u.json, 200
+        else:
+            return 'Incorrect Password', 401
+
 
 
 class UserResource(Resource):
