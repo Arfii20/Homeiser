@@ -177,7 +177,7 @@ async function get_lists(house_id){
 			}
 		}else{
 			const response_error = await response.json();
-			console.log(response_error.error);
+			console.log({message: response_error.error});
 		}
 	}
 	catch (error) {
@@ -391,7 +391,7 @@ async function get_list_event(list_id){
 		}
 	}else{
 		const response_error = await response.json();
-		console.log(response_error.error);
+		console.log({message: response_error.error});
 	}
 }
 

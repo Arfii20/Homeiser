@@ -194,12 +194,10 @@ async function addBirthdays(){
 
     const user_obj = await JSON.parse(await response_user.json());
 
-    console.log(user_obj)
-    console.log(user_obj.dob)
-
     const month_day = user_obj.dob.substring(5);
+	const currentYear = new Date().getFullYear();
 
-    for (let i = 2023; i < 2030; i++){
+    for (let i = currentYear; i < (currentYear + 5); i++){
 		const eventTimeFromConverted = `${i}-${month_day} 00:00:00`;
 		const eventTimeToConverted = `${i}-${month_day} 23:59:00`;
 

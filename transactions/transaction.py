@@ -156,7 +156,7 @@ class Transaction:
         # add pair to pairs table if the pair doesn't already exist
         if p_id is None:
             cur.execute(
-                "INSERT INTO pairs(src, dest) VALUES (%s, %s)",
+                "INSERT INTO pairs (src, dest) VALUES (%s, %s)",
                 [self.src_id, self.dest_id],
             )
 

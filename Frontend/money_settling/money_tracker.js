@@ -169,11 +169,11 @@ async function createcloseRightContainer(event){
 							<h1 class="form__title" style="color:#a220a4">New Transaction</h1>
 						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" placeholder="Full Name of Source User: ">
+						      <input type="number" class="form__input" placeholder="ID of Source User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="text" class="form__input" placeholder="Full Name of Destination User: ">
+						      <input type="number" class="form__input" placeholder="ID of Destination User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
@@ -265,8 +265,8 @@ async function postTransaction(event){
 	const button = event.target;
 
 	const form = button.closest('form');
-	const transaction_SrcElement = form.querySelector('input[placeholder*="Full Name of Source User"]');
-	const transaction_DestElement = form.querySelector('input[placeholder*="Full Name of Destination User"]');
+	const transaction_SrcElement = form.querySelector('input[placeholder*="ID of Source User"]');
+	const transaction_DestElement = form.querySelector('input[placeholder*="ID of Destination User"]');
 	const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
@@ -333,9 +333,9 @@ async function postTransaction(event){
 	  	},
 	  	body: JSON.stringify({
 	  		transaction_id: 0,
-	    	src_id: 0,
-	    	dest_id: 0,
-	    	src: transaction_Src.replace(/'/g, "\\'"),
+	    	src_id: transaction_Src,
+	    	dest_id: transaction_Dest,
+	    	src: "Does not Matter",
 	    	dest: transaction_Dest.replace(/'/g, "\\'"),
 	    	amount: parseInt(transaction_Amount),
 	    	description: transaction_Description.replace(/'/g, "\\'"),

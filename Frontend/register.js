@@ -49,9 +49,6 @@ async function postRegister(event){
     const register_Password = register_PasswordElement.value;
 	const register_Confirm = register_ConfirmElement.value;
 
-
-	console.log(register_Email);
-
 	if (register_Fname === "") {
 		setInputError(register_FnameElement, 'Please enter First Name');
 		return;
@@ -137,7 +134,6 @@ async function postRegister(event){
   	if (response.ok) {
     	console.log({message: "Registration successful"});
     	const obj = await JSON.parse(await response.json());
-    	console.log(obj);
     	await setLocalStorage(obj.user_id, obj.household_id, obj.email);
     	alert("Register Successful. Please log in now.");
     	window.location.href = "./login.html";

@@ -155,13 +155,11 @@ async function postDetails(event){
 		// Validating dob
 		if (profile_Birth != "" && isValidDate(profile_Birth)) {
 			prev_values.birth = profile_Birth;
+			clearInputError(profile_BirthElement);
 		}
 		else if (profile_Birth != "" && !isValidDate(profile_Birth)){
 			setInputError(profile_BirthElement, "Date must be valid and in yyyy-mm-dd format");
 			return;
-		}
-		else{
-			clearInputError(profile_BirthElement);
 		}
 
 		if (profile_password === "") {

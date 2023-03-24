@@ -57,8 +57,11 @@ async function getDetails(user_id){
 							        <div class="detailsTable">
 										      <table class="main-table" style="width:100%">
 										      		<thead class="fixed">
+										      				<th class="header">
+					                  					Member ID
+					                				</th>
 					                				<th class="header">
-					                  					Members
+					                  					Member Name
 					                				</th>
 					                		</thead>`
 
@@ -66,7 +69,8 @@ async function getDetails(user_id){
 				await Promise.resolve(); 
 				stringToBeAdded += `<tbody id="data-output">
 										          	<tr>
-											              <td class="table-data"> ${obj.users[i]} </td>
+										          			<td class="table-data"> ${obj.users[i][0]} </td>
+											              <td class="table-data"> ${obj.users[i][1]} </td>
 											         	<tr>
 										        </tbody>`;
 			}
