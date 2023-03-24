@@ -139,23 +139,30 @@ function createMockUpHTMLofGroup(){
 							        <div class="detailsTable">
 										      <table class="main-table" style="width:100%">
 										      		<thead class="fixed">
-					                				<tr><th class="header">
-					                  					Members
+					                			<tr>
+					                				<th class="header">
+					                  					Member ID
+					                				</th><th class="header">
+					                  					Member Name
 					                				</th>
 					                		</tr></thead><tbody id="data-output">
 										          	<tr>
+											              <td class="table-data"> 1 </td>
 											              <td class="table-data"> Mockup User 1 </td>
 											         	</tr><tr>
 										        </tr></tbody><tbody id="data-output">
 										          	<tr>
+											              <td class="table-data"> 2 </td>
 											              <td class="table-data"> Mockup User 2 </td>
 											         	</tr><tr>
 										        </tr></tbody><tbody id="data-output">
 										          	<tr>
+											              <td class="table-data"> 3 </td>
 											              <td class="table-data"> Mockup User 3 </td>
 											         	</tr><tr>
 										        </tr></tbody><tbody id="data-output">
 										          	<tr>
+											              <td class="table-data"> 4 </td>
 											              <td class="table-data"> Mockup User 4 </td>
 											         	</tr><tr>
 										        </tr></tbody></table>
