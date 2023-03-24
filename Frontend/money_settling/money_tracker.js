@@ -120,7 +120,7 @@ async function getTransaction(event) {
 			}
 			rightContainer.innerHTML =  `<div class="container2">
 										  <form class="text" id="transactions">
-										    <h1 class="form__title" style="color:#a220a4">Transaction</h1>
+										    <h1 class="form__title" style="color:#a220a4; margin-top:0.5rem; margin-bottom:2rem">Transaction</h1>
 										    <div class="form__input-error-message"></div>
 										    <div class="form__input-group">
 										      <input type="text" class="form__input" placeholder="Source User - ${obj.src} " readonly>
@@ -167,13 +167,14 @@ async function createcloseRightContainer(event){
 		rightContainer.innerHTML =  `<div class="container2">
 						  <form class="text" id="transactions">
 							<h1 class="form__title" style="color:#a220a4">New Transaction</h1>
+							<h5 class="form__title" style="margin-bottom: 1.7rem">You can find ID in Group Tab</h5>
 						   	<div class="form__input-error-message"></div>
 						    <div class="form__input-group">
-						      <input type="number" class="form__input" placeholder="ID of Source User: ">
+						      <input type="number" class="form__input" placeholder="ID of User who owes you: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
-						      <input type="number" class="form__input" placeholder="ID of Destination User: ">
+						      <input type="text" class="form__input" placeholder="Name of the User: ">
 						      <div class="form__input-error-message"></div>
 						    </div>
 						    <div class="form__input-group">
@@ -253,7 +254,6 @@ async function deleteTransaction(event){
 		}
 	})
 	.then(data => {
-		console.log(data);
 	})
 	.catch(error => {
 		console.log(error);
@@ -265,8 +265,8 @@ async function postTransaction(event){
 	const button = event.target;
 
 	const form = button.closest('form');
-	const transaction_SrcElement = form.querySelector('input[placeholder*="ID of Source User"]');
-	const transaction_DestElement = form.querySelector('input[placeholder*="ID of Destination User"]');
+	const transaction_SrcElement = form.querySelector('input[placeholder*="ID of User who owes you"]');
+	const transaction_DestElement = form.querySelector('input[placeholder*="Name of the User"]');
 	const transaction_AmountElement = form.querySelector('input[placeholder*="Amount"]');
 	const transaction_DescriptionElement = form.querySelector('input[placeholder*="Description"]');
 	const transaction_DueDateElement = form.querySelector('input[placeholder*="Due Date"]');
@@ -278,8 +278,8 @@ async function postTransaction(event){
 	const transaction_DueDate = transaction_DueDateElement.value;
 	const transaction_Paid = "false";
 
-	if (transaction_Src === "") {
-		setInputError(transaction_SrcElement, 'Please enter source user');
+	if (!Number.isInteger(Number(transaction_Src)) || (Number(transaction_Src) <= 0)) {
+		setInputError(transaction_SrcElement, 'Invalid source user');
 		return;
 	}
 	else{
@@ -334,9 +334,9 @@ async function postTransaction(event){
 	  	body: JSON.stringify({
 	  		transaction_id: 0,
 	    	src_id: transaction_Src,
-	    	dest_id: transaction_Dest,
+	    	dest_id: user_id,
 	    	src: "Does not Matter",
-	    	dest: transaction_Dest.replace(/'/g, "\\'"),
+	    	dest: "Does not Matter",
 	    	amount: parseInt(transaction_Amount),
 	    	description: transaction_Description.replace(/'/g, "\\'"),
 	    	due_date: transaction_DueDate,
@@ -356,10 +356,13 @@ async function postTransaction(event){
 	  	}
 	})
 	.then(data => {
-	  	console.log(data);
+
 	})
 	.catch(error => {
-	  	console.log(error);
+	  	if (error.message === 'Failed to fetch') {
+        	setInputError(transaction_SrcElement, 'Invalid source user');
+			return;
+    	}
 	});
 }
 

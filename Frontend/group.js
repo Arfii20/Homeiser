@@ -60,10 +60,8 @@ async function postGroup(event){
 		clearInputError(group_CGPassElement);
 	}
 
-    if (group_Maxuser === 0) {
-        setInputError(group_MaxuserElement, 'Please enter max users');
-        return;
-    } else if (!Number.isInteger(Number(group_Maxuser)) || (Number(group_Maxuser) <= 0)) {
+
+    if (!Number.isInteger(Number(group_Maxuser)) || (Number(group_Maxuser) <= 0)) {
         setInputError(group_MaxuserElement, 'The number of users should be a positive integer');
         return;
     } else {
