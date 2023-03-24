@@ -47,9 +47,13 @@ async function postGroup(event){
 		clearInputError(group_CGElement);
 	}
 
-
+	const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/;
     if (group_CGPass === "") {
 		setInputError(group_CGPassElement, 'Please create Group Password');
+		return;
+	}
+	else if (!regex.test(group_CGPass)) {
+		setInputError(group_CGPassElement, 'Password must be minimum 8 characters with a digit, a lowercase, an uppercase and a symbol');
 		return;
 	}
 	else{
@@ -137,10 +141,7 @@ async function patchGroup(event){
     const group_JoinID = group_JoinIDElement.value;
     const group_JGPass = group_JGPassElement.value;
 
-	if (group_JoinID === 0) {
-        setInputError(group_JoinIDElement, 'Please enter max users');
-        return;
-    } else if (!Number.isInteger(Number(group_JoinID)) || (Number(group_JoinID) <= 0)) {
+	if (!Number.isInteger(Number(group_JoinID)) || (Number(group_JoinID) <= 0)) {
         setInputError(group_JoinIDElement, 'Invalid ID');
         return;
     } else {
@@ -155,33 +156,29 @@ async function patchGroup(event){
 		clearInputError(group_JGPassElement);
 	}
 
-
-    if (group_JGPass === "") {
-		setInputError(group_JGPassElement, 'Please enter Group Password');
-		return;
-	}
-	else{
-		clearInputError(group_JGPassElement);
-	}
-
-	const response = await fetch(`${BASE}user/${group_JoinID}/${email_id}/1`, {
-							  	method: 'PATCH',
-							  	headers: {
-							    	'Content-Type': 'application/json'
-							  	},
-							  	body: {}
-								});
-  	if (response.ok) {
-    	console.log({message: "Joining successful"});
-    	const obj = await JSON.parse(await response.json());
-		localStorage.setItem("house_id", obj.household_id);
-		await addBirthdays();
-    	alert("Joined Successfully");
-    	window.location.href = "./welcome.html";
-  	} 
-  	else {
-    	console.log({message: await response.json()});
+	try{
+		const response = await fetch(`${BASE}user/${group_JoinID}/${email_id}/1`, {
+								  	method: 'PATCH',
+								  	headers: {
+								    	'Content-Type': 'application/json'
+								  	},
+								  	body: {}
+									});
+	  	if (response.ok) {
+	    	console.log({message: "Joining successful"});
+	    	const obj = await JSON.parse(await response.json());
+			localStorage.setItem("house_id", obj.household_id);
+			await addBirthdays();
+	    	alert("Joined Successfully");
+	    	window.location.href = "./welcome.html";
+	  	} 
   	}
+	catch (error) {
+	    if (error.message === 'Failed to fetch') {
+	  		setInputError(group_JoinIDElement, 'Group does not exist');
+	    	console.log({message: await response.json()});
+	  	}
+	}
 }
 
 async function addBirthdays(){

@@ -96,9 +96,13 @@ async function postRegister(event){
 		clearInputError(register_EmailElement);
 	}
 
-
+	const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/;
 	if (register_Password === "") {
 		setInputError(register_PasswordElement, 'Please enter password');
+		return;
+	}	
+	else if (!regex.test(register_Password)) {
+		setInputError(register_PasswordElement, 'Password must be minimum 8 characters with a digit, a lowercase, an uppercase and a symbol');
 		return;
 	}
 	else{

@@ -174,6 +174,7 @@ class UserProfile(Resource):
         except:
             return {"message": "Error deleting stuff"}, 500
 
+
 class GroupDetails(Resource):
     def get(self, house_id):
         """
