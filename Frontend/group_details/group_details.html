@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Group Details</title>
+  <link rel="icon" type="image/png" href="../Images/logo.png">
+  <link rel="stylesheet" type="text/css" href="./group_details.css">
+</head>
+
+<body>
+  <header id="header1"></header>
+  <header id="header2">
+    <div class="dropdown2 hamburger" style="display: none;">
+      <button class="dropbtn2"><img src="../Images/hamburger.png" alt="menu button" style="max-width: 17px;"></button>
+      <div class="dropdown-content2" id="dropdown-content">
+        <a href="../shared_list/shared_list.html">Shared List</a>
+        <a href="../shared_calendar/calendar.html">Shared Calendar</a>
+        <a href="../money_settling/money_tracker.html">Money Tracker</a>
+      </div>
+    </div>
+    <div class="dropdown2">
+      <button class="dropbtn2"><a href="../welcome.html" style="color: black !important; text-decoration: none;">
+        <img src="../Images/logo.png" alt="logo", style="max-width: 18px;">  HOMEISER<a></button>
+    </div>
+
+    <ul class="if-not-logged-in" style="display: none;">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../group.html">Group</a></li>
+      <li><a href="../profile/profile.html">Profile</a></li>
+      <li><a href="../register.html">Register</a></li>
+      <li><a href="../login.html" class="dropbtn">Log in</a></li>
+    </ul>
+    <ul class="if-logged-in" style="display: none;">
+      <li><a href="../profile/profile.html">Profile</a></li>
+      <li><a href="../group_details/group_details.html">Group</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../login.html" onclick="logout()">Log out</a></li>
+    </ul>
+    </div>
+  </header>
+
+  <style>
+    body {
+      background-image: url("../Images/IMG_0674.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+  
+  <div style="text-align: center;font-size: 50px;font-weight: bold;">
+  	<a>Group</a>
+  </div>
+
+  <br><br>
+
+  <div class="container">
+    <h1 class="form__title" style="color:#a220a4;">Group Details</h1>
+    <h1 class="form__title" style="font-size: 18px; color: #a220a4;">Loading..</h1>
+  </div>
+
+  <script src="./group_details.js"></script>
+
+</body>
+</html>
